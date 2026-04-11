@@ -24,8 +24,46 @@ export interface HouseholdMember {
   created_at: string;
 }
 
+export const DEFAULT_NUTRITION_PROFILE: NutritionProfile = {
+  target_calories: 2000,
+  macro_targets: {
+    protein_pct: 30,
+    carbs_pct: 40,
+    fat_pct: 30
+  },
+  allergies: [],
+  avoidances: [],
+  appliances: ['oven', 'stove'],
+  cooking_skill: 'intermediate',
+  is_child: false
+};
+
+const IS_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
+const MOCK_STORAGE_KEY = 'wfm_mock_household_members';
+
+const getMockData = (): HouseholdMember[] => {
+  const stored = localStorage.getItem(MOCK_STORAGE_KEY);
+  if (stored) return JSON.parse(stored);
+  const initial = [{
+    id: 'mock-member-1',
+    household_id: 'mock-household-1',
+    name: 'Me (Mock)',
+    nutrition_profile: DEFAULT_NUTRITION_PROFILE,
+    is_owner: true,
+    is_active: true,
+    created_at: new Date().toISOString()
+  }];
+  localStorage.setItem(MOCK_STORAGE_KEY, JSON.stringify(initial));
+  return initial;
+};
+
+const saveMockData = (members: HouseholdMember[]) => {
+  localStorage.setItem(MOCK_STORAGE_KEY, JSON.stringify(members));
+};
+
 export const householdService = {
   async getMembers(householdId: string): Promise<HouseholdMember[]> {
+    if (IS_MOCK) return getMockData();
     const { data, error } = await supabase
       .from('household_members')
       .select('*')
@@ -38,6 +76,7 @@ export const householdService = {
   },
 
   async getMyHouseholdId(): Promise<string | null> {
+    if (IS_MOCK) return 'mock-household-1';
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return null;
 
@@ -55,6 +94,20 @@ export const householdService = {
   },
 
   async addMember(householdId: string, name: string, profile: NutritionProfile): Promise<HouseholdMember> {
+    if (IS_MOCK) {
+      const members = getMockData();
+      const newMember = {
+        id: `mock-member-${Date.now()}`,
+        household_id: householdId,
+        name,
+        nutrition_profile: profile,
+        is_owner: false,
+        is_active: true,
+        created_at: new Date().toISOString()
+      };
+      saveMockData([...members, newMember]);
+      return newMember;
+    }
     const { data, error } = await supabase
       .from('household_members')
       .insert({
@@ -72,6 +125,12 @@ export const householdService = {
   },
 
   async updateMember(memberId: string, updates: Partial<HouseholdMember>): Promise<void> {
+    if (IS_MOCK) {
+      const members = getMockData();
+      const updated = members.map(m => m.id === memberId ? { ...m, ...updates } : m);
+      saveMockData(updated);
+      return;
+    }
     const { error } = await supabase
       .from('household_members')
       .update(updates)
@@ -81,6 +140,28 @@ export const householdService = {
   },
 
   async deleteMember(memberId: string): Promise<void> {
+    if (IS_MOCK) {
+      const members = getMockData();
+      const member = members.find(m => m.id === memberId);
+      if (member?.is_owner) {
+        throw new Error('Cannot delete household owner.');
+      }
+      const filtered = members.filter(m => m.id !== memberId);
+      saveMockData(filtered);
+      return;
+    }
+
+    // Safety check for owner deletion in real Supabase too (though RLS should handle it)
+    const { data: member } = await supabase
+      .from('household_members')
+      .select('is_owner')
+      .eq('id', memberId)
+      .single();
+
+    if (member?.is_owner) {
+      throw new Error('Cannot delete household owner.');
+    }
+
     const { error } = await supabase
       .from('household_members')
       .delete()
@@ -88,20 +169,6 @@ export const householdService = {
 
     if (error) throw error;
   }
-};
-
-export const DEFAULT_NUTRITION_PROFILE: NutritionProfile = {
-  target_calories: 2000,
-  macro_targets: {
-    protein_pct: 30,
-    carbs_pct: 40,
-    fat_pct: 30
-  },
-  allergies: [],
-  avoidances: [],
-  appliances: ['oven', 'stove'],
-  cooking_skill: 'intermediate',
-  is_child: false
 };
 
 export const NUTRITION_PRESETS: Record<string, Partial<NutritionProfile>> = {

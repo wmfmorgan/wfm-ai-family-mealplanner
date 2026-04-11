@@ -18,9 +18,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const isMock = import.meta.env.VITE_USE_MOCK === 'true';
+
     // Check for initial session
     const getInitialSession = async () => {
       try {
+        if (isMock) {
+          const mockUser = { email: 'mock@example.com', id: 'mock-user-123' };
+          setSession({ user: mockUser } as any);
+          setUser(mockUser as any);
+          setLoading(false);
+          return;
+        }
+
         const { data: { session } } = await supabase.auth.getSession();
         setSession(session);
         setUser(session?.user ?? null);
@@ -32,6 +42,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     getInitialSession();
+
+    if (isMock) return;
 
     // Listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {

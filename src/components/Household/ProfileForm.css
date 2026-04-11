@@ -197,6 +197,21 @@ textarea {
   background-color: #2d4532;
 }
 
+.btn-primary:disabled {
+  background-color: #e0e5d8;
+  color: #8a9a8d;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.macro-warning {
+  color: #c53030;
+  font-size: 0.85rem;
+  margin-top: 12px;
+  font-weight: 600;
+  font-style: italic;
+}
+
 .btn-tertiary {
   background: none;
   border: none;

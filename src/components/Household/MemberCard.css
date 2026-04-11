@@ -17,7 +17,7 @@
 .member-card-header {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
+  align-items: center;
   margin-bottom: 12px;
 }
 
@@ -30,10 +30,16 @@
   letter-spacing: -0.02em;
 }
 
-.edit-button {
+.action-buttons {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.edit-button,
+.delete-button {
   background: none;
   border: none;
-  color: #6a7d6e;
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
@@ -43,8 +49,20 @@
   transition: color 0.2s;
 }
 
+.edit-button {
+  color: #6a7d6e;
+}
+
 .edit-button:hover {
   color: #3A5A40;
+}
+
+.delete-button {
+  color: #a65a5a;
+}
+
+.delete-button:hover {
+  color: #8a3a3a;
 }
 
 .dietary-tags {
@@ -64,6 +82,15 @@
   padding: 4px 10px;
   border-radius: 100px;
   border: 1px solid #d8e2d1;
+}
+
+.avoid-tag {
+  background-color: #f7f3e9;
+  color: #7d6b4a;
+  border-color: #e5dec8;
+  text-transform: none;
+  font-style: italic;
+  font-weight: 500;
 }
 
 .nutrition-summary {

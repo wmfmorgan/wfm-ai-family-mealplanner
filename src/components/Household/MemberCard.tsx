@@ -4,6 +4,7 @@ import './MemberCard.css';
 export interface MemberCardProps {
   name: string;
   dietaryNeeds: string[];
+  avoidances?: string[];
   calorieTarget: number;
   macros: {
     protein: string;
@@ -11,6 +12,8 @@ export interface MemberCardProps {
     fat: string;
   };
   onEdit: () => void;
+  onDelete?: () => void;
+  isOwner?: boolean;
 }
 
 /**
@@ -21,20 +24,31 @@ export interface MemberCardProps {
 const MemberCard: React.FC<MemberCardProps> = ({ 
   name, 
   dietaryNeeds, 
+  avoidances = [],
   calorieTarget, 
   macros,
-  onEdit 
+  onEdit,
+  onDelete,
+  isOwner = false
 }) => {
   return (
     <div className="member-card">
       <div className="member-card-header">
         <h2 className="member-name">{name}</h2>
-        <button className="edit-button" onClick={onEdit}>Edit</button>
+        <div className="action-buttons">
+          {!isOwner && onDelete && (
+            <button className="delete-button" onClick={onDelete}>Delete</button>
+          )}
+          <button className="edit-button" onClick={onEdit}>Edit</button>
+        </div>
       </div>
       
       <div className="dietary-tags">
         {dietaryNeeds.map((need, index) => (
           <span key={index} className="diet-tag">{need}</span>
+        ))}
+        {avoidances.map((avoid, index) => (
+          <span key={`avoid-${index}`} className="diet-tag avoid-tag">{avoid}</span>
         ))}
       </div>
 

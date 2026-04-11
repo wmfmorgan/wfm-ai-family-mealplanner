@@ -17,6 +17,7 @@ const APPLIANCE_LIST = ["Slow Cooker", "Air Fryer", "Oven", "Stove", "Pressure C
 const ProfileForm: React.FC<ProfileFormProps> = ({ initialData, onSave, onCancel }) => {
   const [name, setName] = useState(initialData.name);
   const [profile, setProfile] = useState<NutritionProfile>(initialData.nutrition_profile);
+  const [avoidancesText, setAvoidancesText] = useState(initialData.nutrition_profile.avoidances.join(', '));
   const [isAdvanced, setIsAdvanced] = useState(false);
   const [activePreset, setActivePreset] = useState<string | null>(null);
 
@@ -33,6 +34,12 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ initialData, onSave, onCancel
         }
       }));
     }
+  };
+
+  const handleAvoidancesChange = (val: string) => {
+    setAvoidancesText(val);
+    const list = val.split(',').map(s => s.trim()).filter(s => s !== '');
+    setProfile(prev => ({ ...prev, avoidances: list }));
   };
 
   const toggleAllergy = (allergy: string) => {
@@ -55,6 +62,11 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ initialData, onSave, onCancel
     }));
   };
 
+  const totalMacros = profile.macro_targets.protein_pct + 
+                      profile.macro_targets.carbs_pct + 
+                      profile.macro_targets.fat_pct;
+  const isMacroValid = !isAdvanced || totalMacros === 100;
+
   return (
     <div className="profile-form-container">
       <header className="form-header">
@@ -67,8 +79,9 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ initialData, onSave, onCancel
         <section className="form-section">
           <h2 className="section-heading">Basic Information</h2>
           <div className="input-group">
-            <label>Name</label>
+            <label htmlFor="member-name">Name</label>
             <input 
+              id="member-name"
               type="text" 
               value={name} 
               onChange={(e) => setName(e.target.value)} 
@@ -111,8 +124,9 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ initialData, onSave, onCancel
           {isAdvanced ? (
             <div className="advanced-inputs">
               <div className="input-group">
-                <label>Daily Calories</label>
+                <label htmlFor="target-calories">Daily Calories</label>
                 <input 
+                  id="target-calories"
                   type="number" 
                   value={profile.target_calories} 
                   onChange={(e) => setProfile({...profile, target_calories: parseInt(e.target.value) || 0})} 
@@ -120,8 +134,9 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ initialData, onSave, onCancel
               </div>
               <div className="macro-grid">
                 <div className="input-group">
-                  <label>Protein (%)</label>
+                  <label htmlFor="protein-pct">Protein (%)</label>
                   <input 
+                    id="protein-pct"
                     type="number" 
                     value={profile.macro_targets.protein_pct} 
                     onChange={(e) => setProfile({
@@ -131,8 +146,9 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ initialData, onSave, onCancel
                   />
                 </div>
                 <div className="input-group">
-                  <label>Carbs (%)</label>
+                  <label htmlFor="carbs-pct">Carbs (%)</label>
                   <input 
+                    id="carbs-pct"
                     type="number" 
                     value={profile.macro_targets.carbs_pct} 
                     onChange={(e) => setProfile({
@@ -142,8 +158,9 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ initialData, onSave, onCancel
                   />
                 </div>
                 <div className="input-group">
-                  <label>Fat (%)</label>
+                  <label htmlFor="fat-pct">Fat (%)</label>
                   <input 
+                    id="fat-pct"
                     type="number" 
                     value={profile.macro_targets.fat_pct} 
                     onChange={(e) => setProfile({
@@ -153,6 +170,11 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ initialData, onSave, onCancel
                   />
                 </div>
               </div>
+              {!isMacroValid && (
+                <p className="macro-warning">
+                  Total macros must equal 100% (currently {totalMacros}%).
+                </p>
+              )}
             </div>
           ) : (
             <p className="helper-text">Targets are currently managed by the active preset.</p>
@@ -180,8 +202,8 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ initialData, onSave, onCancel
             <label>Chef's Notes (Additional Avoidances)</label>
             <textarea 
               placeholder="e.g. No mushrooms, hates cilantro..." 
-              value={profile.avoidances.join(', ')}
-              onChange={(e) => setProfile({...profile, avoidances: e.target.value.split(',').map(s => s.trim()).filter(s => s !== '')})}
+              value={avoidancesText}
+              onChange={(e) => handleAvoidancesChange(e.target.value)}
             />
           </div>
         </section>
@@ -206,7 +228,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ initialData, onSave, onCancel
         {/* Action Buttons */}
         <div className="form-actions">
           <button type="button" className="btn-tertiary" onClick={onCancel}>Cancel</button>
-          <button type="submit" className="btn-primary">Save Changes</button>
+          <button type="submit" className="btn-primary" disabled={!isMacroValid}>Save Changes</button>
         </div>
       </form>
     </div>

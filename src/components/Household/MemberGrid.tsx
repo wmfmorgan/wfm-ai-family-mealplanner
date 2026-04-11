@@ -6,10 +6,11 @@ import './MemberGrid.css';
 export interface MemberGridProps {
   members: HouseholdMember[];
   onEditMember: (member: HouseholdMember) => void;
+  onDeleteMember: (member: HouseholdMember) => void;
   onAddMember: () => void;
 }
 
-const MemberGrid: React.FC<MemberGridProps> = ({ members, onEditMember, onAddMember }) => {
+const MemberGrid: React.FC<MemberGridProps> = ({ members, onEditMember, onDeleteMember, onAddMember }) => {
   return (
     <div className="member-grid-container">
       <div className="member-grid">
@@ -17,10 +18,12 @@ const MemberGrid: React.FC<MemberGridProps> = ({ members, onEditMember, onAddMem
           <MemberCard
             key={member.id}
             name={member.name}
+            isOwner={member.is_owner}
             dietaryNeeds={[
               ...member.nutrition_profile.allergies,
               ...(member.nutrition_profile.is_child ? ['Child'] : [])
             ]}
+            avoidances={member.nutrition_profile.avoidances}
             calorieTarget={member.nutrition_profile.target_calories}
             macros={{
               protein: `${member.nutrition_profile.macro_targets.protein_pct}%`,
@@ -28,6 +31,7 @@ const MemberGrid: React.FC<MemberGridProps> = ({ members, onEditMember, onAddMem
               fat: `${member.nutrition_profile.macro_targets.fat_pct}%`,
             }}
             onEdit={() => onEditMember(member)}
+            onDelete={() => onDeleteMember(member)}
           />
         ))}
         <button className="add-member-card" onClick={onAddMember}>

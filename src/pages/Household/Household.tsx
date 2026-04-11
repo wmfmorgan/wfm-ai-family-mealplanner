@@ -39,6 +39,29 @@ const Household: React.FC = () => {
     setEditingMember(null);
   };
 
+  const handleDeleteMember = async (member: HouseholdMember) => {
+    if (member.is_owner) {
+      alert('The household owner cannot be removed.');
+      return;
+    }
+
+    if (!window.confirm(`Are you sure you want to remove ${member.name}? This will permanently delete their profile.`)) {
+      return;
+    }
+
+    try {
+      await householdService.deleteMember(member.id);
+      // Refresh list
+      if (householdId) {
+        const data = await householdService.getMembers(householdId);
+        setMembers(data);
+      }
+    } catch (err) {
+      console.error('Error deleting member:', err);
+      alert('Failed to delete member. Please try again.');
+    }
+  };
+
   const handleSaveMember = async (name: string, profile: NutritionProfile) => {
     if (!householdId) return;
 
@@ -95,6 +118,7 @@ const Household: React.FC = () => {
           <MemberGrid 
             members={members}
             onEditMember={handleEditMember}
+            onDeleteMember={handleDeleteMember}
             onAddMember={handleAddClick}
           />
         </section>
