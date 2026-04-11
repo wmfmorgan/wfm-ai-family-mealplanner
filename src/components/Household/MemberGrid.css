@@ -1,0 +1,43 @@
+.member-grid-container {
+  width: 100%;
+}
+
+.member-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+  align-items: stretch;
+}
+
+.add-member-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  border: 2px dashed #e0e5d8;
+  border-radius: 12px;
+  padding: 24px;
+  min-height: 200px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #8a9a8d;
+}
+
+.add-member-card:hover {
+  border-color: #3A5A40;
+  color: #3A5A40;
+  background-color: #fcfdfa;
+}
+
+.plus-icon {
+  font-size: 2.5rem;
+  font-weight: 300;
+  margin-bottom: 8px;
+}
+
+.add-text {
+  font-family: 'Newsreader', serif;
+  font-size: 1.1rem;
+  font-style: italic;
+}

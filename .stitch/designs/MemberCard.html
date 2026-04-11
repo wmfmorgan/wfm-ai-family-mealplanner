@@ -1,0 +1,168 @@
+import React from 'react';
+
+/**
+ * MemberCard Component
+ * A tactile, card-style UI element for a family meal planner.
+ * Uses vanilla CSS and aligns with the 'Verdant Table' design system.
+ */
+const MemberCard = ({ 
+  name = "Jane Doe", 
+  dietaryNeeds = ["Keto", "Nut-Free"], 
+  calorieTarget = 1850, 
+  macros = { protein: "30%", carbs: "10%", fat: "60%" },
+  onEdit 
+}) => {
+  return (
+    <div className="member-card">
+      <div className="member-card-header">
+        <h2 className="member-name">{name}</h2>
+        <button className="edit-button" onClick={onEdit}>Edit</button>
+      </div>
+      
+      <div className="dietary-tags">
+        {dietaryNeeds.map((need, index) => (
+          <span key={index} className="diet-tag">{need}</span>
+        ))}
+      </div>
+
+      <div className="nutrition-summary">
+        <div className="calorie-display">
+          <span className="label">Target</span>
+          <span className="value">{calorieTarget} kcal</span>
+        </div>
+        <div className="macro-split">
+          <div className="macro-item">
+            <span className="label">P</span>
+            <span className="value">{macros.protein}</span>
+          </div>
+          <div className="macro-item">
+            <span className="label">C</span>
+            <span className="value">{macros.carbs}</span>
+          </div>
+          <div className="macro-item">
+            <span className="label">F</span>
+            <span className="value">{macros.fat}</span>
+          </div>
+        </div>
+      </div>
+
+      <style jsx>{`
+        .member-card {
+          background-color: #fcfdfa; /* Warm neutral from system */
+          border: 1px solid #e0e5d8;
+          border-radius: 12px;
+          padding: 24px;
+          max-width: 320px;
+          box-shadow: 0 4px 12px rgba(58, 90, 64, 0.05); /* Subtle earthy shadow */
+          font-family: 'Manrope', sans-serif; /* Clean sans-serif for body */
+          color: #2d3a2f;
+          transition: transform 0.2s ease;
+        }
+
+        .member-card:hover {
+          transform: translateY(-2px);
+        }
+
+        .member-card-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: baseline;
+          margin-bottom: 12px;
+        }
+
+        .member-name {
+          font-family: 'Newsreader', serif; /* Serif heading from system */
+          font-size: 1.5rem;
+          font-weight: 500;
+          color: #3A5A40; /* Primary green from system */
+          margin: 0;
+          letter-spacing: -0.02em;
+        }
+
+        .edit-button {
+          background: none;
+          border: none;
+          color: #6a7d6e;
+          font-size: 0.85rem;
+          font-weight: 600;
+          cursor: pointer;
+          text-decoration: underline;
+          text-underline-offset: 4px;
+          padding: 0;
+          transition: color 0.2s;
+        }
+
+        .edit-button:hover {
+          color: #3A5A40;
+        }
+
+        .dietary-tags {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+          margin-bottom: 24px;
+        }
+
+        .diet-tag {
+          background-color: #f0f5ed; /* Soft green tint */
+          color: #3A5A40;
+          font-size: 0.75rem;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          padding: 4px 10px;
+          border-radius: 100px;
+          border: 1px solid #d8e2d1;
+        }
+
+        .nutrition-summary {
+          border-top: 1px solid #eef2ea;
+          padding-top: 16px;
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-end;
+        }
+
+        .calorie-display {
+          display: flex;
+          flex-direction: column;
+        }
+
+        .macro-split {
+          display: flex;
+          gap: 16px;
+        }
+
+        .macro-item {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .label {
+          font-size: 0.65rem;
+          text-transform: uppercase;
+          color: #8a9a8d;
+          font-weight: 700;
+          letter-spacing: 0.1em;
+          margin-bottom: 2px;
+        }
+
+        .value {
+          font-size: 0.9rem;
+          font-weight: 600;
+          color: #4a5d4e;
+        }
+
+        .calorie-display .value {
+          font-size: 1.1rem;
+          font-family: 'Newsreader', serif;
+          font-style: italic;
+          color: #3A5A40;
+        }
+      `}</style>
+    </div>
+  );
+};
+
+export default MemberCard;

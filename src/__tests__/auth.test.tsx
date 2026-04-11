@@ -3,7 +3,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { AuthProvider, useAuth } from '../contexts/AuthContext';
 import { ProtectedRoute } from '../components/Auth/ProtectedRoute';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
-import React from 'react';
 
 // Mock Supabase
 vi.mock('../lib/supabase', () => ({

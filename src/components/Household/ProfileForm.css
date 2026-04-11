@@ -1,0 +1,210 @@
+.profile-form-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 40px 24px;
+  background-color: #fcfdfa;
+  color: #2d3a2f;
+  font-family: 'Manrope', sans-serif;
+}
+
+.form-header {
+  margin-bottom: 48px;
+  border-bottom: 1px solid #e0e5d8;
+  padding-bottom: 24px;
+}
+
+.form-title {
+  font-family: 'Newsreader', serif;
+  font-size: 2.5rem;
+  font-weight: 400;
+  color: #3A5A40;
+  margin: 0 0 8px 0;
+  letter-spacing: -0.02em;
+}
+
+.form-subtitle {
+  font-size: 1rem;
+  color: #6a7d6e;
+  margin: 0;
+}
+
+.form-section {
+  margin-bottom: 48px;
+}
+
+.section-heading {
+  font-family: 'Newsreader', serif;
+  font-size: 1.25rem;
+  font-style: italic;
+  color: #3A5A40;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.section-heading::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #eef2ea;
+  margin-left: 16px;
+}
+
+.section-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 20px;
+}
+
+.preset-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.preset-button {
+  padding: 16px;
+  background: #fff;
+  border: 1px solid #e0e5d8;
+  border-radius: 8px;
+  font-weight: 600;
+  color: #4a5d4e;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+}
+
+.preset-button.active {
+  background-color: #f0f5ed;
+  border-color: #3A5A40;
+  color: #3A5A40;
+  box-shadow: 0 4px 12px rgba(58, 90, 64, 0.08);
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.input-group label, .input-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #8a9a8d;
+}
+
+input[type="text"], input[type="number"], textarea {
+  padding: 12px;
+  border: 1px solid #e0e5d8;
+  border-radius: 6px;
+  background: #fff;
+  font-family: inherit;
+  color: inherit;
+}
+
+textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.macro-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+}
+
+.helper-text {
+  font-size: 0.9rem;
+  color: #6a7d6e;
+  font-style: italic;
+}
+
+.toggle-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.toggle-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #3A5A40;
+}
+
+.allergy-toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.allergy-toggle {
+  padding: 8px 16px;
+  border-radius: 100px;
+  border: 1px solid #e0e5d8;
+  background: #fff;
+  font-size: 0.85rem;
+  color: #4a5d4e;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.allergy-toggle.active {
+  background-color: #3A5A40;
+  color: #fff;
+  border-color: #3A5A40;
+}
+
+.appliance-checklist {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 24px;
+  margin-top: 64px;
+  padding-top: 32px;
+  border-top: 1px solid #e0e5d8;
+}
+
+.btn-primary {
+  background-color: #3A5A40;
+  color: #fff;
+  padding: 14px 32px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-primary:hover {
+  background-color: #2d4532;
+}
+
+.btn-tertiary {
+  background: none;
+  border: none;
+  color: #6a7d6e;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.mt-6 { margin-top: 24px; }

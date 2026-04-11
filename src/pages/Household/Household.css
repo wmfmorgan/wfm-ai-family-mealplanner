@@ -1,0 +1,47 @@
+.household-page {
+  padding: 40px 0;
+  color: #2d3a2f;
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.page-header {
+  margin-bottom: 48px;
+  max-width: 600px;
+}
+
+.page-title {
+  font-family: 'Newsreader', serif;
+  font-size: 3rem;
+  font-weight: 400;
+  color: #3A5A40;
+  margin: 0 0 12px 0;
+  letter-spacing: -0.02em;
+}
+
+.page-description {
+  font-size: 1.1rem;
+  color: #6a7d6e;
+  line-height: 1.6;
+  font-style: italic;
+  margin: 0;
+}
+
+.members-section {
+  margin-top: 24px;
+}
+
+.household-page.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  font-family: 'Newsreader', serif;
+  font-style: italic;
+  font-size: 1.25rem;
+  color: #8a9a8d;
+}
