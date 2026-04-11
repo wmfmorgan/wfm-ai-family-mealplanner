@@ -8,9 +8,10 @@
 - [x] 01-03-PLAN.md — Shell & Auth Flow
 
 ## Phase 2: Household & Profiles
-- [ ] Define Nutrition Profile schema in Supabase.
-- [ ] Implement Household Management UI.
-- [ ] CRUD for household members (Calories, Macros, Allergies, Appliances).
+**Goal:** Establish household and profile management with automatic initialization and cookbook-style UI.
+**Plans:** 2 plans
+- [ ] 02-01-PLAN.md — Database & Schema Refinements
+- [ ] 02-02-PLAN.md — Household Management UI
 
 ## Phase 3: AI Layer Enhancements
 - [ ] Implement advanced provider switching (Gemini, Grok) in Edge Functions.
