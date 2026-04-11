@@ -1,0 +1,120 @@
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--bg-primary);
+}
+
+.main-content {
+  flex: 1;
+  padding: 2rem 0;
+  margin-bottom: 4rem; /* For bottom bar on mobile */
+}
+
+/* Sidebar (Desktop Only) */
+.sidebar {
+  width: 240px;
+  background-color: var(--bg-surface);
+  border-right: 1px solid var(--border-primary);
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+
+.sidebar-logo {
+  font-size: 1.75rem;
+  color: var(--accent-primary);
+  margin-top: 0;
+  margin-bottom: 2rem;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-balanced);
+  color: var(--text-secondary);
+  font-weight: 500;
+  transition: var(--transition-standard);
+}
+
+.nav-link:hover {
+  background-color: rgba(74, 103, 65, 0.05);
+  color: var(--accent-primary);
+}
+
+.nav-link.active {
+  background-color: rgba(74, 103, 65, 0.1);
+  color: var(--accent-primary);
+}
+
+.nav-icon {
+  font-size: 1.25rem;
+}
+
+/* Bottom Tab Bar (Mobile Only) */
+.bottom-tab-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4rem;
+  background-color: var(--bg-surface);
+  border-top: 1px solid var(--border-primary);
+  display: none; /* Hidden by default */
+  justify-content: space-around;
+  align-items: center;
+  z-index: 100;
+}
+
+.tab-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  height: 100%;
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.tab-link.active {
+  color: var(--accent-primary);
+}
+
+.tab-icon {
+  font-size: 1.25rem;
+  margin-bottom: 2px;
+}
+
+/* Responsiveness */
+@media (max-width: 768px) {
+  .sidebar {
+    display: none;
+  }
+  
+  .bottom-tab-bar {
+    display: flex;
+  }
+  
+  .main-content {
+    margin-left: 0;
+    padding: 1rem 0;
+  }
+}
+
+@media (min-width: 769px) {
+  .main-content {
+    margin-bottom: 0;
+  }
+}

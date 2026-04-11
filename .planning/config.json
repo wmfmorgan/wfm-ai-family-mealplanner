@@ -1,0 +1,17 @@
+{
+  "workflow": {
+    "research": "Standard Research",
+    "requirements": true,
+    "roadmap": true,
+    "plan_check": "Strict Verification",
+    "verifier": "Standard Verifier",
+    "branching": "Branch per Phase"
+  },
+  "preferences": {
+    "model_profile": "Standard Profile",
+    "style": "minimalist, earthy tones",
+    "ai_proxy": "direct_local",
+    "meal_strategy": "multi-recipe hybrid",
+    "shopping_list": "basic_grouping"
+  }
+}
