@@ -2,7 +2,17 @@ import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import MealPlanner from '../pages/MealPlanner/MealPlanner'
 import { plannerService } from '../lib/services/planner'
-import { householdService } from '../lib/services/household'
+import { householdService, DEFAULT_NUTRITION_PROFILE } from '../lib/services/household'
+
+const mockMember = { 
+  id: 'm1', 
+  name: 'Alice', 
+  household_id: 'h123',
+  nutrition_profile: DEFAULT_NUTRITION_PROFILE,
+  is_owner: true,
+  is_active: true,
+  created_at: new Date().toISOString()
+};
 
 // Mock services
 vi.mock('../lib/services/planner', () => ({
@@ -23,7 +33,7 @@ vi.mock('../lib/services/household', () => ({
 describe('MealPlanner - Optimistic UI', () => {
   it('toggles lock visually even if slot has no ID', async () => {
     vi.mocked(householdService.getMyHouseholdId).mockResolvedValue('h123')
-    vi.mocked(householdService.getMembers).mockResolvedValue([{ id: 'm1', name: 'Alice', household_id: 'h123' }])
+    vi.mocked(householdService.getMembers).mockResolvedValue([mockMember])
     vi.mocked(plannerService.getMealPlan).mockResolvedValue({ 
       slots: [] // Empty plan, so slots won't have IDs initially
     })
@@ -53,7 +63,7 @@ describe('MealPlanner - Optimistic UI', () => {
 
   it('updates manual entry visually even if slot has no ID', async () => {
     vi.mocked(householdService.getMyHouseholdId).mockResolvedValue('h123')
-    vi.mocked(householdService.getMembers).mockResolvedValue([{ id: 'm1', name: 'Alice', household_id: 'h123' }])
+    vi.mocked(householdService.getMembers).mockResolvedValue([mockMember])
     vi.mocked(plannerService.getMealPlan).mockResolvedValue({ slots: [] })
 
     render(<MealPlanner />)
@@ -80,7 +90,7 @@ describe('MealPlanner - Optimistic UI', () => {
 
   it('opens recipe detail drawer when a recipe slot is clicked', async () => {
     vi.mocked(householdService.getMyHouseholdId).mockResolvedValue('h123')
-    vi.mocked(householdService.getMembers).mockResolvedValue([{ id: 'm1', name: 'Alice', household_id: 'h123' }])
+    vi.mocked(householdService.getMembers).mockResolvedValue([mockMember])
     
     const mockRecipe = {
       name: 'Signature Soup',

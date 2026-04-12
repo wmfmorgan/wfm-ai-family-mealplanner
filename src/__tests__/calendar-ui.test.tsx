@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import PlannerGrid from '../components/MealPlanner/PlannerGrid'
-import { startOfWeek, format, addDays } from 'date-fns'
+import { startOfWeek, format } from 'date-fns'
 
 describe('PlannerGrid', () => {
   it('renders 7 columns starting with Sunday', () => {

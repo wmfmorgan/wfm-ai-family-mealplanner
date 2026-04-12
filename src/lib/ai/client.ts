@@ -1,5 +1,6 @@
 import { supabase } from '../supabase';
 import { saveAiLog } from './logger';
+import { Recipe } from '../services/planner';
 
 export interface AskAIOptions {
   prompt: string;
@@ -147,7 +148,7 @@ async function handleMockAi(prompt: string) {
   ];
 
   const plan = [];
-  const recipes = [];
+  const recipes: Recipe[] = [];
 
   // Generate 7 days of meals
   for (let day = 0; day < 7; day++) {

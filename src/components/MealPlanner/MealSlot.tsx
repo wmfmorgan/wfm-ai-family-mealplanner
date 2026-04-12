@@ -12,7 +12,6 @@ interface MealSlotProps {
 }
 
 const MealSlot: React.FC<MealSlotProps> = ({ 
-  id, 
   type, 
   recipeName, 
   isLocked = false, 

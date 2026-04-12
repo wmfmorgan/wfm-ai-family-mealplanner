@@ -1,5 +1,4 @@
 import { supabase } from '../supabase';
-import { format, startOfWeek } from 'date-fns';
 
 export interface Recipe {
   id?: string;
@@ -77,7 +76,7 @@ export async function saveMealPlan(
   }
   
   // 1. Ensure recipes exist and get their IDs
-  const savedRecipes = [];
+  const savedRecipes: Recipe[] = [];
   for (const recipe of recipes) {
     if (recipe.id) {
       const { data, error } = await supabase
