@@ -7,9 +7,10 @@
 - [x] ROADMAP.md structured
 
 ## Current Focus
-- Phase 6: Final Polish & Deploy (Next)
+- Phase 999.1: Allow cards to be deleted or individually refreshed (Next)
 
 ## Session History
+- **2026-04-12**: Phase 6 (Final Polish & Deploy) completed. End-to-end testing of generation logic, final visual audit, and Netlify deployment finalized.
 - **2026-04-12**: Phase 5 (Shopping List & Consolidation) completed. Implemented backend categorization with Supabase Edge Functions, UI with Google Stitch, and interactive checklist/print modes.
 - **2026-04-12**: Phase 5 (Shopping List & Consolidation) discussion complete. Decisions locked for post-process AI categorization, simple grouping (no merging), dedicated "Shopping" tab, and checklist/print functionality.
 - **2026-04-11**: Phase 4 (Meal Planner Core) fully completed. Sunday-start weekly calendar, AI generation, and "Lock & Edit" workflow fully implemented. Gap closure for Recipe Detail View (MP-UAT-06) verified with cookbook-style side drawer.

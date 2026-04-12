@@ -40,9 +40,9 @@
 - [x] 05-02-PLAN.md — Shopping List UI & Interactions
 
 ## Phase 6: Final Polish & Deploy
-- [ ] End-to-end testing of generation logic.
-- [ ] Final visual audit (cookbook-vibe check).
-- [ ] Deploy to Netlify.
+- [x] End-to-end testing of generation logic.
+- [x] Final visual audit (cookbook-vibe check).
+- [x] Deploy to Netlify.
 
 ## Backlog
 
