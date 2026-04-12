@@ -13,6 +13,10 @@ const Sidebar: React.FC = () => {
           <span className="nav-icon">📅</span>
           <span className="nav-text">Planner</span>
         </NavLink>
+        <NavLink to="/shopping" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+          <span className="nav-icon">🛒</span>
+          <span className="nav-text">Shopping</span>
+        </NavLink>
         <NavLink to="/household" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
           <span className="nav-icon">🏠</span>
           <span className="nav-text">Household</span>
