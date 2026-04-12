@@ -204,20 +204,20 @@ const MealPlanner: React.FC = () => {
       });
 
       // Skip database save in mock mode
-      if (responseData.provider !== 'mock') {
+      if (activeProvider !== 'mock') {
         await plannerService.saveMealPlan(
           householdId,
           weekDateStr,
           response.recipes.map(r => ({ ...r, household_id: householdId })),
           finalSlots as any,
-          { provider: responseData.provider, model: responseData.model }
+          { provider: activeProvider, model: activeModel }
         );
       } else {
         console.log('Mock mode: Skipping DB save. Updating UI only.');
       }
 
       // Update local state directly for mock mode or reload for real mode
-      if (responseData.provider === 'mock') {
+      if (activeProvider === 'mock') {
         const gridData: Record<string, any> = {};
         finalSlots.forEach((slot: any) => {
           const dateStr = format(addDays(weekStartDate, slot.day_of_week), 'yyyy-MM-dd');
