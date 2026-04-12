@@ -13,10 +13,9 @@ const MODELS = {
     { id: 'gemini-3.1-pro', name: 'Gemini 3.1 Pro' },
   ],
   grok: [
-    { id: 'grok-2', name: 'Grok 2' },
+    { id: 'grok-4-1-fast-reasoning', name: 'Grok 4.1 Reasoning' },
     { id: 'grok-beta', name: 'Grok Beta' },
     { id: 'grok-3', name: 'Grok 3 (Think)' },
-    { id: 'grok-4.20', name: 'Grok 4.20' },
   ],
 };
 
