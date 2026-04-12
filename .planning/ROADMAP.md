@@ -34,10 +34,10 @@
 
 ## Phase 5: Shopping List & Consolidation
 **Goal:** Implement the shopping list generation and category-based grouping.
-**Requirements:** [SHOP-01, SHOP-02]
-- [x] Recipe Detail View (Moved to Phase 4 Gap Closure)
-- [ ] Basic Shopping List logic (Grouping by category).
-- [ ] Printing/Marking functionality.
+**Requirements:** [SHOP-01, SHOP-02, SHOP-03, SHOP-04]
+**Plans:** 2 plans
+- [ ] 05-01-PLAN.md — Backend & AI Categorization
+- [ ] 05-02-PLAN.md — Shopping List UI & Interactions
 
 ## Phase 6: Final Polish & Deploy
 - [ ] End-to-end testing of generation logic.
