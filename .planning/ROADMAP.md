@@ -36,8 +36,8 @@
 **Goal:** Implement the shopping list generation and category-based grouping.
 **Requirements:** [SHOP-01, SHOP-02, SHOP-03, SHOP-04]
 **Plans:** 2 plans
-- [ ] 05-01-PLAN.md — Backend & AI Categorization
-- [ ] 05-02-PLAN.md — Shopping List UI & Interactions
+- [x] 05-01-PLAN.md — Backend & AI Categorization
+- [x] 05-02-PLAN.md — Shopping List UI & Interactions
 
 ## Phase 6: Final Polish & Deploy
 - [ ] End-to-end testing of generation logic.

@@ -145,23 +145,58 @@ export async function saveMealPlan(
 
   if (slotsError) throw slotsError;
 
+  // 4. Trigger AI ingredient categorization (non-blocking)
+  const allIngredients = recipes.flatMap(r => {
+    if (Array.isArray(r.ingredients)) {
+      return r.ingredients.filter((i: any) => typeof i === 'string');
+    }
+    return [];
+  });
+
+  if (allIngredients.length > 0) {
+    // Non-blocking call to categorize ingredients
+    supabase.functions.invoke('categorize-ingredients', {
+      body: { 
+        meal_plan_id: plan.id, 
+        ingredients: allIngredients 
+      }
+    }).catch(err => console.error('Failed to trigger categorization:', err));
+  }
+
   return plan;
 }
 
 /**
- * Fetches all recipes belonging to a household.
+ * Fetches all categorized shopping list items for a given meal plan.
  */
-export async function getRecipes(householdId: string) {
-  if (IS_MOCK) return []; // No mock recipes stored yet
-  
+export async function getShoppingListItems(mealPlanId: string) {
+  if (IS_MOCK) return [];
+
   const { data, error } = await supabase
-    .from('recipes')
+    .from('shopping_list_items')
     .select('*')
-    .eq('household_id', householdId)
-    .order('created_at', { ascending: false });
+    .eq('meal_plan_id', mealPlanId)
+    .order('category', { ascending: true });
 
   if (error) throw error;
   return data;
+}
+
+/**
+ * Updates a specific meal plan slot (e.g., locking or manual entry).
+ */
+export async function updateSlot(slotId: string, updates: Partial<MealPlanSlot>) {
+  if (IS_MOCK) {
+    console.log('Mock mode: Slot update skipped.');
+    return;
+  }
+  
+  const { error } = await supabase
+    .from('meal_plan_slots')
+    .update(updates)
+    .eq('id', slotId);
+
+  if (error) throw error;
 }
 
 /**
@@ -170,22 +205,6 @@ export async function getRecipes(householdId: string) {
 export const plannerService = {
   getMealPlan,
   saveMealPlan,
-  getRecipes,
-
-  /**
-   * Updates a specific meal plan slot (e.g., locking or manual entry).
-   */
-  updateSlot: async (slotId: string, updates: Partial<MealPlanSlot>) => {
-    if (IS_MOCK) {
-      console.log('Mock mode: Slot update skipped.');
-      return;
-    }
-    
-    const { error } = await supabase
-      .from('meal_plan_slots')
-      .update(updates)
-      .eq('id', slotId);
-
-    if (error) throw error;
-  }
+  getShoppingListItems,
+  updateSlot
 };

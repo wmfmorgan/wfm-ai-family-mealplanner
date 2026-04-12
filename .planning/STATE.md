@@ -7,9 +7,11 @@
 - [x] ROADMAP.md structured
 
 ## Current Focus
-- Phase 5: Shopping List & Consolidation (Drafting)
+- Phase 6: Final Polish & Deploy (Next)
 
 ## Session History
+- **2026-04-12**: Phase 5 (Shopping List & Consolidation) completed. Implemented backend categorization with Supabase Edge Functions, UI with Google Stitch, and interactive checklist/print modes.
+- **2026-04-12**: Phase 5 (Shopping List & Consolidation) discussion complete. Decisions locked for post-process AI categorization, simple grouping (no merging), dedicated "Shopping" tab, and checklist/print functionality.
 - **2026-04-11**: Phase 4 (Meal Planner Core) fully completed. Sunday-start weekly calendar, AI generation, and "Lock & Edit" workflow fully implemented. Gap closure for Recipe Detail View (MP-UAT-06) verified with cookbook-style side drawer.
 - **2026-04-11**: Phase 4 context gathered. Decisions on calendar, generation logic, and recipe privacy locked.
 - **2026-04-11**: Phase 3 (AI Layer Enhancements) completed. Multi-provider AI proxy, frontend logging, and developer debug UI fully implemented and verified.

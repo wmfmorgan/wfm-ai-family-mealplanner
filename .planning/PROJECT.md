@@ -5,7 +5,7 @@ A web-based family meal planner where a single logged-in user manages a househol
 
 ## Tech Stack
 - **Frontend**: React + Vite (TS)
-- **UI**: Google Stitch (Vanilla CSS)
+- **UI**: Google Stitch (Vanilla CSS) — [WFM-AI-MEALPLANNER](https://stitch.google.com/projects/15134141823727190585)
 - **Backend/Auth/DB**: Supabase
 - **AI Layer**: Supabase Edge Functions (Deno)
 - **AI Providers**: Gemini, Grok, Ollama (Direct local call for dev)

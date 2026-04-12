@@ -6,6 +6,7 @@ import Shell from './components/Layout/Shell';
 import Login from './pages/Auth/Login';
 import Household from './pages/Household/Household';
 import MealPlanner from './pages/MealPlanner/MealPlanner';
+import ShoppingList from './pages/MealPlanner/ShoppingList';
 import Settings from './pages/Settings/Settings';
 import './App.css';
 
@@ -24,6 +25,16 @@ const App: React.FC = () => {
               <ProtectedRoute>
                 <Shell isFullWidth={true}>
                   <MealPlanner />
+                </Shell>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/shopping"
+            element={
+              <ProtectedRoute>
+                <Shell>
+                  <ShoppingList />
                 </Shell>
               </ProtectedRoute>
             }

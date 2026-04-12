@@ -13,7 +13,7 @@
 - **Supabase**: PostgreSQL for data, Auth for identity, RLS for security.
 - **Edge Functions**: All AI calls must go through Deno edge functions for security.
 - **Ollama**: Local development must support direct `localhost:11434` calls for Ollama.
-- **Google Stitch**: All UI components should be generated using Stitch for a cohesive, minimalist look.
+- **Google Stitch**: All UI components should be generated using the [WFM-AI-MEALPLANNER](https://stitch.google.com/projects/15134141823727190585) project for a cohesive, minimalist look.
 - **State Management**: Meal plans must be versioned by week.
 - **Performance**: Recipes and plans should be cached in Supabase to avoid redundant AI calls.
 

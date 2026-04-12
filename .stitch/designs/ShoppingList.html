@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>The Market Ledger | Artisan Kitchen</title>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&amp;family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed": "#330e21",
+                        "on-secondary": "#ffffff",
+                        "on-primary-container": "#c2e4b4",
+                        "primary": "#334f2b",
+                        "surface-container": "#eeeeed",
+                        "surface-variant": "#e3e2e1",
+                        "surface-container-high": "#e9e8e7",
+                        "primary-container": "#4a6741",
+                        "on-tertiary-container": "#ffcde0",
+                        "on-error": "#ffffff",
+                        "inverse-on-surface": "#f1f0f0",
+                        "inverse-surface": "#2f3130",
+                        "surface-container-highest": "#e3e2e1",
+                        "tertiary-container": "#815166",
+                        "tertiary-fixed": "#ffd8e6",
+                        "inverse-primary": "#afd0a1",
+                        "on-tertiary-fixed-variant": "#65394d",
+                        "secondary": "#566250",
+                        "on-surface-variant": "#434840",
+                        "surface-container-lowest": "#ffffff",
+                        "surface": "#faf9f8",
+                        "background": "#faf9f8",
+                        "tertiary": "#663a4e",
+                        "on-primary": "#ffffff",
+                        "secondary-fixed-dim": "#bdcbb4",
+                        "primary-fixed-dim": "#afd0a1",
+                        "on-secondary-fixed": "#141e10",
+                        "secondary-fixed": "#d9e7d0",
+                        "on-primary-fixed-variant": "#324e2a",
+                        "on-secondary-container": "#5c6856",
+                        "surface-bright": "#faf9f8",
+                        "on-error-container": "#93000a",
+                        "on-surface": "#1a1c1c",
+                        "tertiary-fixed-dim": "#f2b6ce",
+                        "surface-dim": "#dadad9",
+                        "primary-fixed": "#caecbc",
+                        "on-tertiary": "#ffffff",
+                        "on-background": "#1a1c1c",
+                        "secondary-container": "#d9e7d0",
+                        "surface-container-low": "#f4f3f2",
+                        "on-secondary-fixed-variant": "#3e4a39",
+                        "error-container": "#ffdad6",
+                        "error": "#ba1a1a",
+                        "surface-tint": "#496640",
+                        "outline": "#73796f",
+                        "on-primary-fixed": "#062104",
+                        "outline-variant": "#c3c8bd"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Newsreader"],
+                        "body": ["Manrope"],
+                        "label": ["Manrope"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #faf9f8; /* Surface token */
+        }
+    </style>
+</head>
+<body class="font-body text-on-surface">
+<!-- TopAppBar -->
+<header class="bg-[#faf9f8] dark:bg-stone-900 sticky top-0 z-50">
+<div class="flex justify-between items-center w-full px-12 py-6 max-w-screen-2xl mx-auto">
+<div class="flex items-center gap-12">
+<span class="text-2xl font-serif text-[#334f2b] dark:text-[#a3b18a] font-headline italic tracking-tight">Artisan Kitchen</span>
+<nav class="hidden md:flex gap-8">
+<a class="text-stone-500 dark:text-stone-400 font-['Manrope'] uppercase tracking-widest text-xs hover:text-[#4a6741] transition-colors duration-300 cursor-pointer active:opacity-70" href="#">Planner</a>
+<a class="text-[#334f2b] dark:text-white border-b border-[#334f2b] pb-1 font-medium font-['Manrope'] uppercase tracking-widest text-xs cursor-pointer active:opacity-70" href="#">Market</a>
+<a class="text-stone-500 dark:text-stone-400 font-['Manrope'] uppercase tracking-widest text-xs hover:text-[#4a6741] transition-colors duration-300 cursor-pointer active:opacity-70" href="#">Kitchen</a>
+</nav>
+</div>
+<div class="flex items-center gap-6 text-[#334f2b] dark:text-[#a3b18a]">
+<span class="material-symbols-outlined cursor-pointer active:opacity-70" data-icon="account_circle">account_circle</span>
+<span class="material-symbols-outlined cursor-pointer active:opacity-70" data-icon="shopping_bag">shopping_bag</span>
+</div>
+</div>
+<div class="bg-[#f4f3f2] dark:bg-stone-800 h-[1px] w-full"></div>
+</header>
+<main class="max-w-[1024px] mx-auto px-6 py-16 min-h-screen">
+<!-- Header Section -->
+<div class="mb-16">
+<h1 class="font-headline italic text-5xl text-primary mb-2">The Market Ledger</h1>
+<p class="font-headline text-lg text-secondary opacity-80 italic">Weekly Provisions</p>
+</div>
+<div class="grid grid-cols-12 gap-12">
+<!-- Left Column: Atmospheric Image & Notes -->
+<div class="col-span-12 md:col-span-4">
+<div class="sticky top-32 space-y-12">
+<div class="aspect-[3/4] bg-surface-container overflow-hidden rounded-lg">
+<img class="w-full h-full object-cover" data-alt="Close-up of fresh organic produce, purple kale, carrots, and radishes on a rustic linen cloth with soft morning light." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCC2JmBxbJS8iqvs7krJ-9KMd785BDNjkhalI4xRUf2MrXL9nKkl-PcYMhYvt5ib5CYX0PznpQUdGU794YpkMif1IkHKa1HsvuOeRBHh0Tm-mq7NJ9-OyEoxw7DoJqO2PXMSol-zLlpcRUl9kPMfKZ6sqdOEN70Elx6LKtpOu6byOfEF7FzobB-6bnKaSBYLEFyThyWGg0-y5A1Yc0NwXMcEargvxD1z9MWjQtWX6YotCYTWiZfRiqnM2TD9TDSagN4JR8fVbKjR3rO"/>
+</div>
+<div class="bg-surface-container-low p-8 rounded-lg">
+<h3 class="font-headline italic text-xl text-primary mb-4">Kitchen Notes</h3>
+<p class="font-body text-sm leading-relaxed text-on-surface-variant">
+                            This week's menu focuses on root vegetables and early greens. Remember to check the pantry for finishing salts and aged balsamic before visiting the local farm stand.
+                        </p>
+<div class="mt-6 pt-6 border-t border-outline-variant/20">
+<p class="font-label text-[10px] uppercase tracking-widest text-outline">Last Updated: Tuesday, 08:45 AM</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Shopping List -->
+<div class="col-span-12 md:col-span-8">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-12">
+<!-- Category: Produce -->
+<section>
+<h2 class="font-label text-xs uppercase tracking-[0.2em] text-outline mb-6 border-b border-outline-variant/10 pb-2">Produce</h2>
+<div class="space-y-3">
+<div class="bg-surface-container-lowest p-4 rounded border border-outline-variant/20 flex items-center justify-between group">
+<div class="flex items-center gap-4">
+<div class="w-5 h-5 rounded border border-primary-container flex items-center justify-center cursor-pointer">
+<span class="material-symbols-outlined text-[16px] text-primary-container opacity-0 group-hover:opacity-100" data-icon="check">check</span>
+</div>
+<span class="font-body text-sm">Wild Arugula</span>
+</div>
+<span class="font-label text-[10px] text-outline">2 Bunches</span>
+</div>
+<div class="bg-surface-container-lowest p-4 rounded border border-outline-variant/20 flex items-center justify-between group">
+<div class="flex items-center gap-4">
+<div class="w-5 h-5 rounded border border-primary-container flex items-center justify-center bg-primary-container">
+<span class="material-symbols-outlined text-[16px] text-on-primary" data-icon="check">check</span>
+</div>
+<span class="font-body text-sm line-through text-outline">Rainbow Carrots</span>
+</div>
+<span class="font-label text-[10px] text-outline">1 lb</span>
+</div>
+<div class="bg-surface-container-lowest p-4 rounded border border-outline-variant/20 flex items-center justify-between group">
+<div class="flex items-center gap-4">
+<div class="w-5 h-5 rounded border border-primary-container flex items-center justify-center cursor-pointer">
+<span class="material-symbols-outlined text-[16px] text-primary-container opacity-0" data-icon="check">check</span>
+</div>
+<span class="font-body text-sm">Heirloom Tomatoes</span>
+</div>
+<span class="font-label text-[10px] text-outline">3 Large</span>
+</div>
+</div>
+</section>
+<!-- Category: Protein -->
+<section>
+<h2 class="font-label text-xs uppercase tracking-[0.2em] text-outline mb-6 border-b border-outline-variant/10 pb-2">Protein</h2>
+<div class="space-y-3">
+<div class="bg-surface-container-lowest p-4 rounded border border-outline-variant/20 flex items-center justify-between group">
+<div class="flex items-center gap-4">
+<div class="w-5 h-5 rounded border border-primary-container flex items-center justify-center cursor-pointer">
+<span class="material-symbols-outlined text-[16px] text-primary-container opacity-0" data-icon="check">check</span>
+</div>
+<span class="font-body text-sm">Organic Chicken Thighs</span>
+</div>
+<span class="font-label text-[10px] text-outline">1.5 lbs</span>
+</div>
+<div class="bg-surface-container-lowest p-4 rounded border border-outline-variant/20 flex items-center justify-between group">
+<div class="flex items-center gap-4">
+<div class="w-5 h-5 rounded border border-primary-container flex items-center justify-center cursor-pointer">
+<span class="material-symbols-outlined text-[16px] text-primary-container opacity-0" data-icon="check">check</span>
+</div>
+<span class="font-body text-sm">Wild Caught Salmon</span>
+</div>
+<span class="font-label text-[10px] text-outline">2 Fillets</span>
+</div>
+</div>
+</section>
+<!-- Category: Dairy -->
+<section>
+<h2 class="font-label text-xs uppercase tracking-[0.2em] text-outline mb-6 border-b border-outline-variant/10 pb-2">Dairy</h2>
+<div class="space-y-3">
+<div class="bg-surface-container-lowest p-4 rounded border border-outline-variant/20 flex items-center justify-between group">
+<div class="flex items-center gap-4">
+<div class="w-5 h-5 rounded border border-primary-container flex items-center justify-center cursor-pointer">
+<span class="material-symbols-outlined text-[16px] text-primary-container opacity-0" data-icon="check">check</span>
+</div>
+<span class="font-body text-sm">French Cultured Butter</span>
+</div>
+<span class="font-label text-[10px] text-outline">1 Block</span>
+</div>
+<div class="bg-surface-container-lowest p-4 rounded border border-outline-variant/20 flex items-center justify-between group">
+<div class="flex items-center gap-4">
+<div class="w-5 h-5 rounded border border-primary-container flex items-center justify-center cursor-pointer">
+<span class="material-symbols-outlined text-[16px] text-primary-container opacity-0" data-icon="check">check</span>
+</div>
+<span class="font-body text-sm">Pecorino Romano</span>
+</div>
+<span class="font-label text-[10px] text-outline">200g</span>
+</div>
+</div>
+</section>
+<!-- Category: Pantry -->
+<section>
+<h2 class="font-label text-xs uppercase tracking-[0.2em] text-outline mb-6 border-b border-outline-variant/10 pb-2">Pantry</h2>
+<div class="space-y-3">
+<div class="bg-surface-container-lowest p-4 rounded border border-outline-variant/20 flex items-center justify-between group">
+<div class="flex items-center gap-4">
+<div class="w-5 h-5 rounded border border-primary-container flex items-center justify-center cursor-pointer">
+<span class="material-symbols-outlined text-[16px] text-primary-container opacity-0" data-icon="check">check</span>
+</div>
+<span class="font-body text-sm">Maldon Sea Salt</span>
+</div>
+<span class="font-label text-[10px] text-outline">Refill Box</span>
+</div>
+<div class="bg-surface-container-lowest p-4 rounded border border-outline-variant/20 flex items-center justify-between group">
+<div class="flex items-center gap-4">
+<div class="w-5 h-5 rounded border border-primary-container flex items-center justify-center cursor-pointer">
+<span class="material-symbols-outlined text-[16px] text-primary-container opacity-0" data-icon="check">check</span>
+</div>
+<span class="font-body text-sm">Buckwheat Flour</span>
+</div>
+<span class="font-label text-[10px] text-outline">1 kg</span>
+</div>
+<div class="bg-surface-container-lowest p-4 rounded border border-outline-variant/20 flex items-center justify-between group">
+<div class="flex items-center gap-4">
+<div class="w-5 h-5 rounded border border-primary-container flex items-center justify-center cursor-pointer">
+<span class="material-symbols-outlined text-[16px] text-primary-container opacity-0" data-icon="check">check</span>
+</div>
+<span class="font-body text-sm">Smoked Paprika</span>
+</div>
+<span class="font-label text-[10px] text-outline">Small Tin</span>
+</div>
+</div>
+</section>
+</div>
+<!-- Add Item CTA -->
+<div class="mt-16 pt-8 border-t border-outline-variant/10">
+<button class="flex items-center gap-3 text-primary font-body text-sm group">
+<span class="material-symbols-outlined transition-transform group-hover:rotate-90" data-icon="add">add</span>
+<span class="underline underline-offset-4 decoration-primary/30 group-hover:decoration-primary">Append a new provision to the ledger</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-[#faf9f8] dark:bg-stone-950 border-t border-[#f4f3f2] dark:border-stone-800 py-12">
+<div class="flex flex-col items-center gap-8 w-full max-w-7xl mx-auto px-8">
+<span class="font-['Newsreader'] italic text-lg text-[#334f2b] dark:text-[#a3b18a]">Artisan Kitchen</span>
+<div class="flex gap-12">
+<a class="text-stone-400 font-['Manrope'] text-xs uppercase tracking-[0.2em] hover:underline decoration-[#334f2b] underline-offset-8 transition-all duration-500" href="#">Provenance</a>
+<a class="text-stone-400 font-['Manrope'] text-xs uppercase tracking-[0.2em] hover:underline decoration-[#334f2b] underline-offset-8 transition-all duration-500" href="#">Archive</a>
+<a class="text-stone-400 font-['Manrope'] text-xs uppercase tracking-[0.2em] hover:underline decoration-[#334f2b] underline-offset-8 transition-all duration-500" href="#">Terms</a>
+</div>
+<p class="text-stone-400 font-['Manrope'] text-xs uppercase tracking-[0.2em]">© 2024 Artisan Kitchen. A Curated Heirloom.</p>
+</div>
+</footer>
+</body></html>

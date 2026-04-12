@@ -27,9 +27,9 @@ A minimalist earthy aesthetic inspired by modern high-end cookbooks. The interfa
 - **Loaders:** Soft pulse effect on Sage Green elements. No generic circular spinners.
 
 ## 5. Layout Principles
-- **Centered Content:** All main content is constrained to a 800px max-width container to ensure high readability, especially for long-form meal plans and recipes.
+- **Centered Content:** All main content is constrained to a 1024px centered container (1200px for the Weekly Planner) to ensure high readability while utilizing desktop space.
 - **Whitespace:** Generous margins and padding to prevent visual clutter in a kitchen environment.
-- **Responsive:** Mobile-first single column layout, expanding to centered 800px on desktop.
+- **Priority:** Desktop-first layout with high-end editorial multi-column arrangements. Responsive mobile view follows as a secondary single-column stack.
 
 ## 6. Motion & Interaction
 - **Transitions:** Standard `ease-in-out` for opacity and transforms.
