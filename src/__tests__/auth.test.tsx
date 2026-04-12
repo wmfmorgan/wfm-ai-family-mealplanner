@@ -29,6 +29,7 @@ const TestComponent = () => {
 describe('AuthContext', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.stubEnv('VITE_USE_MOCK', 'false');
   });
 
   it('provides initial session state', async () => {
@@ -73,6 +74,7 @@ describe('AuthContext', () => {
 describe('ProtectedRoute', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.stubEnv('VITE_USE_MOCK', 'false');
   });
 
   it('redirects to login when not authenticated', async () => {

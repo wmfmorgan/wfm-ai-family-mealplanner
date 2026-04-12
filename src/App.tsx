@@ -5,11 +5,11 @@ import { ProtectedRoute } from './components/Auth/ProtectedRoute';
 import Shell from './components/Layout/Shell';
 import Login from './pages/Auth/Login';
 import Household from './pages/Household/Household';
+import Settings from './pages/Settings/Settings';
 import './App.css';
 
 // Placeholder components for routes
 const Planner = () => <div><h1>Weekly Planner</h1><p>Plan your meals for the week here.</p></div>;
-const Settings = () => <div><h1>Settings</h1><p>Account and app preferences.</p></div>;
 
 const App: React.FC = () => {
   return (

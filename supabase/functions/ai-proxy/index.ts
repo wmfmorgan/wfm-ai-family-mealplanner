@@ -30,10 +30,7 @@ serve(async (req) => {
       })
     }
 
-    // 3. (Optional but good) Verify JWT with Supabase Auth
-    // Since we are in an edge function, we can use the supabase client to verify.
-    // However, Supabase's Edge Functions are usually protected by the Gateway if configured.
-    // For manual validation:
+    // 3. Verify JWT with Supabase Auth
     const supabaseUrl = Deno.env.get('SUPABASE_URL')
     const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')
     const supabase = createClient(supabaseUrl!, supabaseAnonKey!)
@@ -48,7 +45,7 @@ serve(async (req) => {
     }
 
     // 4. Parse payload
-    const { provider, prompt, ping } = await req.json()
+    const { provider, prompt, ping, model } = await req.json()
 
     // 5. Check for ping mode
     if (ping) {
@@ -57,27 +54,52 @@ serve(async (req) => {
       })
     }
 
-    // 6. Basic AI provider routing (mock for now, but ready for GEMINI_API_KEY)
-    const geminiApiKey = Deno.env.get('GEMINI_API_KEY')
-    
-    if (provider === 'gemini' && geminiApiKey) {
-      // Logic for fetching from Gemini would go here.
-      // For now, return a functional mock response indicating connectivity.
-      return new Response(JSON.stringify({
-        status: 'ok',
-        provider: 'gemini',
-        received_prompt: prompt,
-        message: 'Gemini integration ready (mocked response).'
-      }), {
+    // 6. AI provider routing
+    let apiUrl = ''
+    let apiKey = ''
+    let defaultModel = ''
+
+    if (provider === 'gemini') {
+      apiUrl = 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions'
+      apiKey = Deno.env.get('GEMINI_API_KEY') || ''
+      defaultModel = 'gemini-1.5-flash' // Updated from plan's 2.5 which doesn't exist yet
+    } else if (provider === 'grok') {
+      apiUrl = 'https://api.x.ai/v1/chat/completions'
+      apiKey = Deno.env.get('XAI_API_KEY') || ''
+      defaultModel = 'grok-beta'
+    } else {
+      return new Response(JSON.stringify({ error: `Unsupported provider: ${provider}` }), {
+        status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
     }
 
-    return new Response(JSON.stringify({ 
-      status: 'ok', 
-      message: 'AI Proxy received your request.',
-      received: { provider, prompt }
-    }), {
+    if (!apiKey) {
+      return new Response(JSON.stringify({ error: `API key for ${provider} is not configured.` }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
+    }
+
+    // 7. Call the provider using OpenAI-compatible format
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: model || defaultModel,
+        messages: [
+          { role: 'user', content: prompt }
+        ],
+      }),
+    })
+
+    const result = await response.json()
+
+    return new Response(JSON.stringify(result), {
+      status: response.status,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
 
