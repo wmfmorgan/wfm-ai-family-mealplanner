@@ -23,10 +23,12 @@
 - [x] 03-03-PLAN.md — Settings & Debug UI
 
 ## Phase 4: Meal Planner Core
-- [ ] Implement Calendar UI (Sunday–Saturday).
-- [ ] Logic for selecting days/meals.
-- [ ] Prompt Engineering for Multi-Recipe hybrid strategy.
-- [ ] Persist generated meal plans by week.
+**Goal:** Implement the core meal planning experience with a weekly calendar, AI-driven generation, and persistence.
+**Requirements:** [PLAN-01, GEN-01, REC-01, STATE-01, LOCK-01]
+**Plans:** 3 plans
+- [ ] 04-01-PLAN.md — Database Schema & AI Backend
+- [ ] 04-02-PLAN.md — Calendar UI & Generation Flow
+- [ ] 04-03-PLAN.md — Interaction (Lock/Edit) & Polish
 
 ## Phase 5: Recipes & Shopping List
 - [ ] Recipe Detail View component.
