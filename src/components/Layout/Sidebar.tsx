@@ -7,6 +7,7 @@ const Sidebar: React.FC = () => {
     <aside className="sidebar">
       <div className="sidebar-header">
         <h2 className="sidebar-logo">Cookbook</h2>
+        <h1>TEST</h1>
       </div>
       <nav className="sidebar-nav">
         <NavLink to="/planner" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
