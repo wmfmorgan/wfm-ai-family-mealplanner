@@ -43,3 +43,14 @@
 - [ ] End-to-end testing of generation logic.
 - [ ] Final visual audit (cookbook-vibe check).
 - [ ] Deploy to Netlify.
+
+## Backlog
+
+### Phase 999.1: Allow cards to be deleted or individually refreshed (BACKLOG)
+
+**Goal:** Captured for future planning
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd:review-backlog when ready)
