@@ -65,6 +65,30 @@
   border-radius: 8px;
 }
 
+.model-select {
+  padding: 0.5rem 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background-color: white;
+  font-family: inherit;
+  font-size: 0.875rem;
+  color: #4a5568;
+  cursor: pointer;
+  min-width: 180px;
+  transition: all 0.2s;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.model-select:hover {
+  border-color: #cbd5e0;
+}
+
+.model-select:focus {
+  outline: none;
+  border-color: var(--primary-color, #38a169);
+  box-shadow: 0 0 0 3px rgba(56, 161, 105, 0.1);
+}
+
 .toggle-btn {
   padding: 0.5rem 1.25rem;
   border: none;

@@ -160,10 +160,13 @@ const MealPlanner: React.FC = () => {
         lockedSlots,
       });
 
+      const activeProvider = localStorage.getItem('active_ai_provider') || 'gemini';
+      const activeModel = localStorage.getItem('active_ai_model') || (activeProvider === 'grok' ? 'grok-2' : 'gemini-1.5-flash');
+
       const responseData = await askAI({
         prompt,
-        provider: 'mock',
-        model: 'gemini-1.5-flash',
+        provider: activeProvider,
+        model: activeModel,
       });
 
       // Handle both raw JSON return (mock) and OpenAI-style (real/edge)

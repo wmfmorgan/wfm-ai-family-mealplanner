@@ -66,7 +66,7 @@ serve(async (req) => {
     } else if (provider === 'grok') {
       apiUrl = 'https://api.x.ai/v1/chat/completions'
       apiKey = Deno.env.get('XAI_API_KEY') || ''
-      defaultModel = 'grok-beta'
+      defaultModel = 'grok-2'
     } else {
       return new Response(JSON.stringify({ error: `Unsupported provider: ${provider}` }), {
         status: 400,

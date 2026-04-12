@@ -5,9 +5,11 @@ import './Auth.css';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loginMode, setLoginMode] = useState<'magic' | 'password'>('magic');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
-  const { signInWithMagicLink, session } = useAuth();
+  const { signInWithMagicLink, signInWithPassword, session } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -21,12 +23,18 @@ const Login: React.FC = () => {
     setLoading(true);
     setMessage(null);
 
-    const { error } = await signInWithMagicLink(email);
-
-    if (error) {
-      setMessage({ type: 'error', text: error.message || 'An error occurred. Please try again.' });
+    let result;
+    if (loginMode === 'magic') {
+      result = await signInWithMagicLink(email);
+      if (!result.error) {
+        setMessage({ type: 'success', text: 'Check your email for the magic link!' });
+      }
     } else {
-      setMessage({ type: 'success', text: 'Check your email for the magic link!' });
+      result = await signInWithPassword(email, password);
+    }
+
+    if (result?.error) {
+      setMessage({ type: 'error', text: result.error.message || 'An error occurred. Please try again.' });
     }
     setLoading(false);
   };
@@ -37,6 +45,21 @@ const Login: React.FC = () => {
         <h1 className="auth-title">Cookbook</h1>
         <p className="auth-subtitle">Sign in to your family meal planner</p>
         
+        <div className="auth-mode-toggle">
+          <button 
+            className={`mode-btn ${loginMode === 'magic' ? 'active' : ''}`}
+            onClick={() => setLoginMode('magic')}
+          >
+            Magic Link
+          </button>
+          <button 
+            className={`mode-btn ${loginMode === 'password' ? 'active' : ''}`}
+            onClick={() => setLoginMode('password')}
+          >
+            Password
+          </button>
+        </div>
+
         <form onSubmit={handleLogin} className="auth-form flex flex-col gap-4">
           <div className="flex flex-col gap-2">
             <label htmlFor="email" className="auth-label">Email address</label>
@@ -51,13 +74,32 @@ const Login: React.FC = () => {
               className="w-full"
             />
           </div>
+
+          {loginMode === 'password' && (
+            <div className="flex flex-col gap-2">
+              <label htmlFor="password" title="Password" className="auth-label">Password</label>
+              <input
+                id="password"
+                type="password"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                disabled={loading}
+                className="w-full"
+              />
+            </div>
+          )}
           
           <button
             type="submit"
             disabled={loading}
             className="btn-primary w-full mt-4"
           >
-            {loading ? 'Sending link...' : 'Send Magic Link'}
+            {loading 
+              ? (loginMode === 'magic' ? 'Sending link...' : 'Signing in...') 
+              : (loginMode === 'magic' ? 'Send Magic Link' : 'Sign In')
+            }
           </button>
         </form>
 
