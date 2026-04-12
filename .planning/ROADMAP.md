@@ -25,13 +25,17 @@
 ## Phase 4: Meal Planner Core
 **Goal:** Implement the core meal planning experience with a weekly calendar, AI-driven generation, and persistence.
 **Requirements:** [PLAN-01, GEN-01, REC-01, STATE-01, LOCK-01]
-**Plans:** 3 plans
-- [ ] 04-01-PLAN.md — Database Schema & AI Backend
-- [ ] 04-02-PLAN.md — Calendar UI & Generation Flow
-- [ ] 04-03-PLAN.md — Interaction (Lock/Edit) & Polish
+**Plans:** 5 plans
+- [x] 04-01-PLAN.md — Database Schema & AI Backend
+- [x] 04-02-PLAN.md — Calendar UI & Generation Flow
+- [x] 04-03-PLAN.md — Interaction (Lock/Edit) & Polish
+- [ ] 04-04-PLAN.md — Fix Slot Locking & Date Consistency (Gap Closure)
+- [ ] 04-05-PLAN.md — Recipe Detail View (Gap Closure)
 
-## Phase 5: Recipes & Shopping List
-- [ ] Recipe Detail View component.
+## Phase 5: Shopping List & Consolidation
+**Goal:** Implement the shopping list generation and category-based grouping.
+**Requirements:** [SHOP-01, SHOP-02]
+- [x] Recipe Detail View (Moved to Phase 4 Gap Closure)
 - [ ] Basic Shopping List logic (Grouping by category).
 - [ ] Printing/Marking functionality.
 
