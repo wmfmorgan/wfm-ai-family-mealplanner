@@ -9,10 +9,11 @@
 
 | ID | Description | Requirement | Status | Result/Evidence |
 |----|-------------|-------------|--------|-----------------|
-| SHOP-UAT-01 | **Categorization Trigger:** Generate/Save meal plan triggers ingredient categorization. | [SHOP-01, SHOP-04] | 🟡 TODO | |
-| SHOP-UAT-02 | **Shopping List Display:** Categorized ingredients show up in "The Market Ledger" tab. | [SHOP-02] | 🟡 TODO | |
-| SHOP-UAT-03 | **Interactive Checklist:** Items can be checked off and persist across navigation. | [SHOP-03] | 🟡 TODO | |
-| SHOP-UAT-04 | **Print Optimization:** Print Ledger button shows a clean, 2-column layout. | [SHOP-03] | 🟡 TODO | |
+| SHOP-UAT-01 | **Categorization Trigger:** Generate/Save meal plan triggers ingredient categorization. | [SHOP-01, SHOP-04] | ✅ PASS | Verified fix in `categorize-ingredients` edge function. Successfully passes provider/model from frontend. |
+| SHOP-UAT-02 | **Shopping List Display:** Categorized ingredients show up in "The Market Ledger" tab. | [SHOP-02] | ✅ PASS | Verified with `shopping-list.test.tsx`. Items render under correct category headings. |
+| SHOP-UAT-03 | **Interactive Checklist:** Items can be checked off and persist across navigation. | [SHOP-03] | ✅ PASS | Verified with `shopping-list.test.tsx`. Checked state persists to `localStorage` and updates UI. |
+| SHOP-UAT-04 | **Print Optimization:** Print Ledger button shows a clean, 2-column layout. | [SHOP-03] | ✅ PASS | Verified CSS media query in `ShoppingList.css`. Includes `column-count: 2` and hides UI elements. |
 
 ## Findings & Fixes
-- None yet.
+- **FIXED (2026-04-12):** `categorize-ingredients` was hardcoded to Gemini, causing 500 errors when Grok was the active provider. Updated function to accept provider/model and frontend to pass them.
+- **FIXED (2026-04-12):** Improved error handling and logging in `categorize-ingredients` for better debugging in Supabase dashboard.
