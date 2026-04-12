@@ -44,7 +44,7 @@ serve(async (req) => {
       })
     }
 
-    const { meal_plan_id, ingredients } = await req.json()
+    const { meal_plan_id, ingredients, provider = 'gemini', model = 'gemini-1.5-flash' } = await req.json()
 
     if (!meal_plan_id || !ingredients || !Array.isArray(ingredients)) {
       return new Response(JSON.stringify({ error: 'Missing meal_plan_id or ingredients array' }), {
@@ -85,7 +85,8 @@ Do not group or modify the ingredient strings. If an ingredient is ambiguous, us
         'Authorization': authHeader,
       },
       body: JSON.stringify({
-        provider: 'gemini',
+        provider,
+        model,
         prompt: JSON.stringify(uniqueIngredients),
         system_prompt: systemPrompt,
         response_format: { type: 'json_object' }
@@ -93,9 +94,9 @@ Do not group or modify the ingredient strings. If an ingredient is ambiguous, us
     })
 
     if (!aiProxyResponse.ok) {
-      const errorText = await aiProxyResponse.text()
-      console.error('AI Proxy Error:', errorText)
-      throw new Error(`AI Proxy failed with status ${aiProxyResponse.status}`)
+      const errorData = await aiProxyResponse.json().catch(() => ({ error: 'Unknown AI Proxy error' }))
+      console.error('AI Proxy Error:', errorData)
+      throw new Error(`AI Proxy failed (${provider}): ${errorData.error || errorData.details || 'Internal Error'}`)
     }
 
     const aiResult = await aiProxyResponse.json()
@@ -136,7 +137,15 @@ Do not group or modify the ingredient strings. If an ingredient is ambiguous, us
 
   } catch (error) {
     console.error('Categorize-Ingredients Error:', error)
-    return new Response(JSON.stringify({ error: error.message }), {
+    
+    // Handle Supabase/PostgreSQL errors specifically if possible
+    const errorMessage = error.message || 'Unknown server error'
+    const errorDetails = error.details || error.hint || undefined
+
+    return new Response(JSON.stringify({ 
+      error: errorMessage,
+      details: errorDetails
+    }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })

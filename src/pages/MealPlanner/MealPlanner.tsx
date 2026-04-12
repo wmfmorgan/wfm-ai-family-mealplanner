@@ -209,7 +209,8 @@ const MealPlanner: React.FC = () => {
           householdId,
           weekDateStr,
           response.recipes.map(r => ({ ...r, household_id: householdId })),
-          finalSlots as any
+          finalSlots as any,
+          { provider: responseData.provider, model: responseData.model }
         );
       } else {
         console.log('Mock mode: Skipping DB save. Updating UI only.');

@@ -68,7 +68,8 @@ export async function saveMealPlan(
   householdId: string,
   weekStartDate: string,
   recipes: Recipe[],
-  slots: Omit<MealPlanSlot, 'meal_plan_id'>[]
+  slots: Omit<MealPlanSlot, 'meal_plan_id'>[],
+  options?: { provider?: string; model?: string }
 ) {
   if (IS_MOCK) {
     console.log('Mock mode: Meal plan save skipped.');
@@ -158,7 +159,9 @@ export async function saveMealPlan(
     supabase.functions.invoke('categorize-ingredients', {
       body: { 
         meal_plan_id: plan.id, 
-        ingredients: allIngredients 
+        ingredients: allIngredients,
+        provider: options?.provider,
+        model: options?.model
       }
     }).catch(err => console.error('Failed to trigger categorization:', err));
   }
