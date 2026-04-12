@@ -1,5 +1,5 @@
 import React from 'react';
-import { addDays } from 'date-fns';
+import { addDays, format } from 'date-fns';
 import DayColumn from './DayColumn';
 import './PlannerGrid.css';
 
@@ -21,7 +21,7 @@ const PlannerGrid: React.FC<PlannerGridProps> = ({
   const days = Array.from({ length: 7 }, (_, i) => addDays(weekStartDate, i));
 
   const getMealsForDate = (date: Date) => {
-    const dateStr = date.toISOString().split('T')[0];
+    const dateStr = format(date, 'yyyy-MM-dd');
     return planData[dateStr] || {};
   };
 
@@ -29,7 +29,7 @@ const PlannerGrid: React.FC<PlannerGridProps> = ({
     <div className="planner-grid-container">
       <div className="planner-grid">
         {days.map((day) => {
-          const dateStr = day.toISOString().split('T')[0];
+          const dateStr = format(day, 'yyyy-MM-dd');
           return (
             <DayColumn
               key={dateStr}

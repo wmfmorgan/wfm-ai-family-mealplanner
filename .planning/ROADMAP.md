@@ -29,8 +29,8 @@
 - [x] 04-01-PLAN.md — Database Schema & AI Backend
 - [x] 04-02-PLAN.md — Calendar UI & Generation Flow
 - [x] 04-03-PLAN.md — Interaction (Lock/Edit) & Polish
-- [ ] 04-04-PLAN.md — Fix Slot Locking & Date Consistency (Gap Closure)
-- [ ] 04-05-PLAN.md — Recipe Detail View (Gap Closure)
+- [x] 04-04-PLAN.md — Fix Slot Locking & Date Consistency (Gap Closure)
+- [x] 04-05-PLAN.md — Recipe Detail View (Gap Closure)
 
 ## Phase 5: Shopping List & Consolidation
 **Goal:** Implement the shopping list generation and category-based grouping.

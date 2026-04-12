@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { format, startOfWeek, addWeeks, subWeeks } from 'date-fns';
+import { format, startOfWeek, addWeeks, subWeeks, addDays } from 'date-fns';
 import { householdService, HouseholdMember } from '../../lib/services/household';
 import { plannerService } from '../../lib/services/planner';
 import { askAI } from '../../lib/ai/client';
 import { generateMealPlanPrompt, GenerationResponse } from '../../lib/ai/prompts';
 import PlannerGrid from '../../components/MealPlanner/PlannerGrid';
 import GenerationPanel from '../../components/MealPlanner/GenerationPanel';
+import RecipeDetail from '../../components/MealPlanner/RecipeDetail';
+import { Recipe } from '../../lib/services/planner';
 import './MealPlanner.css';
 
 const MealPlanner: React.FC = () => {
@@ -17,6 +19,7 @@ const MealPlanner: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [householdId, setHouseholdId] = useState<string | null>(null);
+  const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
 
   useEffect(() => {
     const init = async () => {
@@ -48,12 +51,13 @@ const MealPlanner: React.FC = () => {
       if (plan && plan.slots) {
         const gridData: Record<string, any> = {};
         plan.slots.forEach((slot: any) => {
-          const dateStr = format(new Date(weekStartDate.getTime() + slot.day_of_week * 24 * 60 * 60 * 1000), 'yyyy-MM-dd');
+          const dateStr = format(addDays(weekStartDate, slot.day_of_week), 'yyyy-MM-dd');
           
           if (!gridData[dateStr]) gridData[dateStr] = {};
           gridData[dateStr][slot.meal_type] = {
             id: slot.id,
             recipeName: slot.recipe?.name || '',
+            recipe: slot.recipe,
             isLocked: slot.is_locked,
             manualEntry: slot.manual_entry || ''
           };
@@ -78,37 +82,49 @@ const MealPlanner: React.FC = () => {
 
   const handleLockToggle = async (date: string, mealType: string, isLocked: boolean) => {
     const slot = planData[date]?.[mealType];
+    
+    // Optimistic update
+    setPlanData(prev => ({
+      ...prev,
+      [date]: {
+        ...prev[date],
+        [mealType]: { ...prev[date]?.[mealType], isLocked }
+      }
+    }));
+
     if (!slot?.id) return;
 
     try {
       await plannerService.updateSlot(slot.id, { is_locked: isLocked });
-      // Optimistic update
+    } catch (err) {
+      console.error('Error toggling lock:', err);
+      // Revert on error
       setPlanData(prev => ({
         ...prev,
         [date]: {
           ...prev[date],
-          [mealType]: { ...prev[date][mealType], isLocked }
+          [mealType]: { ...prev[date][mealType], isLocked: !isLocked }
         }
       }));
-    } catch (err) {
-      console.error('Error toggling lock:', err);
     }
   };
 
   const handleEdit = async (date: string, mealType: string, manualEntry: string) => {
     const slot = planData[date]?.[mealType];
+
+    // Optimistic update
+    setPlanData(prev => ({
+      ...prev,
+      [date]: {
+        ...prev[date],
+        [mealType]: { ...prev[date]?.[mealType], manualEntry }
+      }
+    }));
+
     if (!slot?.id) return;
 
     try {
       await plannerService.updateSlot(slot.id, { manual_entry: manualEntry });
-      // Optimistic update
-      setPlanData(prev => ({
-        ...prev,
-        [date]: {
-          ...prev[date],
-          [mealType]: { ...prev[date][mealType], manualEntry }
-        }
-      }));
     } catch (err) {
       console.error('Error updating manual entry:', err);
     }
@@ -169,8 +185,6 @@ const MealPlanner: React.FC = () => {
       const weekDateStr = format(weekStartDate, 'yyyy-MM-dd');
       
       // Merge AI response with locked slots
-      // If AI respected the prompt, locked slots are already in response.plan
-      // But we should double check and ensure manual_entry is preserved
       const finalSlots = response.plan.map(p => {
         const locked = lockedSlots.find(l => l.day_of_week === p.day_of_week && l.meal_type === p.meal_type);
         if (locked) {
@@ -178,14 +192,13 @@ const MealPlanner: React.FC = () => {
             ...p,
             is_locked: true,
             manual_entry: locked.manual_entry,
-            // If it's a manual entry without a recipe, AI might have put a dummy name
             recipe_name: locked.manual_entry ? undefined : (p.recipe_name || locked.recipe_name)
           };
         }
         return p;
       });
 
-      // Skip database save in mock mode to avoid UUID validation errors with mock IDs
+      // Skip database save in mock mode
       if (responseData.provider !== 'mock') {
         await plannerService.saveMealPlan(
           householdId,
@@ -201,10 +214,14 @@ const MealPlanner: React.FC = () => {
       if (responseData.provider === 'mock') {
         const gridData: Record<string, any> = {};
         finalSlots.forEach((slot: any) => {
-          const dateStr = format(new Date(weekStartDate.getTime() + slot.day_of_week * 24 * 60 * 60 * 1000), 'yyyy-MM-dd');
+          const dateStr = format(addDays(weekStartDate, slot.day_of_week), 'yyyy-MM-dd');
           if (!gridData[dateStr]) gridData[dateStr] = {};
+          
+          const recipe = response.recipes.find(r => r.name === slot.recipe_name);
+          
           gridData[dateStr][slot.meal_type] = {
             recipeName: slot.recipe_name,
+            recipe,
             isLocked: slot.is_locked,
             manualEntry: slot.manual_entry || ''
           };
@@ -247,8 +264,10 @@ const MealPlanner: React.FC = () => {
             weekStartDate={weekStartDate} 
             planData={planData}
             onSlotClick={(date, mealType) => {
-              console.log('Clicked slot:', date, mealType);
-              // Future: Open recipe selector
+              const slot = planData[date]?.[mealType];
+              if (slot?.recipe) {
+                setSelectedRecipe(slot.recipe);
+              }
             }}
             onLockToggle={handleLockToggle}
             onEdit={handleEdit}
@@ -266,6 +285,11 @@ const MealPlanner: React.FC = () => {
         onToggleStrategy={() => setLeftoverStrategy(!leftoverStrategy)}
         onGenerate={handleGenerate}
         isGenerating={isGenerating}
+      />
+
+      <RecipeDetail 
+        recipe={selectedRecipe} 
+        onClose={() => setSelectedRecipe(null)} 
       />
     </div>
   );

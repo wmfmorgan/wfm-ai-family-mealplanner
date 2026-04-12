@@ -27,4 +27,9 @@ Verify the successful implementation of the core meal planning engine, Sunday-st
     1. Lock one slot (e.g., Monday Dinner).
     2. Regenerate the plan.
     3. Verify the locked slot's recipe/text did NOT change, while unlocked slots were updated.
-- [x] **Tactile Feedback**: Verify visual cues (e.g., icon change, color shift) when a slot is locked or in edit mode.
+## Recipe Detail View (04-05)
+- [x] **Drawer Interaction**: Click on a generated recipe slot and verify the `RecipeDetail` drawer slides in.
+- [x] **Recipe Content**: Confirm title, ingredients (list), and instructions (numbered list) are displayed.
+- [x] **Close Interaction**: Verify clicking the close button or backdrop hides the drawer.
+- [x] **Visual Consistency**: Confirm serif typography and "earthy cookbook" aesthetic in the drawer.
+- [x] **Gap Closure**: Confirm MP-UAT-06 now passes.

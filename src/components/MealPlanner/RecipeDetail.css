@@ -1,0 +1,120 @@
+.recipe-detail-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(2px);
+  z-index: 1000;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.recipe-detail-drawer {
+  width: 100%;
+  max-width: 500px;
+  height: 100%;
+  background-color: var(--color-bg-card, #fdfcf9);
+  box-shadow: -4px 0 20px rgba(0, 0, 0, 0.1);
+  padding: 2.5rem 2rem;
+  overflow-y: auto;
+  position: relative;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+.close-button {
+  position: absolute;
+  top: 1rem;
+  right: 1.5rem;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  color: var(--color-text-secondary, #6b7280);
+  padding: 0.5rem;
+  line-height: 1;
+}
+
+.close-button:hover {
+  color: var(--color-text-primary, #111827);
+}
+
+.recipe-header {
+  margin-bottom: 2rem;
+  border-bottom: 1px solid var(--color-border, #e5e7eb);
+  padding-bottom: 1.5rem;
+}
+
+.recipe-title {
+  font-family: var(--font-serif, "Newsreader", serif);
+  font-size: 2.25rem;
+  color: var(--color-primary, #2d4f1e);
+  margin-bottom: 0.5rem;
+  line-height: 1.2;
+}
+
+.recipe-meta {
+  display: flex;
+  gap: 1.5rem;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary, #6b7280);
+  font-weight: 500;
+}
+
+.recipe-section {
+  margin-bottom: 2.5rem;
+}
+
+.recipe-section h3 {
+  font-family: var(--font-serif, "Newsreader", serif);
+  font-size: 1.25rem;
+  color: var(--color-text-primary, #111827);
+  margin-bottom: 1rem;
+  border-bottom: 2px solid var(--color-secondary, #e8f0e3);
+  display: inline-block;
+  padding-bottom: 0.25rem;
+}
+
+.ingredients-list, .instructions-list {
+  padding-left: 1.25rem;
+  color: var(--color-text-primary, #374151);
+  line-height: 1.6;
+}
+
+.ingredients-list li, .instructions-list li {
+  margin-bottom: 0.5rem;
+}
+
+.nutrition-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 1rem;
+}
+
+.nutrition-item {
+  background: var(--color-secondary, #f4f8f1);
+  padding: 0.75rem;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.nutrition-key {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-secondary, #6b7280);
+  margin-bottom: 0.25rem;
+}
+
+.nutrition-value {
+  font-weight: 600;
+  color: var(--color-primary, #2d4f1e);
+}
