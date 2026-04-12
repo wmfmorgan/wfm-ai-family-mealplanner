@@ -99,6 +99,11 @@ input:focus {
   padding: 0 1rem;
 }
 
+.full-width-content {
+  width: 100%;
+  padding: 0 1rem;
+}
+
 .flex { display: flex; }
 .flex-col { flex-direction: column; }
 .items-center { align-items: center; }

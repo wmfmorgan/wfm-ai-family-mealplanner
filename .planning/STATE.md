@@ -7,9 +7,10 @@
 - [x] ROADMAP.md structured
 
 ## Current Focus
-- Phase 4: AI Meal Planning (Drafting)
+- Phase 5: Shopping List & Consolidation (Drafting)
 
 ## Session History
+- **2026-04-11**: Phase 4 (Meal Planner Core) completed. Sunday-start weekly calendar, AI generation, and \"Lock & Edit\" workflow fully implemented and verified.
 - **2026-04-11**: Phase 4 context gathered. Decisions on calendar, generation logic, and recipe privacy locked.
 - **2026-04-11**: Phase 3 (AI Layer Enhancements) completed. Multi-provider AI proxy, frontend logging, and developer debug UI fully implemented and verified.
 - **2026-04-11**: Phase 1 (Foundation & Auth) completed. Project initialized with Supabase, Magic Link Auth, and Responsive Cookbook Shell.

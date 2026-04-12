@@ -1,0 +1,39 @@
+.planner-grid-container {
+  width: 100%;
+  overflow-x: auto;
+  padding: 1.5rem 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--sage-green, #4a6d4a) transparent;
+}
+
+.planner-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(140px, 1fr));
+  gap: 1rem;
+  width: 100%;
+  padding: 0.5rem;
+}
+
+.planner-grid::-webkit-scrollbar {
+  height: 6px;
+}
+
+.planner-grid::-webkit-scrollbar-thumb {
+  background: var(--sage-green, #4a6d4a);
+  border-radius: 10px;
+}
+
+@media (max-width: 1024px) {
+  .planner-grid {
+    gap: 0.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .planner-grid {
+    display: flex;
+    flex-direction: column;
+    min-width: unset;
+    gap: 1.5rem;
+  }
+}

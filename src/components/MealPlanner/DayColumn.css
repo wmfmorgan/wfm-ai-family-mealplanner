@@ -1,0 +1,50 @@
+.day-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 0.5rem;
+  border-radius: 8px;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.day-column.today {
+  background-color: var(--surface-container-low, #f4f3f2);
+}
+
+.day-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--soft-border, #e1e3df);
+}
+
+.day-name {
+  font-family: 'Newsreader', serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--sage-green, #4a6741);
+}
+
+.day-number {
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.75rem;
+  color: var(--muted-earth, #747973);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+}
+
+.meal-slots {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+@media (max-width: 768px) {
+  .day-column {
+    padding: 1rem;
+    background-color: var(--surface-container-lowest, #ffffff);
+    border: 1px solid var(--soft-border, #e1e3df);
+  }
+}

@@ -5,14 +5,15 @@ import './Layout.css';
 
 interface ShellProps {
   children: React.ReactNode;
+  isFullWidth?: boolean;
 }
 
-const Shell: React.FC<ShellProps> = ({ children }) => {
+const Shell: React.FC<ShellProps> = ({ children, isFullWidth = false }) => {
   return (
     <div className="app-shell">
       <Sidebar />
       <main className="main-content">
-        <div className="centered-content">
+        <div className={isFullWidth ? "full-width-content" : "centered-content"}>
           {children}
         </div>
       </main>

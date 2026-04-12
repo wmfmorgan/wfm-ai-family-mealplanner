@@ -45,7 +45,7 @@ serve(async (req) => {
     }
 
     // 4. Parse payload
-    const { provider, prompt, ping, model } = await req.json()
+    const { provider, prompt, system_prompt, response_format, ping, model } = await req.json()
 
     // 5. Check for ping mode
     if (ping) {
@@ -62,7 +62,7 @@ serve(async (req) => {
     if (provider === 'gemini') {
       apiUrl = 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions'
       apiKey = Deno.env.get('GEMINI_API_KEY') || ''
-      defaultModel = 'gemini-1.5-flash' // Updated from plan's 2.5 which doesn't exist yet
+      defaultModel = 'gemini-1.5-flash'
     } else if (provider === 'grok') {
       apiUrl = 'https://api.x.ai/v1/chat/completions'
       apiKey = Deno.env.get('XAI_API_KEY') || ''
@@ -82,6 +82,12 @@ serve(async (req) => {
     }
 
     // 7. Call the provider using OpenAI-compatible format
+    const messages = []
+    if (system_prompt) {
+      messages.push({ role: 'system', content: system_prompt })
+    }
+    messages.push({ role: 'user', content: prompt })
+
     const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
@@ -90,13 +96,22 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         model: model || defaultModel,
-        messages: [
-          { role: 'user', content: prompt }
-        ],
+        messages: messages,
+        response_format: response_format || undefined,
       }),
     })
 
-    const result = await response.json()
+    let result = await response.json()
+
+    // 8. Handle JSON mode resiliently (strip markdown fences if present)
+    if (response_format?.type === 'json_object' && result.choices?.[0]?.message?.content) {
+      let content = result.choices[0].message.content.trim()
+      // Remove markdown code blocks if present
+      if (content.startsWith('```')) {
+        content = content.replace(/^```[a-z]*\n/i, '').replace(/\n```$/g, '')
+      }
+      result.choices[0].message.content = content
+    }
 
     return new Response(JSON.stringify(result), {
       status: response.status,

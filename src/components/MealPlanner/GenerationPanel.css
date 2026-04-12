@@ -1,0 +1,192 @@
+.generation-panel {
+  width: 320px;
+  background-color: #fcfdfa;
+  border-left: 1px solid #e0e5d8;
+  padding: 32px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  height: calc(100vh - 80px); /* Adjust based on Shell/Layout height */
+  overflow-y: auto;
+  position: sticky;
+  top: 0;
+}
+
+.panel-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.section-title {
+  font-family: 'Newsreader', serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #3A5A40;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.section-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background-color: #eef2ea;
+}
+
+.week-selector {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  border: 1px solid #e0e5d8;
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+
+.nav-btn {
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  color: #3A5A40;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.nav-btn:hover {
+  background-color: #f0f5ed;
+}
+
+.week-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #4a5d4e;
+}
+
+.meal-type-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.checkbox-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  background: #fff;
+  border: 1px solid #e0e5d8;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  user-select: none;
+}
+
+.checkbox-card:hover {
+  border-color: #a3b18a;
+  background-color: #fcfdfa;
+}
+
+.checkbox-card.selected {
+  border-color: #3A5A40;
+  background-color: #f0f5ed;
+}
+
+.checkbox-card input {
+  accent-color: #3A5A40;
+  width: 18px;
+  height: 18px;
+}
+
+.checkbox-label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #2d3a2f;
+}
+
+.strategy-toggle {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  background: #fff;
+  border: 1px solid #e0e5d8;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.strategy-toggle.active {
+  border-color: #3A5A40;
+  background-color: #f0f5ed;
+}
+
+.strategy-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.strategy-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #3A5A40;
+}
+
+.strategy-desc {
+  font-size: 0.8rem;
+  color: #6a7d6e;
+  line-height: 1.4;
+}
+
+.generate-btn {
+  background-color: #3A5A40;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 16px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(58, 90, 64, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: auto;
+}
+
+.generate-btn:hover {
+  background-color: #2d4532;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(58, 90, 64, 0.2);
+}
+
+.generate-btn:active {
+  transform: translateY(0);
+}
+
+.generate-btn:disabled {
+  background-color: #e0e5d8;
+  color: #8a9a8d;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.loading-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

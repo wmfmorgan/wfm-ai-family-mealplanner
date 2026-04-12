@@ -1,0 +1,99 @@
+.meal-slot {
+  background-color: var(--surface-container-lowest, #ffffff);
+  border: 1px solid var(--soft-border, #e1e3df);
+  border-radius: 8px;
+  padding: 0.75rem;
+  min-height: 80px;
+  cursor: pointer;
+  transition: transform 0.1s ease-in-out, background-color 0.2s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+}
+
+.meal-slot.locked {
+  background-color: var(--surface-container-low, #f4f3f2);
+  border-style: solid;
+  border-color: var(--sage-green, #4a6d4a);
+  opacity: 0.9;
+}
+
+.meal-slot:hover {
+  background-color: var(--surface-container-low, #f4f3f2);
+  transform: translateY(-1px);
+}
+
+.meal-slot.locked:hover {
+  transform: none;
+}
+
+.meal-slot-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.lock-button {
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  border-radius: 4px;
+  opacity: 0.4;
+  transition: opacity 0.2s, background-color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lock-button:hover {
+  opacity: 0.8;
+  background-color: rgba(0,0,0,0.05);
+}
+
+.lock-button.is-locked {
+  opacity: 1;
+  color: var(--sage-green, #4a6d4a);
+}
+
+.meal-type-label {
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted-earth, #747973);
+  font-weight: 600;
+}
+
+.meal-content {
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.9rem;
+  color: var(--ink-black, #1a1c19);
+  line-height: 1.4;
+  font-weight: 500;
+  min-height: 1.2em;
+}
+
+.meal-content.empty {
+  color: var(--muted-earth, #747973);
+  font-style: italic;
+  font-weight: 400;
+}
+
+.meal-edit-input {
+  width: 100%;
+  border: 1px solid var(--sage-green, #4a6d4a);
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-family: inherit;
+  font-size: inherit;
+  background: white;
+  color: inherit;
+  outline: none;
+}
+
+.placeholder-text {
+  opacity: 0.6;
+}

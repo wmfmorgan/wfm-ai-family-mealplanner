@@ -5,11 +5,9 @@ import { ProtectedRoute } from './components/Auth/ProtectedRoute';
 import Shell from './components/Layout/Shell';
 import Login from './pages/Auth/Login';
 import Household from './pages/Household/Household';
+import MealPlanner from './pages/MealPlanner/MealPlanner';
 import Settings from './pages/Settings/Settings';
 import './App.css';
-
-// Placeholder components for routes
-const Planner = () => <div><h1>Weekly Planner</h1><p>Plan your meals for the week here.</p></div>;
 
 const App: React.FC = () => {
   return (
@@ -24,8 +22,8 @@ const App: React.FC = () => {
             path="/planner"
             element={
               <ProtectedRoute>
-                <Shell>
-                  <Planner />
+                <Shell isFullWidth={true}>
+                  <MealPlanner />
                 </Shell>
               </ProtectedRoute>
             }
