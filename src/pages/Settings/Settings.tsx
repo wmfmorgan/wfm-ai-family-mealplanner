@@ -22,7 +22,7 @@ const MODELS = {
 
 const Settings: React.FC = () => {
   const [activeProvider, setActiveProvider] = useState<string>(
-    localStorage.getItem(PROVIDER_KEY) || 'gemini'
+    localStorage.getItem(PROVIDER_KEY) || 'grok'
   );
   const [activeModel, setActiveModel] = useState<string>(
     localStorage.getItem(MODEL_KEY) || (activeProvider === 'grok' ? 'grok-2' : 'gemini-1.5-flash')

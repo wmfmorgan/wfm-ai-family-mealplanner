@@ -33,12 +33,28 @@ serve(async (req) => {
     // 3. Verify JWT with Supabase Auth
     const supabaseUrl = Deno.env.get('SUPABASE_URL')
     const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')
-    const supabase = createClient(supabaseUrl!, supabaseAnonKey!)
     
-    const { data: { user }, error: authError } = await supabase.auth.getUser(authHeader.replace('Bearer ', ''))
+    if (!supabaseUrl || !supabaseAnonKey) {
+      return new Response(JSON.stringify({ error: 'Supabase environment variables not set in Edge Function' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
+    }
+
+    // Create client with the user's own auth header
+    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: authHeader } },
+    })
+    
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
     
     if (authError || !user) {
-      return new Response(JSON.stringify({ error: 'Invalid token', details: authError }), {
+      console.error('Auth Error:', authError)
+      return new Response(JSON.stringify({ 
+        error: 'Invalid token', 
+        details: authError?.message || 'User not found or session invalid',
+        code: authError?.status || 401 
+      }), {
         status: 401,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
@@ -75,10 +91,16 @@ serve(async (req) => {
     }
 
     if (!apiKey) {
-      return new Response(JSON.stringify({ error: `API key for ${provider} is not configured.` }), {
-        status: 500,
+      console.error(`[AI Proxy] Missing API Key for provider: ${provider}`);
+      return new Response(JSON.stringify({ 
+        error: `API key for ${provider} is not configured in Supabase Secrets.`,
+        details: 'Go to Settings > Edge Functions in your Supabase dashboard to add it.'
+      }), {
+        status: 412, // Precondition Failed
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
+    } else {
+      console.log(`[AI Proxy] API Key found for provider: ${provider}`);
     }
 
     // 7. Call the provider using OpenAI-compatible format
@@ -88,35 +110,55 @@ serve(async (req) => {
     }
     messages.push({ role: 'user', content: prompt })
 
-    const response = await fetch(apiUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        model: model || defaultModel,
-        messages: messages,
-        response_format: response_format || undefined,
-      }),
-    })
+    try {
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          model: model || defaultModel,
+          messages: messages,
+          response_format: response_format || undefined,
+        }),
+      })
 
-    let result = await response.json()
-
-    // 8. Handle JSON mode resiliently (strip markdown fences if present)
-    if (response_format?.type === 'json_object' && result.choices?.[0]?.message?.content) {
-      let content = result.choices[0].message.content.trim()
-      // Remove markdown code blocks if present
-      if (content.startsWith('```')) {
-        content = content.replace(/^```[a-z]*\n/i, '').replace(/\n```$/g, '')
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`AI Provider (${provider}) Error:`, errorText);
+        return new Response(JSON.stringify({ 
+          error: `AI provider error (${provider})`, 
+          details: errorText 
+        }), {
+          status: response.status,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        })
       }
-      result.choices[0].message.content = content
-    }
 
-    return new Response(JSON.stringify(result), {
-      status: response.status,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    })
+      const result = await response.json()
+      
+      // 8. Handle JSON mode resiliently (strip markdown fences if present)
+      if (response_format?.type === 'json_object' && result.choices?.[0]?.message?.content) {
+        let content = result.choices[0].message.content.trim()
+        // Remove markdown code blocks if present
+        if (content.startsWith('```')) {
+          content = content.replace(/^```[a-z]*\n/i, '').replace(/\n```$/g, '')
+        }
+        result.choices[0].message.content = content
+      }
+
+      return new Response(JSON.stringify(result), {
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
+    } catch (fetchError) {
+      console.error('Fetch Error:', fetchError);
+      return new Response(JSON.stringify({ error: 'Failed to communicate with AI provider', details: fetchError.message }), {
+        status: 502,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
+    }
 
   } catch (error) {
     return new Response(JSON.stringify({ error: error.message }), {

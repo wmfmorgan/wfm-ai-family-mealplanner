@@ -160,8 +160,10 @@ const MealPlanner: React.FC = () => {
         lockedSlots,
       });
 
-      const activeProvider = localStorage.getItem('active_ai_provider') || 'gemini';
+      const activeProvider = localStorage.getItem('active_ai_provider') || 'grok';
       const activeModel = localStorage.getItem('active_ai_model') || (activeProvider === 'grok' ? 'grok-2' : 'gemini-1.5-flash');
+
+      console.log(`[MealPlanner] Using provider: ${activeProvider}, model: ${activeModel}`);
 
       const responseData = await askAI({
         prompt,

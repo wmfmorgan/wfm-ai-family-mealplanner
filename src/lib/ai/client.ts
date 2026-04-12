@@ -26,21 +26,56 @@ export async function askAI({ prompt, provider, model }: AskAIOptions) {
   }
 
   try {
-    const { data, error } = await supabase.functions.invoke('ai-proxy', {
-      body: { prompt, provider, model },
-    });
+    const localFunctionUrl = import.meta.env.VITE_AI_PROXY_URL;
+    let data, error;
+
+    if (localFunctionUrl) {
+      console.log('Using local AI Proxy at:', localFunctionUrl);
+      const { data: { session } } = await supabase.auth.getSession();
+      const response = await fetch(localFunctionUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session?.access_token}`,
+        },
+        body: JSON.stringify({ prompt, provider, model }),
+      });
+      
+      if (!response.ok) {
+        const errData = await response.json();
+        throw { status: response.status, message: errData.error || errData.details || 'Local function error' };
+      }
+      data = await response.json();
+    } else {
+      console.log(`[askAI] Invoking cloud function: ${provider} (${model})`);
+      const result = await supabase.functions.invoke('ai-proxy', {
+        body: { 
+          prompt, 
+          provider, 
+          model,
+          system_prompt: 'You are an expert chef. You MUST respond with JSON in the requested format.',
+          response_format: { type: 'json_object' }
+        },
+      });
+      data = result.data;
+      error = result.error;
+    }
 
     const latency = Math.round(performance.now() - startTime);
 
     if (error) {
+      console.dir(error);
       // If the edge function returns a 500 (likely missing API key), fallback to mock for UAT
       if (error.status === 500 && (error.message.includes('API key') || error.message.includes('not configured'))) {
         console.warn('AI API key not configured. Falling back to mock response for UAT.');
         return await handleMockAi(prompt);
       }
       
+      const details = (error as any).context?.details || error.message;
+      console.error('AI Error Details:', details);
+      
       statusCode = error.status || 500;
-      errorMessage = error.message;
+      errorMessage = details;
       saveAiLog({
         provider,
         prompt,
