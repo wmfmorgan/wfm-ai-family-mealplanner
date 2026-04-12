@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ShoppingCart, Printer, Check, Plus } from 'lucide-react';
+import { Printer, Check, Plus } from 'lucide-react';
 import { plannerService } from '../../lib/services/planner';
 import { householdService } from '../../lib/services/household';
 import { useAuth } from '../../contexts/AuthContext';
