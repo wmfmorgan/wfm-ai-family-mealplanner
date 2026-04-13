@@ -25,7 +25,7 @@ describe('Login Page', () => {
     vi.clearAllMocks();
   });
 
-  it('renders login form', () => {
+  it('renders landing and login form', () => {
     render(
       <MemoryRouter>
         <AuthProvider>
@@ -34,10 +34,18 @@ describe('Login Page', () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByRole('heading', { name: /Cookbook/i })).toBeDefined();
+    expect(screen.getByRole('heading', { name: /Welcome Home/i })).toBeDefined();
     expect(screen.getByText(/Sign in to your family meal planner/i)).toBeDefined();
     expect(screen.getByPlaceholderText('you@example.com')).toBeDefined();
-    expect(screen.getByRole('button', { name: /Send Magic Link/i })).toBeDefined();
+    expect(screen.getByRole('button', { name: /SEND MAGIC LINK/i })).toBeDefined();
+    
+    // Check for feature section
+    expect(screen.getByText(/Intelligent Meal Architecture/i)).toBeDefined();
+    expect(screen.getByText(/AI Recipe Preservation/i)).toBeDefined();
+    
+    // Check for footer
+    expect(screen.getByText('WFM AI', { selector: '.footer-logo' })).toBeDefined();
+    expect(screen.getByText(/REFINED PLANNING FOR THE CONSCIOUS KITCHEN/i)).toBeDefined();
   });
 
   it('switches between magic link and password mode', async () => {
@@ -50,22 +58,22 @@ describe('Login Page', () => {
     );
 
     // Initial state: Magic Link mode
-    expect(screen.queryByLabelText(/Password/i)).toBeNull();
-    expect(screen.getByRole('button', { name: /Send Magic Link/i })).toBeDefined();
+    expect(screen.queryByLabelText(/PASSWORD/i)).toBeNull();
+    expect(screen.getByRole('button', { name: /SEND MAGIC LINK/i })).toBeDefined();
 
     // Switch to Password mode
-    const passwordModeBtn = screen.getByRole('button', { name: /Password/i });
+    const passwordModeBtn = screen.getByRole('button', { name: /^PASSWORD$/i });
     fireEvent.click(passwordModeBtn);
 
-    expect(screen.getByLabelText(/Password/i)).toBeDefined();
-    expect(screen.getByRole('button', { name: /Sign In/i })).toBeDefined();
+    expect(screen.getByLabelText(/PASSWORD/i)).toBeDefined();
+    expect(screen.getByRole('button', { name: /SIGN IN/i })).toBeDefined();
 
     // Switch back to Magic Link mode
-    const magicModeBtn = screen.getByRole('button', { name: /Magic Link/i });
+    const magicModeBtn = screen.getByRole('button', { name: /MAGIC LINK/i });
     fireEvent.click(magicModeBtn);
 
-    expect(screen.queryByLabelText(/Password/i)).toBeNull();
-    expect(screen.getByRole('button', { name: /Send Magic Link/i })).toBeDefined();
+    expect(screen.queryByLabelText(/PASSWORD/i)).toBeNull();
+    expect(screen.getByRole('button', { name: /SEND MAGIC LINK/i })).toBeDefined();
   });
 
   it('calls signInWithMagicLink on form submission', async () => {
@@ -80,7 +88,7 @@ describe('Login Page', () => {
     );
 
     const emailInput = screen.getByPlaceholderText('you@example.com');
-    const submitButton = screen.getByRole('button', { name: /Send Magic Link/i });
+    const submitButton = screen.getByRole('button', { name: /SEND MAGIC LINK/i });
 
     fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
     fireEvent.click(submitButton);
@@ -109,11 +117,11 @@ describe('Login Page', () => {
     );
 
     // Switch to password mode
-    fireEvent.click(screen.getByRole('button', { name: /Password/i }));
+    fireEvent.click(screen.getByRole('button', { name: /^PASSWORD$/i }));
 
     const emailInput = screen.getByPlaceholderText('you@example.com');
-    const passwordInput = screen.getByLabelText(/Password/i);
-    const submitButton = screen.getByRole('button', { name: /Sign In/i });
+    const passwordInput = screen.getByLabelText(/PASSWORD/i);
+    const submitButton = screen.getByRole('button', { name: /SIGN IN/i });
 
     fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
     fireEvent.change(passwordInput, { target: { value: 'password123' } });
@@ -141,7 +149,7 @@ describe('Login Page', () => {
     );
 
     const emailInput = screen.getByPlaceholderText('you@example.com');
-    const submitButton = screen.getByRole('button', { name: /Send Magic Link/i });
+    const submitButton = screen.getByRole('button', { name: /SEND MAGIC LINK/i });
 
     fireEvent.change(emailInput, { target: { value: 'invalid@example.com' } });
     fireEvent.click(submitButton);
