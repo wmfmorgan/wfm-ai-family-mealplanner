@@ -1,7 +1,11 @@
 # Roadmap: wfm-ai-family-mealplanner
 
 ## Active Milestone
-- TBD (All currently planned milestones completed)
+- **[v3.0 - Meal Generation Refinement](milestones/v3.0-REQUIREMENTS.md)**
+    - Phase 08: Surgical Slot Control (Delete/Refresh)
+    - Phase 09: Duplicate Prevention & High-Fidelity Ingredients
+    - Phase 10: AI Sanitization & Sensitivity Check Pass
+    - Phase 11: Generation UI/UX Feedback & Visual Polish
 
 ## Archived Milestones
 - [v2.0](milestones/v2.0-ROADMAP.md) — Desktop UI Refactor (Completed)
@@ -9,34 +13,7 @@
 
 ## Backlog
 
-### Phase 999.1: Allow cards to be deleted or individually refreshed (BACKLOG)
-
-**Goal:** Captured for future planning
-**Requirements:** TBD
-**Plans:** 0 plans
-
-Plans:
-- [ ] TBD (promote with /gsd:review-backlog when ready)
-
-### Phase 999.2: add cooking skill level - ingredients need more details (BACKLOG)
-
-**Goal:** Captured for future planning
-**Requirements:** TBD
-**Plans:** 0 plans
-
-Plans:
-- [ ] TBD (promote with /gsd:review-backlog when ready)
-
 ### Phase 999.3: generate recipe pictures (BACKLOG)
-
-**Goal:** Captured for future planning
-**Requirements:** TBD
-**Plans:** 0 plans
-
-Plans:
-- [ ] TBD (promote with /gsd:review-backlog when ready)
-
-### Phase 999.4: allow/prevent duplicate meals (BACKLOG)
 
 **Goal:** Captured for future planning
 **Requirements:** TBD
@@ -54,24 +31,6 @@ Plans:
 Plans:
 - [ ] TBD (promote with /gsd:review-backlog when ready)
 
-### Phase 999.6: spawn an agent for each meal - check for dupes, etc (BACKLOG)
-
-**Goal:** Captured for future planning
-**Requirements:** TBD
-**Plans:** 0 plans
-
-Plans:
-- [ ] TBD (promote with /gsd:review-backlog when ready)
-
-### Phase 999.7: have a sanitize agent that looks at the meal plan and reduce dupes (BACKLOG)
-
-**Goal:** Captured for future planning
-**Requirements:** TBD
-**Plans:** 0 plans
-
-Plans:
-- [ ] TBD (promote with /gsd:review-backlog when ready)
-
 ### Phase 999.8: more visual feedback when generating meals (BACKLOG)
 
 **Goal:** Captured for future planning
@@ -81,16 +40,7 @@ Plans:
 Plans:
 - [ ] TBD (promote with /gsd:review-backlog when ready)
 
-### Phase 999.9: agent to check for food sensitivities, etc. (BACKLOG)
-
-**Goal:** [Captured for future planning]
-**Requirements:** TBD
-**Plans:** 0 plans
-
-Plans:
-- [ ] TBD (promote with /gsd:review-backlog when ready)
-
-### Phase 999.10: fine tune prompt (BACKLOG)
+### Phase 999.11: clean up model usage (BACKLOG)
 
 **Goal:** [Captured for future planning]
 **Requirements:** TBD

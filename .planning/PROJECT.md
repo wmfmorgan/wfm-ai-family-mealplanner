@@ -12,23 +12,22 @@ A web-based family meal planner where a single logged-in user manages a househol
 - **Deployment**: Netlify (Frontend), Supabase (Backend)
 
 ## Current State
-- **Shipped Version**: v2.0 (Desktop UI Refactor - Part 1)
+- **Shipped Version**: v2.0 (Desktop UI Refactor)
 - **Latest Features**: 
-    - High-fidelity Landing & Login v2 (Desktop)
-    - Editorial Household Profile management v2 (Desktop)
-    - New "Dietary Style" selection (Vegan, Keto, etc.)
-    - Material Symbols icon integration
-    - Top-level desktop shell navigation
+    - Desktop-optimized Shell, Landing, and Household Profiles.
+    - Verified visual alignment with Stitch editorial aesthetic.
+    - Enhanced Dietary Selection (Vegan, Keto, etc.).
 
 ## Milestones
 - **v1.0**: Initial MVP (Foundation, Auth, Household, AI Proxy, Meal Planner Core, Shopping List) — COMPLETED
 - **v2.0**: Desktop UI Refactor (Landing, Household, Navigation) — COMPLETED
+- **v3.0**: Meal Generation Refinement (Surgical Slot Control, AI Quality, Sanitization Pass) — ACTIVE
 
-## Next Milestone Goals (v2.1)
-- **Refactor Weekly Meal Planner (Desktop)**: Full 1200px width grid, interactive slot design.
-- **Refactor Recipe Details (Desktop)**: Side-drawer cookbook view.
-- **Refactor Market Ledger (Desktop)**: Categorical grouping and print styles.
-- **AI Prompt Tuning**: Leverage dietary style for higher-fidelity recipes.
+## Next Milestone Goals (v3.0)
+- **Surgical Slot Control**: Delete/Refresh individual meal slots.
+- **AI Plan Quality**: Prevent duplicates and increase ingredient fidelity.
+- **Sanitization Pass**: Multi-pass AI verification for dietary profile adherence.
+- **Generation Feedback**: Visual progress indicators for multi-step AI tasks.
 
 ## Configuration & Style
 - **Aesthetic**: Minimalist, earthy tones ("Verdant Table" / "Warm Paper").
