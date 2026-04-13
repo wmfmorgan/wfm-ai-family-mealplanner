@@ -29,3 +29,7 @@ A web-based family meal planner where a single logged-in user manages a househol
 - AI providers/models configurable via env vars
 - Row Level Security for data privacy
 - Versioned meal plans by week
+
+## Milestones
+- **v1.0**: Initial MVP (Foundation, Auth, Household, AI Proxy, Meal Planner Core, Shopping List) — COMPLETED
+- **v2.0**: Desktop UI Refactor (Aligning with Stitch Project WFM-AI-MEALPLANNER Desktop designs) — IN PROGRESS

@@ -6,10 +6,17 @@
 - [x] REQUIREMENTS.md defined
 - [x] ROADMAP.md structured
 
-## Current Focus
-- Phase 999.1: Allow cards to be deleted or individually refreshed (Next)
+## Current Milestone: v2.0 - Desktop UI Refactor
+- [ ] Phase 06: Landing & Login (Desktop) [v2] (Next)
+- [ ] Phase 07: Your Household (Desktop) [v2]
+- [ ] Phase 08: Weekly Meal Planner (Desktop) [v2]
+- [ ] Phase 09: Recipe Details (Desktop) [v2]
+- [ ] Phase 10: The Market Ledger (Desktop)
+- [ ] Phase 11: UI Final Polish & Audit
 
 ## Session History
+- **2026-04-13**: Milestone v2.0 (Desktop UI Refactor) initiated. Scoped to refactor Landing, Household, Planner, Recipe, and Shopping List screens to match Desktop Stitch designs.
+- **2026-04-13**: v1.0 Milestone Archived. Final Polish & Deploy completed.
 - **2026-04-12**: Phase 6 (Final Polish & Deploy) completed. End-to-end testing of generation logic, final visual audit, and Netlify deployment finalized.
 - **2026-04-12**: Phase 5 (Shopping List & Consolidation) completed. Implemented backend categorization with Supabase Edge Functions, UI with Google Stitch, and interactive checklist/print modes.
 - **2026-04-12**: Phase 5 (Shopping List & Consolidation) discussion complete. Decisions locked for post-process AI categorization, simple grouping (no merging), dedicated "Shopping" tab, and checklist/print functionality.
@@ -21,7 +28,9 @@
 - **2026-04-11**: Phase 2 (Household & Profiles) completed. Household management with dietary profiles and "Chef's Notes" fully implemented and refined based on UAT.
 
 ## Recent Decisions
-- Multi-recipe hybrid strategy for conflicting dietary needs.
-- Direct local calls for Ollama during development.
-- Basic grouping for shopping list consolidation.
+- Milestone v2.0 scoped to Desktop UI Refactor (Landing, Household, Planner, Recipe, Market Ledger).
+- Settings screen is out of scope for v2.0 refactor.
+- Success criteria: Match Stitch DESKTOP screens perfectly.
+- Multi-recipe hybrid strategy for conflicting dietary needs (v1.0).
+- Basic grouping for shopping list consolidation (v1.0).
 - Minimalist, earthy visual style.
