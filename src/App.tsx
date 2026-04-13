@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './contexts/AuthContext';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ProtectedRoute } from './components/Auth/ProtectedRoute';
 import Shell from './components/Layout/Shell';
 import Login from './pages/Auth/Login';
@@ -9,6 +9,25 @@ import MealPlanner from './pages/MealPlanner/MealPlanner';
 import ShoppingList from './pages/MealPlanner/ShoppingList';
 import Settings from './pages/Settings/Settings';
 import './App.css';
+
+/**
+ * Component to handle redirection from the root path while respecting auth loading state.
+ * This ensures that if we land on / with auth codes (PKCE), we wait for processing 
+ * before redirecting and potentially stripping the code.
+ */
+const HomeRedirect: React.FC = () => {
+  const { loading, session } = useAuth();
+  
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center w-full p-4" style={{ minHeight: '100vh' }}>
+        <p>Verifying session...</p>
+      </div>
+    );
+  }
+
+  return <Navigate to={session ? "/planner" : "/login"} replace />;
+};
 
 const App: React.FC = () => {
   return (
@@ -61,7 +80,7 @@ const App: React.FC = () => {
           />
 
           {/* Redirects */}
-          <Route path="/" element={<Navigate to="/planner" replace />} />
+          <Route path="/" element={<HomeRedirect />} />
           <Route path="*" element={<Navigate to="/planner" replace />} />
         </Routes>
       </Router>

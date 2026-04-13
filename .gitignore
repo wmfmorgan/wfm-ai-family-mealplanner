@@ -129,3 +129,6 @@ out/
 .vscode-test/
 generated/
 .env.example.local
+
+# Local Netlify folder
+.netlify

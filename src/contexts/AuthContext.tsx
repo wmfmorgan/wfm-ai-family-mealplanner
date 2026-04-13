@@ -32,12 +32,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           return;
         }
 
+        // Detect if we are in the middle of an auth redirect (PKCE 'code' or implicit hash)
+        const searchParams = new URLSearchParams(window.location.search);
+        const hasAuthCode = searchParams.has('code');
+        const hasAuthHash = window.location.hash.includes('access_token=') || 
+                           window.location.hash.includes('type=recovery') ||
+                           window.location.hash.includes('type=signup');
+        const isProcessingAuth = hasAuthCode || hasAuthHash;
+
         const { data: { session } } = await supabase.auth.getSession();
         setSession(session);
         setUser(session?.user ?? null);
+        
+        // If we have a session OR if there's no auth to process, we're done loading.
+        // If there IS auth to process but no session yet, keep loading: onAuthStateChange will trigger soon.
+        if (session || !isProcessingAuth) {
+          setLoading(false);
+        }
       } catch (error) {
         console.error('Error getting initial session:', error);
-      } finally {
         setLoading(false);
       }
     };
