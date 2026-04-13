@@ -36,7 +36,7 @@ const MemberGrid: React.FC<MemberGridProps> = ({ members, onEditMember, onDelete
           />
         ))}
         <button className="add-member-card" onClick={onAddMember}>
-          <span className="plus-icon">+</span>
+          <span className="material-symbols-outlined plus-icon">add</span>
           <span className="add-text">Add Member</span>
         </button>
       </div>

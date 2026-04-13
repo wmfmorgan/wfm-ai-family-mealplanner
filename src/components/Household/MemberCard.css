@@ -36,38 +36,37 @@
 
 .action-buttons {
   display: flex;
-  gap: 16px;
+  gap: 8px;
   align-items: center;
 }
 
-.edit-button,
-.delete-button {
+.icon-button {
   background: none;
   border: none;
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  text-decoration: underline;
-  text-underline-offset: 4px;
-  padding: 0;
-  transition: color 0.2s;
-  font-family: 'Manrope', sans-serif;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  color: #747973; /* Muted Earth */
 }
 
-.edit-button {
-  color: #747973; /* Muted Earth */
+.icon-button:hover {
+  background-color: rgba(74, 103, 65, 0.05);
 }
 
 .edit-button:hover {
   color: #4a6741; /* Sage Green */
 }
 
-.delete-button {
-  color: #a65a5a; /* Keeping some red for destructive */
+.delete-button:hover {
+  color: #a65a5a;
+  background-color: rgba(166, 90, 90, 0.05);
 }
 
-.delete-button:hover {
-  color: #8a3a3a;
+.material-symbols-outlined {
+  font-size: 20px;
 }
 
 .dietary-tags {

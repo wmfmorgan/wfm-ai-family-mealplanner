@@ -8,16 +8,18 @@
 
 ## Current Milestone: v2.0 - Desktop UI Refactor
 - [x] Phase 06: Landing & Login (Desktop) [v2]
-- [ ] Phase 07: Your Household (Desktop) [v2] (Next)
-- [ ] Phase 08: Weekly Meal Planner (Desktop) [v2]
+- [x] Phase 07: Your Household (Desktop) [v2]
+- [ ] Phase 08: Weekly Meal Planner (Desktop) [v2] (Next)
 - [ ] Phase 09: Recipe Details (Desktop) [v2]
 - [ ] Phase 10: The Market Ledger (Desktop)
 - [ ] Phase 11: UI Final Polish & Audit
 
 ## Session History
+- **2026-04-13**: Phase 07 (Your Household [v2]) completed. Shell, navigation, and household components refactor finalized.
 - **2026-04-13**: Phase 06 (Landing & Login [v2]) completed. Verified visual refactor to editorial cookbook aesthetic and synchronized tests.
 - **2026-04-13**: Milestone v2.0 (Desktop UI Refactor) initiated. Scoped to refactor Landing, Household, Planner, Recipe, and Shopping List screens to match Desktop Stitch designs.
 - **2026-04-13**: v1.0 Milestone Archived. Final Polish & Deploy completed.
+- **2026-04-13**: Added dietary choices (Vegan, Paleo, etc.) to household profiles. Updated database validation, TS, AI, and UI. Fixes gap in Phase 02.
 - **2026-04-12**: Phase 6 (Final Polish & Deploy) completed. End-to-end testing of generation logic, final visual audit, and Netlify deployment finalized.
 - **2026-04-12**: Phase 5 (Shopping List & Consolidation) completed. Implemented backend categorization with Supabase Edge Functions, UI with Google Stitch, and interactive checklist/print modes.
 - **2026-04-12**: Phase 5 (Shopping List & Consolidation) discussion complete. Decisions locked for post-process AI categorization, simple grouping (no merging), dedicated "Shopping" tab, and checklist/print functionality.

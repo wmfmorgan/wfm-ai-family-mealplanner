@@ -36,10 +36,14 @@ const MemberCard: React.FC<MemberCardProps> = ({
       <div className="member-card-header">
         <h2 className="member-name">{name}</h2>
         <div className="action-buttons">
+          <button className="icon-button edit-button" onClick={onEdit} title="Edit Profile">
+            <span className="material-symbols-outlined">edit</span>
+          </button>
           {!isOwner && onDelete && (
-            <button className="delete-button" onClick={onDelete}>Delete</button>
+            <button className="icon-button delete-button" onClick={onDelete} title="Remove Member">
+              <span className="material-symbols-outlined">delete</span>
+            </button>
           )}
-          <button className="edit-button" onClick={onEdit}>Edit</button>
         </div>
       </div>
       
