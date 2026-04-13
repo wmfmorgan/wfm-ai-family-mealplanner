@@ -34,18 +34,18 @@ describe('Login Page', () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByRole('heading', { name: /Welcome Home/i })).toBeDefined();
-    expect(screen.getByText(/Sign in to your family meal planner/i)).toBeDefined();
-    expect(screen.getByPlaceholderText('you@example.com')).toBeDefined();
+    expect(screen.getByRole('heading', { name: /Welcome Back/i })).toBeDefined();
+    expect(screen.getByText(/Enter your email to receive a secure login link/i)).toBeDefined();
+    expect(screen.getByPlaceholderText('name@example.com')).toBeDefined();
     expect(screen.getByRole('button', { name: /SEND MAGIC LINK/i })).toBeDefined();
     
     // Check for feature section
-    expect(screen.getByText(/Intelligent Meal Architecture/i)).toBeDefined();
-    expect(screen.getByText(/AI Recipe Preservation/i)).toBeDefined();
+    expect(screen.getByText(/Digital Recipe Box/i)).toBeDefined();
+    expect(screen.getByText(/Effortless Planning/i)).toBeDefined();
     
     // Check for footer
     expect(screen.getByText('WFM AI', { selector: '.footer-logo' })).toBeDefined();
-    expect(screen.getByText(/REFINED PLANNING FOR THE CONSCIOUS KITCHEN/i)).toBeDefined();
+    expect(screen.getByText(/© 2026 WFM AI Family Meal Planner. All rights reserved./i)).toBeDefined();
   });
 
   it('switches between magic link and password mode', async () => {
@@ -87,7 +87,7 @@ describe('Login Page', () => {
       </MemoryRouter>
     );
 
-    const emailInput = screen.getByPlaceholderText('you@example.com');
+    const emailInput = screen.getByPlaceholderText('name@example.com');
     const submitButton = screen.getByRole('button', { name: /SEND MAGIC LINK/i });
 
     fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
@@ -119,7 +119,7 @@ describe('Login Page', () => {
     // Switch to password mode
     fireEvent.click(screen.getByRole('button', { name: /^PASSWORD$/i }));
 
-    const emailInput = screen.getByPlaceholderText('you@example.com');
+    const emailInput = screen.getByPlaceholderText('name@example.com');
     const passwordInput = screen.getByLabelText(/PASSWORD/i);
     const submitButton = screen.getByRole('button', { name: /SIGN IN/i });
 
@@ -148,7 +148,7 @@ describe('Login Page', () => {
       </MemoryRouter>
     );
 
-    const emailInput = screen.getByPlaceholderText('you@example.com');
+    const emailInput = screen.getByPlaceholderText('name@example.com');
     const submitButton = screen.getByRole('button', { name: /SEND MAGIC LINK/i });
 
     fireEvent.change(emailInput, { target: { value: 'invalid@example.com' } });
