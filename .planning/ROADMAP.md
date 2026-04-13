@@ -1,9 +1,10 @@
 # Roadmap: wfm-ai-family-mealplanner
 
 ## Active Milestone
-- [v2.0](milestones/v2.0-ROADMAP.md) — Desktop UI Refactor (Current)
+- TBD (All currently planned milestones completed)
 
 ## Archived Milestones
+- [v2.0](milestones/v2.0-ROADMAP.md) — Desktop UI Refactor (Completed)
 - [v1.0](milestones/v1.0-ROADMAP.md) — Foundation, Auth, Household Profiles, AI Layer, Meal Planner Engine, Shopping List Consolidation
 
 ## Backlog

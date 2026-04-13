@@ -9,9 +9,7 @@
 ## Current Milestone: v2.0 - Desktop UI Refactor
 - [x] Phase 06: Landing & Login (Desktop) [v2]
 - [x] Phase 07: Your Household (Desktop) [v2]
-- [ ] Phase 08: Recipe Details (Desktop) [v2] (Next)
-- [ ] Phase 09: The Market Ledger (Desktop)
-- [ ] Phase 10: UI Final Polish & Audit
+- [x] Milestone v2.0 Completed
 
 ## Session History
 - **2026-04-13**: Phase 07 (Your Household [v2]) completed. Shell, navigation, and household components refactor finalized.
