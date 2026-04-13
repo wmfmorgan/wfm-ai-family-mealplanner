@@ -25,6 +25,8 @@
   /* Spacing & Sizing */
   --radius-balanced: 8px;
   --max-width-content: 800px;
+  --max-width-desktop: 1024px;
+  --max-width-planner: 1200px;
   --line-height-relaxed: 1.6;
 
   /* Common Transitions */
@@ -39,7 +41,7 @@
 body {
   margin: 0;
   padding: 0;
-  background-color: var(--bg-primary);
+  background-color: var(--color-canvas-cream);
   color: var(--text-primary);
   font-family: var(--font-body);
   line-height: var(--line-height-relaxed);

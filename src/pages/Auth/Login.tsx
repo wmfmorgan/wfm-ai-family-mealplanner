@@ -45,69 +45,71 @@ const Login: React.FC = () => {
         <h1 className="auth-title">Cookbook</h1>
         <p className="auth-subtitle">Sign in to your family meal planner</p>
         
-        <div className="auth-mode-toggle">
-          <button 
-            className={`mode-btn ${loginMode === 'magic' ? 'active' : ''}`}
-            onClick={() => setLoginMode('magic')}
-          >
-            Magic Link
-          </button>
-          <button 
-            className={`mode-btn ${loginMode === 'password' ? 'active' : ''}`}
-            onClick={() => setLoginMode('password')}
-          >
-            Password
-          </button>
-        </div>
-
-        <form onSubmit={handleLogin} className="auth-form flex flex-col gap-4">
-          <div className="flex flex-col gap-2">
-            <label htmlFor="email" className="auth-label">Email address</label>
-            <input
-              id="email"
-              type="email"
-              placeholder="you@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              disabled={loading}
-              className="w-full"
-            />
+        <div className="auth-form-wrapper">
+          <div className="auth-mode-toggle">
+            <button 
+              className={`mode-btn ${loginMode === 'magic' ? 'active' : ''}`}
+              onClick={() => setLoginMode('magic')}
+            >
+              Magic Link
+            </button>
+            <button 
+              className={`mode-btn ${loginMode === 'password' ? 'active' : ''}`}
+              onClick={() => setLoginMode('password')}
+            >
+              Password
+            </button>
           </div>
 
-          {loginMode === 'password' && (
+          <form onSubmit={handleLogin} className="auth-form flex flex-col gap-4">
             <div className="flex flex-col gap-2">
-              <label htmlFor="password" title="Password" className="auth-label">Password</label>
+              <label htmlFor="email" className="auth-label">Email address</label>
               <input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                id="email"
+                type="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
                 disabled={loading}
                 className="w-full"
               />
             </div>
-          )}
-          
-          <button
-            type="submit"
-            disabled={loading}
-            className="btn-primary w-full mt-4"
-          >
-            {loading 
-              ? (loginMode === 'magic' ? 'Sending link...' : 'Signing in...') 
-              : (loginMode === 'magic' ? 'Send Magic Link' : 'Sign In')
-            }
-          </button>
-        </form>
 
-        {message && (
-          <div className={`auth-message ${message.type} mt-4`}>
-            {message.text}
-          </div>
-        )}
+            {loginMode === 'password' && (
+              <div className="flex flex-col gap-2">
+                <label htmlFor="password" title="Password" className="auth-label">Password</label>
+                <input
+                  id="password"
+                  type="password"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  disabled={loading}
+                  className="w-full"
+                />
+              </div>
+            )}
+            
+            <button
+              type="submit"
+              disabled={loading}
+              className="btn-primary w-full mt-4"
+            >
+              {loading 
+                ? (loginMode === 'magic' ? 'Sending link...' : 'Signing in...') 
+                : (loginMode === 'magic' ? 'Send Magic Link' : 'Sign In')
+              }
+            </button>
+          </form>
+
+          {message && (
+            <div className={`auth-message ${message.type} mt-4`}>
+              {message.text}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

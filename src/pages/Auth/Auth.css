@@ -3,53 +3,70 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--bg-primary);
-  padding: 1.5rem;
+  background-color: var(--color-canvas-cream);
+  padding: 2rem;
 }
 
 .auth-card {
   width: 100%;
+  max-width: 1024px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-balanced);
+  padding: 4rem 2rem;
+  /* Cookbook feel: generous whitespace and subtle border */
+}
+
+/* On desktop, keep the form width controlled within the card */
+.auth-form-wrapper {
+  width: 100%;
   max-width: 400px;
-  text-align: center;
 }
 
 .auth-title {
   margin-top: 0;
   margin-bottom: 0.5rem;
-  font-size: 2.5rem;
+  font-family: var(--font-display);
+  font-size: 3.5rem;
   color: var(--accent-primary);
+  font-weight: 700;
 }
 
 .auth-subtitle {
-  margin-bottom: 2rem;
+  margin-bottom: 3rem;
   color: var(--text-secondary);
+  font-size: 1.1rem;
 }
 
 .auth-mode-toggle {
   display: flex;
-  background-color: var(--bg-secondary);
+  background-color: var(--color-soft-border);
   padding: 4px;
   border-radius: var(--radius-balanced);
-  margin-bottom: 2rem;
+  margin-bottom: 2.5rem;
+  width: 100%;
 }
 
 .mode-btn {
   flex: 1;
-  padding: 0.5rem;
+  padding: 0.6rem;
   border: none;
   background: transparent;
   border-radius: calc(var(--radius-balanced) - 2px);
-  font-size: 0.875rem;
-  font-weight: 500;
+  font-size: 0.9rem;
+  font-weight: 600;
   color: var(--text-secondary);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition-standard);
 }
 
 .mode-btn.active {
-  background-color: white;
+  background-color: var(--color-white);
   color: var(--accent-primary);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .auth-form {
@@ -57,25 +74,45 @@
 }
 
 .auth-label {
-  font-size: 0.875rem;
-  font-weight: 500;
+  font-size: 0.9rem;
+  font-weight: 600;
   color: var(--text-primary);
+  margin-bottom: 0.25rem;
+  display: block;
 }
 
 .auth-message {
-  padding: 0.75rem;
+  padding: 1rem;
   border-radius: var(--radius-balanced);
-  font-size: 0.875rem;
+  font-size: 0.9rem;
+  text-align: center;
+  width: 100%;
 }
 
 .auth-message.success {
-  background-color: rgba(74, 103, 65, 0.1);
+  background-color: rgba(74, 103, 65, 0.05);
   color: var(--accent-primary);
   border: 1px solid var(--accent-primary);
 }
 
 .auth-message.error {
-  background-color: rgba(211, 47, 47, 0.1);
+  background-color: rgba(211, 47, 47, 0.05);
   color: #D32F2F;
   border: 1px solid #D32F2F;
+}
+
+@media (max-width: 640px) {
+  .auth-container {
+    padding: 1rem;
+  }
+  
+  .auth-card {
+    padding: 3rem 1.5rem;
+    border: none;
+    background-color: transparent;
+  }
+
+  .auth-title {
+    font-size: 2.5rem;
+  }
 }

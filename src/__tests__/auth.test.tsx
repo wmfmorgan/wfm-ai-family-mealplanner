@@ -3,6 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { AuthProvider, useAuth } from '../contexts/AuthContext';
 import { ProtectedRoute } from '../components/Auth/ProtectedRoute';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
+import Login from '../pages/Auth/Login';
 
 // Mock Supabase
 vi.mock('../lib/supabase', () => ({
@@ -13,6 +14,7 @@ vi.mock('../lib/supabase', () => ({
         data: { subscription: { unsubscribe: vi.fn() } },
       })),
       signInWithOtp: vi.fn(),
+      signInWithPassword: vi.fn(),
       signOut: vi.fn(),
     },
   },
@@ -84,7 +86,7 @@ describe('ProtectedRoute', () => {
       <MemoryRouter initialEntries={['/protected']}>
         <AuthProvider>
           <Routes>
-            <Route path="/login" element={<div>Login Page</div>} />
+            <Route path="/login" element={<Login />} />
             <Route 
               path="/protected" 
               element={
@@ -98,7 +100,10 @@ describe('ProtectedRoute', () => {
       </MemoryRouter>
     );
 
-    await waitFor(() => expect(screen.getByText('Login Page')).toBeDefined());
+    // Should redirect to /login and render the Login component
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { name: /Cookbook/i })).toBeDefined();
+    });
   });
 
   it('renders children when authenticated', async () => {
