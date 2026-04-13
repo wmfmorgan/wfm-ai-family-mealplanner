@@ -1,8 +1,22 @@
 {
   "mcpServers": {
     "supabase": {
-      "type": "http",
-      "url": "https://mcp.supabase.com/mcp?project_ref=mqrqszanaotdpiwazriw"
+      "command": "npx",
+      "args": [
+        "-y",
+        "@supabase/mcp-server-supabase@latest",
+        "--project-ref=mqrqszanaotdpiwazriw"
+      ],
+      "env": {
+        "SUPABASE_ACCESS_TOKEN": "sbp_9e7d898eadc9eb7fb3b958875a71dd349f447bf1"
+      }
+    },
+    "netlify": {
+      "command": "npx",
+      "args": ["-y", "@netlify/mcp"],
+      "env": {
+        "NETLIFY_PERSONAL_ACCESS_TOKEN": "nfp_yfMKQUH6sgLaqiYjU9a7HXGFq1kAhmXB9b71"
+      }
     }
   }
 }
