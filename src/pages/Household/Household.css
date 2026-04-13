@@ -1,7 +1,14 @@
 .household-page {
-  padding: 40px 0;
+  padding: 40px 24px;
   color: #2d3a2f;
   animation: fadeIn 0.4s ease-out;
+  background-color: #fdfcfb; /* Canvas Cream */
+  min-height: calc(100vh - 80px);
+}
+
+.max-width-planner {
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 @keyframes fadeIn {
@@ -10,25 +17,26 @@
 }
 
 .page-header {
-  margin-bottom: 48px;
-  max-width: 600px;
+  margin-bottom: 64px;
+  max-width: 800px;
 }
 
 .page-title {
   font-family: 'Newsreader', serif;
-  font-size: 3rem;
+  font-size: 3.5rem;
   font-weight: 400;
   color: #3A5A40;
-  margin: 0 0 12px 0;
+  margin: 0 0 16px 0;
   letter-spacing: -0.02em;
 }
 
 .page-description {
-  font-size: 1.1rem;
+  font-size: 1.25rem;
   color: #6a7d6e;
   line-height: 1.6;
   font-style: italic;
   margin: 0;
+  max-width: 600px;
 }
 
 .members-section {

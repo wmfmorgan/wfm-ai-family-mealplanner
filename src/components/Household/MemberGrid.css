@@ -4,8 +4,8 @@
 
 .member-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 32px;
   align-items: stretch;
 }
 
@@ -14,20 +14,21 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: transparent;
-  border: 2px dashed #e0e5d8;
-  border-radius: 12px;
-  padding: 24px;
-  min-height: 200px;
+  background-color: #ffffff;
+  border: 1px dashed #e1e3df; /* Soft Border */
+  border-radius: 8px;
+  padding: 32px;
+  min-height: 240px;
   cursor: pointer;
   transition: all 0.2s ease;
-  color: #8a9a8d;
+  color: #747973; /* Muted Earth */
 }
 
 .add-member-card:hover {
-  border-color: #3A5A40;
-  color: #3A5A40;
+  border-color: #4a6741; /* Sage Green */
+  color: #4a6741;
   background-color: #fcfdfa;
+  transform: translateY(-2px);
 }
 
 .plus-icon {

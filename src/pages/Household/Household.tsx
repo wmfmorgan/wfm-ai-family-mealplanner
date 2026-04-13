@@ -96,33 +96,35 @@ const Household: React.FC = () => {
 
   return (
     <div className="household-page">
-      <header className="page-header">
-        <h1 className="page-title">Household</h1>
-        <p className="page-description">
-          Manage your family's culinary profiles and dietary requirements.
-        </p>
-      </header>
+      <div className="max-width-planner">
+        <header className="page-header">
+          <h1 className="page-title">Household</h1>
+          <p className="page-description">
+            Manage your family's culinary profiles and dietary requirements.
+          </p>
+        </header>
 
-      {editingMember || isAdding ? (
-        <ProfileForm 
-          initialData={
-            editingMember 
-              ? { name: editingMember.name, nutrition_profile: editingMember.nutrition_profile }
-              : { name: '', nutrition_profile: DEFAULT_NUTRITION_PROFILE }
-          }
-          onSave={handleSaveMember}
-          onCancel={() => { setEditingMember(null); setIsAdding(false); }}
-        />
-      ) : (
-        <section className="members-section">
-          <MemberGrid 
-            members={members}
-            onEditMember={handleEditMember}
-            onDeleteMember={handleDeleteMember}
-            onAddMember={handleAddClick}
+        {editingMember || isAdding ? (
+          <ProfileForm 
+            initialData={
+              editingMember 
+                ? { name: editingMember.name, nutrition_profile: editingMember.nutrition_profile }
+                : { name: '', nutrition_profile: DEFAULT_NUTRITION_PROFILE }
+            }
+            onSave={handleSaveMember}
+            onCancel={() => { setEditingMember(null); setIsAdding(false); }}
           />
-        </section>
-      )}
+        ) : (
+          <section className="members-section">
+            <MemberGrid 
+              members={members}
+              onEditMember={handleEditMember}
+              onDeleteMember={handleDeleteMember}
+              onAddMember={handleAddClick}
+            />
+          </section>
+        )}
+      </div>
     </div>
   );
 };

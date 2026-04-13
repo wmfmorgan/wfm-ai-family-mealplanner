@@ -1,38 +1,42 @@
 .member-card {
-  background-color: #fcfdfa;
-  border: 1px solid #e0e5d8;
-  border-radius: 12px;
-  padding: 24px;
-  max-width: 320px;
-  box-shadow: 0 4px 12px rgba(58, 90, 64, 0.05);
+  background-color: #ffffff; /* Card Fill */
+  border: 1px solid #e1e3df; /* Soft Border */
+  border-radius: 8px; /* Balanced radius */
+  padding: 32px;
+  max-width: none; /* Let grid control it */
+  box-shadow: none; /* Minimalist mandate */
   font-family: 'Manrope', sans-serif;
-  color: #2d3a2f;
-  transition: transform 0.2s ease;
+  color: #1a1c19; /* Ink Black */
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
 }
 
 .member-card:hover {
-  transform: translateY(-2px);
+  transform: translateY(-4px);
+  border-color: #4a6741; /* Sage Green */
+  box-shadow: 0 8px 24px rgba(74, 103, 65, 0.08);
 }
 
 .member-card-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
+  align-items: baseline;
+  margin-bottom: 16px;
 }
 
 .member-name {
   font-family: 'Newsreader', serif;
-  font-size: 1.5rem;
+  font-size: 1.75rem;
   font-weight: 500;
-  color: #3A5A40;
+  color: #4a6741; /* Sage Green */
   margin: 0;
   letter-spacing: -0.02em;
 }
 
 .action-buttons {
   display: flex;
-  gap: 12px;
+  gap: 16px;
   align-items: center;
 }
 
@@ -40,25 +44,26 @@
 .delete-button {
   background: none;
   border: none;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
   text-decoration: underline;
   text-underline-offset: 4px;
   padding: 0;
   transition: color 0.2s;
+  font-family: 'Manrope', sans-serif;
 }
 
 .edit-button {
-  color: #6a7d6e;
+  color: #747973; /* Muted Earth */
 }
 
 .edit-button:hover {
-  color: #3A5A40;
+  color: #4a6741; /* Sage Green */
 }
 
 .delete-button {
-  color: #a65a5a;
+  color: #a65a5a; /* Keeping some red for destructive */
 }
 
 .delete-button:hover {
@@ -69,18 +74,19 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-bottom: 24px;
+  margin-bottom: 32px;
+  min-height: 28px;
 }
 
 .diet-tag {
   background-color: #f0f5ed;
-  color: #3A5A40;
-  font-size: 0.75rem;
+  color: #4a6741;
+  font-size: 0.7rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  padding: 4px 10px;
-  border-radius: 100px;
+  letter-spacing: 0.08em;
+  padding: 6px 12px;
+  border-radius: 4px; /* Slightly tighter for tags */
   border: 1px solid #d8e2d1;
 }
 
@@ -91,11 +97,13 @@
   text-transform: none;
   font-style: italic;
   font-weight: 500;
+  letter-spacing: 0;
 }
 
 .nutrition-summary {
-  border-top: 1px solid #eef2ea;
-  padding-top: 16px;
+  margin-top: auto;
+  border-top: 1px solid #e1e3df;
+  padding-top: 24px;
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
@@ -104,37 +112,39 @@
 .calorie-display {
   display: flex;
   flex-direction: column;
+  gap: 4px;
 }
 
 .macro-split {
   display: flex;
-  gap: 16px;
+  gap: 20px;
 }
 
 .macro-item {
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 2px;
 }
 
 .label {
-  font-size: 0.65rem;
+  font-size: 0.7rem;
   text-transform: uppercase;
-  color: #8a9a8d;
+  color: #747973;
   font-weight: 700;
   letter-spacing: 0.1em;
-  margin-bottom: 2px;
 }
 
 .value {
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   font-weight: 600;
-  color: #4a5d4e;
+  color: #1a1c19;
 }
 
 .calorie-display .value {
-  font-size: 1.1rem;
+  font-size: 1.5rem;
   font-family: 'Newsreader', serif;
   font-style: italic;
-  color: #3A5A40;
+  color: #4a6741;
+  line-height: 1;
 }
