@@ -13,6 +13,7 @@ export interface ProfileFormProps {
 
 const TOP_ALLERGIES = ["Peanuts", "Tree Nuts", "Milk", "Egg", "Wheat", "Soy", "Fish", "Shellfish", "Sesame"];
 const APPLIANCE_LIST = ["Slow Cooker", "Air Fryer", "Oven", "Stove", "Pressure Cooker"];
+const DIETARY_STYLES = ["Standard", "Vegetarian", "Vegan", "Pescatarian", "Paleo", "Low-Carb", "Keto"];
 
 const ProfileForm: React.FC<ProfileFormProps> = ({ initialData, onSave, onCancel }) => {
   const [name, setName] = useState(initialData.name);
@@ -87,6 +88,23 @@ const ProfileForm: React.FC<ProfileFormProps> = ({ initialData, onSave, onCancel
               onChange={(e) => setName(e.target.value)} 
               required
             />
+          </div>
+        </section>
+
+        {/* Dietary Choice */}
+        <section className="form-section">
+          <h2 className="section-heading">Dietary Style</h2>
+          <div className="preset-grid">
+            {DIETARY_STYLES.map(style => (
+              <button 
+                key={style}
+                type="button"
+                className={`preset-button ${profile.dietary_choice === style ? 'active' : ''}`}
+                onClick={() => setProfile({...profile, dietary_choice: style})}
+              >
+                {style}
+              </button>
+            ))}
           </div>
         </section>
 

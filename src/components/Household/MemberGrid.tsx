@@ -20,6 +20,7 @@ const MemberGrid: React.FC<MemberGridProps> = ({ members, onEditMember, onDelete
             name={member.name}
             isOwner={member.is_owner}
             dietaryNeeds={[
+              ...(member.nutrition_profile.dietary_choice !== 'Standard' ? [member.nutrition_profile.dietary_choice] : []),
               ...member.nutrition_profile.allergies,
               ...(member.nutrition_profile.is_child ? ['Child'] : [])
             ]}

@@ -28,7 +28,7 @@ export function generateMealPlanPrompt({
 }: GenerationRequest): string {
   const householdContext = members.map(m => {
     const p = m.nutrition_profile;
-    return `- ${m.name}: ${p.is_child ? 'Child' : 'Adult'}, ${p.target_calories}kcal, Allergies: [${p.allergies.join(', ')}], Avoidances: [${p.avoidances.join(', ')}], Skill: ${p.cooking_skill}, Appliances: [${p.appliances.join(', ')}]`;
+    return `- ${m.name}: ${p.is_child ? 'Child' : 'Adult'}, Diet: ${p.dietary_choice}, ${p.target_calories}kcal, Allergies: [${p.allergies.join(', ')}], Avoidances: [${p.avoidances.join(', ')}], Skill: ${p.cooking_skill}, Appliances: [${p.appliances.join(', ')}]`;
   }).join('\n');
 
   const constraintsContext = lockedSlots.length > 0 

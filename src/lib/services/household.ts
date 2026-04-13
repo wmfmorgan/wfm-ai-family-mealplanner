@@ -7,6 +7,7 @@ export interface NutritionProfile {
     carbs_pct: number;
     fat_pct: number;
   };
+  dietary_choice: string;
   allergies: string[];
   avoidances: string[];
   appliances: string[];
@@ -31,6 +32,7 @@ export const DEFAULT_NUTRITION_PROFILE: NutritionProfile = {
     carbs_pct: 40,
     fat_pct: 30
   },
+  dietary_choice: 'Standard',
   allergies: [],
   avoidances: [],
   appliances: ['oven', 'stove'],
@@ -43,7 +45,18 @@ const MOCK_STORAGE_KEY = 'wfm_mock_household_members';
 
 const getMockData = (): HouseholdMember[] => {
   const stored = localStorage.getItem(MOCK_STORAGE_KEY);
-  if (stored) return JSON.parse(stored);
+  if (stored) {
+    const parsed = JSON.parse(stored) as HouseholdMember[];
+    // Ensure dietary_choice exists for all members
+    return parsed.map(m => ({
+      ...m,
+      nutrition_profile: {
+        ...DEFAULT_NUTRITION_PROFILE,
+        ...m.nutrition_profile,
+        dietary_choice: m.nutrition_profile.dietary_choice || 'Standard'
+      }
+    }));
+  }
   const initial = [{
     id: 'mock-member-1',
     household_id: 'mock-household-1',
@@ -175,21 +188,25 @@ export const NUTRITION_PRESETS: Record<string, Partial<NutritionProfile>> = {
   'Active Adult': {
     target_calories: 2500,
     macro_targets: { protein_pct: 25, carbs_pct: 50, fat_pct: 25 },
+    dietary_choice: 'Standard',
     is_child: false
   },
   'Growing Toddler': {
     target_calories: 1200,
     macro_targets: { protein_pct: 20, carbs_pct: 45, fat_pct: 35 },
+    dietary_choice: 'Standard',
     is_child: true
   },
   'Healthy Aging': {
     target_calories: 1800,
     macro_targets: { protein_pct: 30, carbs_pct: 40, fat_pct: 30 },
+    dietary_choice: 'Standard',
     is_child: false
   },
   'Keto Focus': {
     target_calories: 2000,
     macro_targets: { protein_pct: 25, carbs_pct: 5, fat_pct: 70 },
+    dietary_choice: 'Keto',
     is_child: false
   }
 };
