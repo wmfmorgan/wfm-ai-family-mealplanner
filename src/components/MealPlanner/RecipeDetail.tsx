@@ -10,6 +10,14 @@ interface RecipeDetailProps {
 const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe, onClose }) => {
   if (!recipe) return null;
 
+  const renderIngredient = (item: any) => {
+    if (typeof item === 'string') return item;
+    if (typeof item === 'object' && item !== null) {
+      return `${item.amount || ''} ${item.item || item.name || ''} ${item.category ? `(${item.category})` : ''}`.trim();
+    }
+    return String(item);
+  };
+
   return (
     <div className="recipe-detail-overlay" onClick={onClose}>
       <div className="recipe-detail-drawer" onClick={(e) => e.stopPropagation()}>
@@ -31,7 +39,7 @@ const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe, onClose }) => {
           <ul className="ingredients-list">
             {Array.isArray(recipe.ingredients) ? (
               recipe.ingredients.map((item, index) => (
-                <li key={index}>{item}</li>
+                <li key={index}>{renderIngredient(item)}</li>
               ))
             ) : (
               <li>No ingredients listed</li>
@@ -44,7 +52,7 @@ const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe, onClose }) => {
           <ol className="instructions-list">
             {Array.isArray(recipe.instructions) ? (
               recipe.instructions.map((step, index) => (
-                <li key={index}>{step}</li>
+                <li key={index}>{typeof step === 'object' ? step.step || step.instruction || JSON.stringify(step) : step}</li>
               ))
             ) : (
               <li>No instructions listed</li>

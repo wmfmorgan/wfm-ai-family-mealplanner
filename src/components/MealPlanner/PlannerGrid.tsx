@@ -9,6 +9,8 @@ interface PlannerGridProps {
   onSlotClick?: (date: string, mealType: 'breakfast' | 'lunch' | 'dinner' | 'snack') => void;
   onLockToggle?: (date: string, mealType: 'breakfast' | 'lunch' | 'dinner' | 'snack', isLocked: boolean) => void;
   onEdit?: (date: string, mealType: 'breakfast' | 'lunch' | 'dinner' | 'snack', manualEntry: string) => void;
+  onDelete?: (date: string, mealType: 'breakfast' | 'lunch' | 'dinner' | 'snack') => void;
+  onRefresh?: (date: string, mealType: 'breakfast' | 'lunch' | 'dinner' | 'snack') => void;
 }
 
 const PlannerGrid: React.FC<PlannerGridProps> = ({ 
@@ -16,7 +18,9 @@ const PlannerGrid: React.FC<PlannerGridProps> = ({
   planData = {}, 
   onSlotClick,
   onLockToggle,
-  onEdit
+  onEdit,
+  onDelete,
+  onRefresh
 }) => {
   const days = Array.from({ length: 7 }, (_, i) => addDays(weekStartDate, i));
 
@@ -38,6 +42,8 @@ const PlannerGrid: React.FC<PlannerGridProps> = ({
               onSlotClick={(mealType) => onSlotClick?.(dateStr, mealType)}
               onLockToggle={(mealType, isLocked) => onLockToggle?.(dateStr, mealType, isLocked)}
               onEdit={(mealType, manualEntry) => onEdit?.(dateStr, mealType, manualEntry)}
+              onDelete={(mealType) => onDelete?.(dateStr, mealType)}
+              onRefresh={(mealType) => onRefresh?.(dateStr, mealType)}
             />
           );
         })}

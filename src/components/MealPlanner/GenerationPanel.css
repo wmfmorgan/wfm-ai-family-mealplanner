@@ -178,6 +178,19 @@
   box-shadow: none;
 }
 
+.generation-progress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.step-label {
+  font-family: 'Newsreader', serif;
+  font-style: italic;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+}
+
 .loading-spinner {
   width: 20px;
   height: 20px;

@@ -27,6 +27,16 @@ vi.mock('../lib/services/household', () => ({
   householdService: {
     getMyHouseholdId: vi.fn(),
     getMembers: vi.fn(),
+  },
+  DEFAULT_NUTRITION_PROFILE: {
+    target_calories: 2000,
+    macro_targets: { protein_pct: 30, carbs_pct: 40, fat_pct: 30 },
+    dietary_choice: 'Standard',
+    allergies: [],
+    avoidances: [],
+    appliances: ['oven', 'stove'],
+    cooking_skill: 'intermediate',
+    is_child: false
   }
 }))
 

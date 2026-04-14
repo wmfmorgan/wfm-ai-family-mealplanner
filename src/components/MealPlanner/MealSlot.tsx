@@ -9,6 +9,8 @@ interface MealSlotProps {
   onSlotClick?: () => void;
   onLockToggle?: (isLocked: boolean) => void;
   onEdit?: (manualEntry: string) => void;
+  onDelete?: () => void;
+  onRefresh?: () => void;
 }
 
 const MealSlot: React.FC<MealSlotProps> = ({ 
@@ -17,7 +19,9 @@ const MealSlot: React.FC<MealSlotProps> = ({
   isLocked = false, 
   onSlotClick, 
   onLockToggle, 
-  onEdit 
+  onEdit,
+  onDelete,
+  onRefresh
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [inputValue, setInputValue] = useState(recipeName || '');
@@ -38,6 +42,18 @@ const MealSlot: React.FC<MealSlotProps> = ({
   const handleLockClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     onLockToggle?.(!isLocked);
+  };
+
+  const handleDeleteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (window.confirm('Clear this meal?')) {
+      onDelete?.();
+    }
+  };
+
+  const handleRefreshClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onRefresh?.();
   };
 
   const handleContentClick = (e: React.MouseEvent) => {
@@ -72,14 +88,34 @@ const MealSlot: React.FC<MealSlotProps> = ({
     <div className={`meal-slot ${isLocked ? 'locked' : ''} ${isEditing ? 'editing' : ''}`} onClick={onSlotClick}>
       <div className="meal-slot-header">
         <span className="meal-type-label">{displayType}</span>
-        <button 
-          className={`lock-button ${isLocked ? 'is-locked' : ''}`} 
-          onClick={handleLockClick}
-          title={isLocked ? "Unlock meal" : "Lock meal"}
-          aria-label={isLocked ? "Unlock meal" : "Lock meal"}
-        >
-          {isLocked ? '🔒' : '🔓'}
-        </button>
+        <div className="slot-actions">
+          {!isLocked && recipeName && (
+            <>
+              <button 
+                className="action-button refresh-button" 
+                onClick={handleRefreshClick}
+                title="Refresh meal"
+              >
+                🔄
+              </button>
+              <button 
+                className="action-button delete-button" 
+                onClick={handleDeleteClick}
+                title="Clear meal"
+              >
+                🗑️
+              </button>
+            </>
+          )}
+          <button 
+            className={`lock-button ${isLocked ? 'is-locked' : ''}`} 
+            onClick={handleLockClick}
+            title={isLocked ? "Unlock meal" : "Lock meal"}
+            aria-label={isLocked ? "Unlock meal" : "Lock meal"}
+          >
+            {isLocked ? '🔒' : '🔓'}
+          </button>
+        </div>
       </div>
       <div className={`meal-content ${!inputValue ? 'empty' : ''}`} onClick={handleContentClick}>
         {isEditing ? (

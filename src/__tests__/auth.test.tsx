@@ -102,7 +102,7 @@ describe('ProtectedRoute', () => {
 
     // Should redirect to /login and render the Login component
     await waitFor(() => {
-      expect(screen.getByRole('heading', { name: /Cookbook/i })).toBeDefined();
+      expect(screen.getByRole('heading', { name: /Welcome Back/i })).toBeDefined();
     });
   });
 

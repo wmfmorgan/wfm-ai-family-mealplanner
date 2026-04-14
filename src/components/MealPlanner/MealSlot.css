@@ -34,6 +34,39 @@
   align-items: center;
 }
 
+.slot-actions {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+.action-button {
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  font-size: 0.7rem;
+  border-radius: 4px;
+  opacity: 0.4;
+  transition: opacity 0.2s, background-color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.action-button:hover {
+  opacity: 0.8;
+  background-color: rgba(0,0,0,0.05);
+}
+
+.delete-button:hover {
+  color: #e57373;
+}
+
+.refresh-button:hover {
+  color: var(--sage-green, #4a6d4a);
+}
+
 .lock-button {
   background: none;
   border: none;

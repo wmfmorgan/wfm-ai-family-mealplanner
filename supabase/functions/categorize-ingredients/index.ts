@@ -55,7 +55,7 @@ serve(async (req) => {
     console.log(`Extracted from body - provider: ${provider}, model: ${model}`)
     
     const finalProvider = provider || 'gemini'
-    const finalModel = model || (finalProvider === 'grok' ? 'grok-2' : 'gemini-1.5-flash')
+    const finalModel = model || (finalProvider === 'grok' ? 'grok-3' : 'gemini-1.5-flash')
     
     console.log(`Final routing - provider: ${finalProvider}, model: ${finalModel}`)
 

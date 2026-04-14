@@ -12,6 +12,7 @@ interface GenerationPanelProps {
   onToggleStrategy: () => void;
   onGenerate: () => void;
   isGenerating: boolean;
+  generationStep?: string;
 }
 
 const GenerationPanel: React.FC<GenerationPanelProps> = ({
@@ -24,6 +25,7 @@ const GenerationPanel: React.FC<GenerationPanelProps> = ({
   onToggleStrategy,
   onGenerate,
   isGenerating,
+  generationStep,
 }) => {
   const weekEndDate = endOfWeek(weekStartDate, { weekStartsOn: 0 });
   const weekLabel = `${format(weekStartDate, 'MMM d')} - ${format(weekEndDate, 'MMM d')}`;
@@ -87,10 +89,10 @@ const GenerationPanel: React.FC<GenerationPanelProps> = ({
         disabled={isGenerating || selectedMeals.length === 0}
       >
         {isGenerating ? (
-          <>
+          <div className="generation-progress">
             <div className="loading-spinner" />
-            <span>Drafting...</span>
-          </>
+            <span className="step-label">{generationStep || 'Drafting...'}</span>
+          </div>
         ) : (
           <span>Generate Weekly Plan</span>
         )}

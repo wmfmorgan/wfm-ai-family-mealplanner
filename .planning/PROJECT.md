@@ -12,22 +12,16 @@ A web-based family meal planner where a single logged-in user manages a househol
 - **Deployment**: Netlify (Frontend), Supabase (Backend)
 
 ## Current State
-- **Shipped Version**: v2.0 (Desktop UI Refactor)
+- **Shipped Version**: v3.0 (Meal Generation Refinement)
 - **Latest Features**: 
-    - Desktop-optimized Shell, Landing, and Household Profiles.
-    - Verified visual alignment with Stitch editorial aesthetic.
-    - Enhanced Dietary Selection (Vegan, Keto, etc.).
+    - Granular slot control (Delete/Refresh).
+    - Multi-agent coordinator-worker architecture for meal generation.
+    - Editorial progress indicators.
 
 ## Milestones
-- **v1.0**: Initial MVP (Foundation, Auth, Household, AI Proxy, Meal Planner Core, Shopping List) — COMPLETED
-- **v2.0**: Desktop UI Refactor (Landing, Household, Navigation) — COMPLETED
-- **v3.0**: Meal Generation Refinement (Surgical Slot Control, AI Quality, Sanitization Pass) — ACTIVE
-
-## Next Milestone Goals (v3.0)
-- **Surgical Slot Control**: Delete/Refresh individual meal slots.
-- **AI Plan Quality**: Prevent duplicates and increase ingredient fidelity.
-- **Sanitization Pass**: Multi-pass AI verification for dietary profile adherence.
-- **Generation Feedback**: Visual progress indicators for multi-step AI tasks.
+- **v1.0**: Initial MVP — COMPLETED
+- **v2.0**: Desktop UI Refactor — COMPLETED
+- **v3.0**: Meal Generation Refinement — COMPLETED
 
 ## Configuration & Style
 - **Aesthetic**: Minimalist, earthy tones ("Verdant Table" / "Warm Paper").
@@ -36,17 +30,19 @@ A web-based family meal planner where a single logged-in user manages a househol
 - **Configuration**: AI providers/models configurable via environment variables.
 
 <details>
-<summary>Archived Project Context (v1.x)</summary>
+<summary>Archived Project Context (v1.x - v2.x)</summary>
 
-### Core Features (v1.0)
+### Features (v2.0)
+- Desktop-optimized Shell, Landing, and Household Profiles.
+- Verified visual alignment with Stitch editorial aesthetic.
+- Enhanced Dietary Selection.
+
+### Features (v1.0)
 - Supabase Auth (Email/Magic Links)
 - Household & Profile Management
 - Weekly Meal Planner Calendar
-- AI Meal Generation (Per-meal servings/leftovers)
+- AI Meal Generation
 - Recipe Detail View
 - Consolidated Shopping List (Basic grouping)
-- AI Settings & Debug Page (Last 10 interactions)
-
-### Milestone v2.0 Scope
-- [v2.0-REQUIREMENTS.md](milestones/v2.0-REQUIREMENTS.md) — Visual alignment with Stitch Project.
+- AI Settings & Debug Page
 </details>

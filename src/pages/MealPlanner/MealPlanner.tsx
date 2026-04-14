@@ -3,11 +3,12 @@ import { format, startOfWeek, addWeeks, subWeeks, addDays } from 'date-fns';
 import { householdService, HouseholdMember } from '../../lib/services/household';
 import { plannerService } from '../../lib/services/planner';
 import { askAI } from '../../lib/ai/client';
-import { generateMealPlanPrompt, GenerationResponse } from '../../lib/ai/prompts';
+import { generateMealPlanPrompt } from '../../lib/ai/prompts';
 import PlannerGrid from '../../components/MealPlanner/PlannerGrid';
 import GenerationPanel from '../../components/MealPlanner/GenerationPanel';
 import RecipeDetail from '../../components/MealPlanner/RecipeDetail';
 import { Recipe } from '../../lib/services/planner';
+import { supabase } from '../../lib/supabase';
 import './MealPlanner.css';
 
 const MealPlanner: React.FC = () => {
@@ -18,6 +19,7 @@ const MealPlanner: React.FC = () => {
   const [leftoverStrategy, setLeftoverStrategy] = useState<boolean>(true);
   const [loading, setLoading] = useState<boolean>(true);
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
+  const [generationStep, setGenerationStep] = useState<string>('');
   const [householdId, setHouseholdId] = useState<string | null>(null);
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
 
@@ -130,117 +132,175 @@ const MealPlanner: React.FC = () => {
     }
   };
 
-  const handleGenerate = async () => {
-    if (!householdId || members.length === 0) return;
+  const handleDelete = async (date: string, mealType: string) => {
+    const slot = planData[date]?.[mealType];
+    if (!slot?.id) return;
 
-    setIsGenerating(true);
+    // Optimistic update
+    setPlanData(prev => ({
+      ...prev,
+      [date]: {
+        ...prev[date],
+        [mealType]: { ...prev[date][mealType], recipeName: '', recipe: null, manualEntry: '' }
+      }
+    }));
+
     try {
-      // 1. Identify locked slots
-      const lockedSlots: any[] = [];
-      Object.entries(planData).forEach(([dateStr, meals]: [string, any]) => {
-        const dayOfWeek = new Date(dateStr).getDay();
-        Object.entries(meals).forEach(([mealType, data]: [string, any]) => {
-          if (data.isLocked) {
-            lockedSlots.push({
-              day_of_week: dayOfWeek,
-              meal_type: mealType,
-              recipe_name: data.recipeName,
-              manual_entry: data.manualEntry,
-              id: data.id // Keep the ID for preservation
-            });
+      await plannerService.clearSlot(slot.id);
+    } catch (err) {
+      console.error('Error clearing slot:', err);
+      // Revert or reload
+      if (householdId) loadPlan(householdId, format(weekStartDate, 'yyyy-MM-dd'));
+    }
+  };
+
+  const handleRefresh = async (date: string, mealType: string) => {
+    const slot = planData[date]?.[mealType];
+    if (!slot?.id || !householdId) return;
+
+    // Set loading state for the slot (visual feedback)
+    setPlanData(prev => ({
+      ...prev,
+      [date]: {
+        ...prev[date],
+        [mealType]: { ...prev[date][mealType], recipeName: 'Refreshing...', recipe: null }
+      }
+    }));
+
+    try {
+      // 1. Collect exclusion list (all other meal names in the current week)
+      const exclusionList: string[] = [];
+      Object.values(planData).forEach((meals: any) => {
+        Object.values(meals).forEach((m: any) => {
+          if (m.recipeName && m.recipeName !== 'Refreshing...') {
+            exclusionList.push(m.recipeName);
           }
         });
       });
 
-      const prompt = generateMealPlanPrompt({
+      // 2. Call service
+      const activeProvider = localStorage.getItem('active_ai_provider') || 'grok';
+      const activeModel = localStorage.getItem('active_ai_model') || (activeProvider === 'grok' ? 'grok-3' : 'gemini-1.5-flash');
+
+      const newRecipe = await plannerService.refreshSlot(
+        slot.id,
+        householdId,
+        mealType,
         members,
-        weekStartDate: format(weekStartDate, 'yyyy-MM-dd'),
-        selectedMeals: selectedMeals as any,
-        leftoverStrategy,
-        lockedSlots,
-      });
+        exclusionList,
+        { provider: activeProvider, model: activeModel }
+      );
+
+      if (newRecipe) {
+        setPlanData(prev => ({
+          ...prev,
+          [date]: {
+            ...prev[date],
+            [mealType]: { 
+              ...prev[date][mealType], 
+              recipeName: newRecipe.name, 
+              recipe: newRecipe 
+            }
+          }
+        }));
+      }
+    } catch (err) {
+      console.error('Error refreshing slot:', err);
+      if (householdId) loadPlan(householdId, format(weekStartDate, 'yyyy-MM-dd'));
+    }
+  };
+
+  const handleGenerate = async () => {
+    if (!householdId || members.length === 0) return;
+
+    setIsGenerating(true);
+    setGenerationStep('Designing your week...');
+
+    try {
+      // Small delays for editorial feel
+      const stepTimer1 = setTimeout(() => setGenerationStep('Drafting recipes...'), 2000);
+      const stepTimer2 = setTimeout(() => setGenerationStep('Final polish...'), 5000);
 
       const activeProvider = localStorage.getItem('active_ai_provider') || 'grok';
-      const activeModel = localStorage.getItem('active_ai_model') || (activeProvider === 'grok' ? 'grok-2' : 'gemini-1.5-flash');
-
-      console.log(`[MealPlanner] Using provider: ${activeProvider}, model: ${activeModel}`);
-
-      const responseData = await askAI({
-        prompt,
-        provider: activeProvider,
-        model: activeModel,
-      });
-
-      // Handle both raw JSON return (mock) and OpenAI-style (real/edge)
-      let response: GenerationResponse;
-      if (responseData.plan && responseData.recipes) {
-        response = responseData;
-      } else if (responseData.choices?.[0]?.message?.content) {
-        try {
-          response = JSON.parse(responseData.choices[0].message.content);
-        } catch (e) {
-          console.error('Failed to parse AI response JSON:', e);
-          throw new Error('AI returned invalid JSON format.');
-        }
+      const activeModel = localStorage.getItem('active_ai_model') || (activeProvider === 'grok' ? 'grok-3' : 'gemini-1.5-flash');
+      
+      let finalPlan;
+      if (activeProvider === 'mock') {
+        const prompt = generateMealPlanPrompt({
+          members,
+          weekStartDate: format(weekStartDate, 'yyyy-MM-dd'),
+          selectedMeals: selectedMeals as any,
+          leftoverStrategy,
+          lockedSlots: [],
+        });
+        const responseData = await askAI({ prompt, provider: 'mock' });
+        finalPlan = responseData;
       } else {
-        console.error('Unexpected AI response structure:', responseData);
-        throw new Error('AI generation failed to return a valid plan.');
+        // Call new Multi-Agent Edge Function
+        const { data, error } = await supabase.functions.invoke('generate-plan', {
+          body: {
+            members,
+            household_id: householdId,
+            provider: activeProvider,
+            model: activeModel,
+            selected_meals: selectedMeals
+          }
+        });        if (error) throw error;
+        finalPlan = data;
       }
 
       const weekDateStr = format(weekStartDate, 'yyyy-MM-dd');
-      
-      // Merge AI response with locked slots
-      const finalSlots = response.plan.map(p => {
-        const locked = lockedSlots.find(l => l.day_of_week === p.day_of_week && l.meal_type === p.meal_type);
-        if (locked) {
-          return {
-            ...p,
-            is_locked: true,
-            manual_entry: locked.manual_entry,
-            recipe_name: locked.manual_entry ? undefined : (p.recipe_name || locked.recipe_name)
-          };
+
+      // Map response to save format - EXPLICITLY pick fields to avoid 400 errors with unknown columns
+      const recipesToSave = (finalPlan.days || []).flatMap((d: any) => [
+        d.breakfast, d.lunch, d.dinner
+      ]).filter(Boolean).map((r: any) => ({ 
+        household_id: householdId,
+        name: r.name,
+        ingredients: r.ingredients,
+        instructions: r.instructions,
+        prep_time_min: r.prep_time_minutes || r.prep_time_min || 0,
+        cook_time_min: r.cook_time_min || 0,
+        servings: r.servings || 4,
+        category: r.category || '',
+        description: r.description || '',
+        nutrition: r.nutrition || {}
+      }));
+
+      const slotsToSave = (finalPlan.days || []).flatMap((d: any) => {
+        const dailySlots = [];
+        if (selectedMeals.includes('breakfast')) {
+          dailySlots.push({ day_of_week: d.day, meal_type: 'breakfast', recipe_name: d.breakfast?.name });
         }
-        return p;
+        if (selectedMeals.includes('lunch')) {
+          dailySlots.push({ day_of_week: d.day, meal_type: 'lunch', recipe_name: d.lunch?.name });
+        }
+        if (selectedMeals.includes('dinner')) {
+          dailySlots.push({ day_of_week: d.day, meal_type: 'dinner', recipe_name: d.dinner?.name });
+        }
+        return dailySlots;
       });
 
-      // Skip database save in mock mode
       if (activeProvider !== 'mock') {
         await plannerService.saveMealPlan(
           householdId,
           weekDateStr,
-          response.recipes.map(r => ({ ...r, household_id: householdId })),
-          finalSlots as any,
+          recipesToSave,
+          slotsToSave as any,
           { provider: activeProvider, model: activeModel }
         );
-      } else {
-        console.log('Mock mode: Skipping DB save. Updating UI only.');
       }
 
-      // Update local state directly for mock mode or reload for real mode
-      if (activeProvider === 'mock') {
-        const gridData: Record<string, any> = {};
-        finalSlots.forEach((slot: any) => {
-          const dateStr = format(addDays(weekStartDate, slot.day_of_week), 'yyyy-MM-dd');
-          if (!gridData[dateStr]) gridData[dateStr] = {};
-          
-          const recipe = response.recipes.find(r => r.name === slot.recipe_name);
-          
-          gridData[dateStr][slot.meal_type] = {
-            recipeName: slot.recipe_name,
-            recipe,
-            isLocked: slot.is_locked,
-            manualEntry: slot.manual_entry || ''
-          };
-        });
-        setPlanData(gridData);
-      } else {
-        await loadPlan(householdId, weekDateStr);
-      }
+      clearTimeout(stepTimer1);
+      clearTimeout(stepTimer2);
+      await loadPlan(householdId, weekDateStr);
+
     } catch (err) {
       console.error('Error generating meal plan:', err);
-      alert('Failed to generate meal plan. Check logs for details.');
+      alert('Failed to generate meal plan.');
     } finally {
       setIsGenerating(false);
+      setGenerationStep('');
     }
   };
 
@@ -277,6 +337,8 @@ const MealPlanner: React.FC = () => {
             }}
             onLockToggle={handleLockToggle}
             onEdit={handleEdit}
+            onDelete={handleDelete}
+            onRefresh={handleRefresh}
           />
         </div>
       </main>
@@ -291,6 +353,7 @@ const MealPlanner: React.FC = () => {
         onToggleStrategy={() => setLeftoverStrategy(!leftoverStrategy)}
         onGenerate={handleGenerate}
         isGenerating={isGenerating}
+        generationStep={generationStep}
       />
 
       <RecipeDetail 

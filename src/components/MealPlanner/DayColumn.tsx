@@ -14,6 +14,8 @@ interface DayColumnProps {
   onSlotClick?: (type: 'breakfast' | 'lunch' | 'dinner' | 'snack') => void;
   onLockToggle?: (type: 'breakfast' | 'lunch' | 'dinner' | 'snack', isLocked: boolean) => void;
   onEdit?: (type: 'breakfast' | 'lunch' | 'dinner' | 'snack', manualEntry: string) => void;
+  onDelete?: (type: 'breakfast' | 'lunch' | 'dinner' | 'snack') => void;
+  onRefresh?: (type: 'breakfast' | 'lunch' | 'dinner' | 'snack') => void;
 }
 
 const DayColumn: React.FC<DayColumnProps> = ({ 
@@ -21,7 +23,9 @@ const DayColumn: React.FC<DayColumnProps> = ({
   meals, 
   onSlotClick,
   onLockToggle,
-  onEdit
+  onEdit,
+  onDelete,
+  onRefresh
 }) => {
   const dayName = format(date, 'EEE'); // Sun, Mon, etc.
   const dayNumber = format(date, 'MMM d'); // Apr 14, etc.
@@ -38,6 +42,8 @@ const DayColumn: React.FC<DayColumnProps> = ({
         onSlotClick={() => onSlotClick?.(type)}
         onLockToggle={(isLocked) => onLockToggle?.(type, isLocked)}
         onEdit={(manualEntry) => onEdit?.(type, manualEntry)}
+        onDelete={() => onDelete?.(type)}
+        onRefresh={() => onRefresh?.(type)}
       />
     );
   };

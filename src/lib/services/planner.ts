@@ -4,9 +4,11 @@ export interface Recipe {
   id?: string;
   household_id: string;
   name: string;
+  description?: string;
   ingredients: any;
   instructions: any;
   nutrition: any;
+  category?: string;
   prep_time_min: number;
   cook_time_min: number;
   servings: number;
@@ -111,13 +113,19 @@ export async function saveMealPlan(
 
   if (planError) throw planError;
 
-  // 3. Clear existing slots and insert new ones
-  const { error: deleteError } = await supabase
-    .from('meal_plan_slots')
-    .delete()
-    .eq('meal_plan_id', plan.id);
+  // Find which meal types we are overwriting
+  const mealTypesToUpdate = [...new Set(slots.map(s => s.meal_type))];
 
-  if (deleteError) throw deleteError;
+  // 3. Clear existing slots for the specific meal types and insert new ones
+  if (mealTypesToUpdate.length > 0) {
+    const { error: deleteError } = await supabase
+      .from('meal_plan_slots')
+      .delete()
+      .eq('meal_plan_id', plan.id)
+      .in('meal_type', mealTypesToUpdate);
+
+    if (deleteError) throw deleteError;
+  }
 
   const slotsWithPlanId = slots.map(slot => {
     // Map recipe name back to the saved recipe ID if recipe_id is missing
@@ -149,7 +157,13 @@ export async function saveMealPlan(
   // 4. Trigger AI ingredient categorization (non-blocking)
   const allIngredients = recipes.flatMap(r => {
     if (Array.isArray(r.ingredients)) {
-      return r.ingredients.filter((i: any) => typeof i === 'string');
+      return r.ingredients.map((i: any) => {
+        if (typeof i === 'string') return i;
+        if (typeof i === 'object' && i !== null) {
+          return `${i.amount || ''} ${i.item || i.name || ''}`.trim();
+        }
+        return null;
+      }).filter(Boolean);
     }
     return [];
   });
@@ -209,5 +223,79 @@ export const plannerService = {
   getMealPlan,
   saveMealPlan,
   getShoppingListItems,
-  updateSlot
+  updateSlot,
+
+  /**
+   * Clears a specific meal plan slot.
+   */
+  async clearSlot(slotId: string) {
+    if (IS_MOCK) {
+      console.log('Mock mode: Slot clear skipped.');
+      return;
+    }
+    const { error } = await supabase
+      .from('meal_plan_slots')
+      .update({ recipe_id: null, manual_entry: null })
+      .eq('id', slotId);
+    if (error) throw error;
+  },
+
+  /**
+   * Refreshes a single slot using the refresh-slot Edge Function.
+   */
+  async refreshSlot(
+    slotId: string, 
+    householdId: string,
+    category: string, 
+    members: any[], 
+    exclusionList: string[],
+    options?: { provider?: string; model?: string }
+  ) {
+    if (IS_MOCK) {
+      console.log('Mock mode: Slot refresh skipped.');
+      return null;
+    }
+
+    // 1. Call AI Refresh Function
+    const { data, error: invokeError } = await supabase.functions.invoke('refresh-slot', {
+      body: { 
+        members, 
+        category, 
+        exclusion_list: exclusionList,
+        provider: options?.provider,
+        model: options?.model
+      }
+    });
+
+    if (invokeError) throw invokeError;
+    const newRecipeData = data.recipe;
+
+    // 2. Insert new recipe
+    const { data: recipe, error: recipeError } = await supabase
+      .from('recipes')
+      .insert({
+        household_id: householdId,
+        name: newRecipeData.name,
+        ingredients: newRecipeData.ingredients,
+        instructions: newRecipeData.instructions,
+        nutrition: {}, // Default empty for now
+        prep_time_min: newRecipeData.prep_time_minutes || 0,
+        cook_time_min: 0, // AI should ideally provide this
+        servings: 4 // Default
+      })
+      .select()
+      .single();
+
+    if (recipeError) throw recipeError;
+
+    // 3. Update Slot
+    const { error: slotError } = await supabase
+      .from('meal_plan_slots')
+      .update({ recipe_id: recipe.id, manual_entry: null })
+      .eq('id', slotId);
+
+    if (slotError) throw slotError;
+
+    return { ...recipe, id: recipe.id };
+  }
 };
