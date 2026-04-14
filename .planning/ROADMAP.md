@@ -50,3 +50,48 @@ Plans:
 
 Plans:
 - [ ] TBD (promote with /gsd:review-backlog when ready)
+
+### Phase 999.3: generate recipe pictures (BACKLOG)
+**Goal:** TBD
+**Requirements:** TBD
+**Plans:** 0 plans
+
+### Phase 999.4: allow prevent duplicate meals (BACKLOG)
+**Goal:** TBD
+**Requirements:** TBD
+**Plans:** 0 plans
+
+### Phase 999.5: add print export option for recipes (BACKLOG)
+**Goal:** TBD
+**Requirements:** TBD
+**Plans:** 0 plans
+
+### Phase 999.6: spawn an agent for each meal check for dupes etc (BACKLOG)
+**Goal:** TBD
+**Requirements:** TBD
+**Plans:** 0 plans
+
+### Phase 999.7: have a sanitize agent that looks at the meal plan and reduce dupes (BACKLOG)
+**Goal:** TBD
+**Requirements:** TBD
+**Plans:** 0 plans
+
+### Phase 999.8: more visual feedback when generating meals (BACKLOG)
+**Goal:** TBD
+**Requirements:** TBD
+**Plans:** 0 plans
+
+### Phase 999.9: agent to check for food sensitivities etc (BACKLOG)
+**Goal:** TBD
+**Requirements:** TBD
+**Plans:** 0 plans
+
+### Phase 999.10: fine-tune prompt (BACKLOG)
+**Goal:** TBD
+**Requirements:** TBD
+**Plans:** 0 plans
+
+### Phase 999.11: clean-up model usage (BACKLOG)
+**Goal:** TBD
+**Requirements:** TBD
+**Plans:** 0 plans
