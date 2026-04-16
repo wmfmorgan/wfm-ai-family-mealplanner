@@ -8,11 +8,13 @@
 
 ## Current Milestone: v3.0 - Meal Generation Refinement
 - [x] Phase 08: Surgical Slot Control (Delete/Refresh)
-- [ ] Phase 09: Duplicate Prevention & High-Fidelity Ingredients
-- [ ] Phase 10: AI Sanitization & Sensitivity Check Pass
-- [ ] Phase 11: Generation UI/UX Feedback & Visual Polish
+- [ ] Phase 09: Duplicate Prevention & High-Fidelity Ingredients (Skill Level, Chef Notes)
+- [ ] Phase 10: State Preservation & Preferences (Locking, Favorites, Repeating)
+- [ ] Phase 11: AI Sanitization & Sensitivity (Sensitivity Check, Multi-pass)
+- [ ] Phase 12: Generation UI/UX Feedback & Visual Polish
 
 ## Session History
+- **2026-04-14**: Backlog review completed. Promoted 999.2 (Skill Level), 999.13 (Ingredients), 999.14 (Locking), 999.15 (Favorites), and 999.9 (Sensitivity Check) into the active v3.0 milestone.
 - **2026-04-13**: Phase 08 (Surgical Slot Control & Multi-Agent Generation) completed. Implemented backend orchestration, dedicated Edge Functions, and granular slot controls (Delete/Refresh).
 - **2026-04-13**: Milestone v3.0 (Meal Generation Refinement) initiated. Scoped to granular control over individual slots, plan quality (duplicates, specificity), and enhanced UI feedback.
 - **2026-04-13**: Phase 07 (Your Household [v2]) completed. Shell, navigation, and household components refactor finalized.
