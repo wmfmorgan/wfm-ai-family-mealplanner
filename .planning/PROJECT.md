@@ -29,10 +29,19 @@ A web-based family meal planner where a single logged-in user manages a househol
 
 ## Current State
 - **Shipped Version**: v3.0 (Meal Generation Refinement)
+- **Phase 13 complete** — Foundation & Database Migrations: `_shared/` AI client modules + 5 DB migrations deployed
 - **Latest Features**: 
     - Granular slot control (Delete/Refresh).
     - Multi-agent coordinator-worker architecture for meal generation.
     - Editorial progress indicators.
+
+## Validated Requirements (Phase 13)
+- **INFRA-01** — Shared AI client with role-based temperature/max_tokens enforcement *(Validated in Phase 13: Foundation & Database Migrations)*
+- **INFRA-02** — Token usage logging to `ai_usage_log` table *(Validated in Phase 13)*
+- **INFRA-03** — Provider resolution from env vars in shared client *(Validated in Phase 13)*
+- **INFRA-04** — `recipe_cache` table with JSONB, GIN index, 30-day TTL *(Validated in Phase 13)*
+- **INFRA-05** — `recipes` table with source tracking columns (source_provider NOT NULL, source_id, image_url) *(Validated in Phase 13)*
+- **INFRA-06** — `shopping_list_items` with aisle/amount/unit columns *(Validated in Phase 13)*
 
 ## Milestones
 - **v1.0**: Initial MVP — COMPLETED
@@ -81,4 +90,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-16 after milestone v4.0 started*
+*Last updated: 2026-04-17 after Phase 13 complete*
