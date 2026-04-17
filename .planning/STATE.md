@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v4.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 14-01-PLAN.md
-last_updated: "2026-04-17T21:24:13.519Z"
+stopped_at: Completed 14-02-PLAN.md
+last_updated: "2026-04-17T21:31:49.624Z"
 last_activity: 2026-04-17
 progress:
   total_phases: 2
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-04-16)
 ## Current Position
 
 Phase: 14 (spoonacular-integration-ai-coordinator) — EXECUTING
-Plan: 2 of 4
+Plan: 3 of 4
 Status: Ready to execute
 Last activity: 2026-04-17
 
@@ -52,6 +52,7 @@ Progress: [....................] 0%
 | Phase 13-foundation-database-migrations P01 | 10 | 3 tasks | 5 files |
 | Phase 13-foundation-database-migrations P03 | 1min | 1 tasks | 1 files |
 | Phase 14 P01 | 4min | 4 tasks | 4 files |
+| Phase 14 P02 | 3 min | 2 tasks | 6 files |
 
 ### Decisions
 
@@ -72,6 +73,7 @@ Progress: [....................] 0%
 - [Phase 14]: Generation preferences remain on public.households as JSONB instead of a new table.
 - [Phase 14]: Spoonacular quota logs record daily_limit per request to handle post-2026-04-17 pricing changes.
 - [Phase 14]: Cache reuse is split between recipe_cache payload rows and recipe_cache_directive_lookup directive hashes with one-hour TTL checks.
+- [Phase 14]: Coordinator responses are sanitized to directives-only and must exactly match enabled matrix cells
 
 ### Pending Todos
 
@@ -84,6 +86,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-17T21:24:13.517Z
-Stopped at: Completed 14-01-PLAN.md
+Last session: 2026-04-17T21:31:49.621Z
+Stopped at: Completed 14-02-PLAN.md
 Resume file: None

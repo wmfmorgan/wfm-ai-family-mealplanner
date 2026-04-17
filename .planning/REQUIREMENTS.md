@@ -19,7 +19,7 @@ Requirements for milestone v4.0: Overhaul AI Architecture. Each maps to roadmap 
 ### Recipe Search & Grounding
 
 - [x] **SEARCH-01**: User can generate meals using real recipes from Spoonacular via cache-first search
-- [ ] **SEARCH-02**: AI Coordinator outputs search directives (query, diet, cuisine, allergen exclusions, calorie range) instead of inventing recipes
+- [x] **SEARCH-02**: AI Coordinator outputs search directives (query, diet, cuisine, allergen exclusions, calorie range) instead of inventing recipes
 - [x] **SEARCH-03**: User can configure how many meals to generate (partial generation for testing, not always 21)
 - [x] **SEARCH-04**: System tracks Spoonacular points consumed per day and displays quota status to user
 - [ ] **SEARCH-05**: System automatically falls back to AI generation when Spoonacular quota is near exhaustion (~80%)
@@ -39,7 +39,7 @@ Requirements for milestone v4.0: Overhaul AI Architecture. Each maps to roadmap 
 - [ ] **SAFE-02**: AI Adapter modifies grounded recipes when allergen/avoidance/serving/skill issues detected (substitution, not invention)
 - [ ] **SAFE-03**: Fallback AI-generated recipes include temperature, max_tokens, and schema validation controls
 - [ ] **SAFE-04**: Fallback AI-generated recipes are labeled in data (`source_provider: 'ai-generated'`) and UI (visible badge on card and detail view)
-- [ ] **SAFE-05**: Allergy matching uses structured taxonomy (not naive substring matching)
+- [x] **SAFE-05**: Allergy matching uses structured taxonomy (not naive substring matching)
 
 ### UI & Display
 
@@ -100,7 +100,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | INFRA-05 | Phase 13 | Complete |
 | INFRA-06 | Phase 13 | Complete |
 | SEARCH-01 | Phase 14 | Complete |
-| SEARCH-02 | Phase 14 | Pending |
+| SEARCH-02 | Phase 14 | Complete |
 | SEARCH-03 | Phase 14 | Complete |
 | SEARCH-04 | Phase 14 | Complete |
 | SEARCH-05 | Phase 14 | Pending |
@@ -114,7 +114,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SAFE-02 | Phase 17 | Pending |
 | SAFE-03 | Phase 16 | Pending |
 | SAFE-04 | Phase 16 | Pending |
-| SAFE-05 | Phase 14 | Pending |
+| SAFE-05 | Phase 14 | Complete |
 | UI-01 | Phase 16 | Pending |
 | UI-02 | Phase 16 | Pending |
 | UI-03 | Phase 16 | Pending |
