@@ -1,28 +1,36 @@
 # Project State: wfm-ai-family-mealplanner
 
-## Initialization
-- [x] PROJECT.md updated
-- [x] config.json updated
-- [x] v3.0-REQUIREMENTS.md defined
-- [x] ROADMAP.md updated
+## Current Position
 
-## Current Milestone: v3.0 - Meal Generation Refinement
-- [x] Phase 08: Surgical Slot Control (Delete/Refresh)
-- [ ] Phase 09: Duplicate Prevention & High-Fidelity Ingredients (Skill Level, Chef Notes)
-- [ ] Phase 10: State Preservation & Preferences (Locking, Favorites, Repeating)
-- [ ] Phase 11: AI Sanitization & Sensitivity (Sensitivity Check, Multi-pass)
-- [ ] Phase 12: Generation UI/UX Feedback & Visual Polish
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-04-16 — Milestone v4.0 started
+
+## Current Milestone: v4.0 - Overhaul AI Architecture
+
+(Phases to be defined after requirements and roadmap creation)
+
+## Accumulated Context
+
+### From v3.0
+- Multi-agent coordinator-worker architecture shipped but has efficiency issues (C+ rating)
+- No temperature/max_tokens controls on any LLM call
+- Nutrition data fabricated by AI, no grounding
+- Allergy enforcement is prompt-only, no programmatic verification
+- N+1 recipe insert pattern causes unnecessary DB latency
+- Categorizer LLM call can be eliminated with provider aisle data
+- `ai-proxy` Edge Function exists but only 1 of 3 business functions uses it
+- Provider resolution logic duplicated across 3 Edge Functions
+
+### Key Decisions
+- Spoonacular first, Edamam deferred to future milestone
+- Shared Deno module (`_shared/ai-client.ts`) replaces `ai-proxy` routing
+- Lazy-save is greenfield — none of it implemented yet
+- Fallback AI-generated recipes must be explicitly flagged in data and UI
 
 ## Session History
-- **2026-04-14**: Backlog review completed. Promoted 999.2 (Skill Level), 999.13 (Ingredients), 999.14 (Locking), 999.15 (Favorites), and 999.9 (Sensitivity Check) into the active v3.0 milestone.
-- **2026-04-13**: Phase 08 (Surgical Slot Control & Multi-Agent Generation) completed. Implemented backend orchestration, dedicated Edge Functions, and granular slot controls (Delete/Refresh).
-- **2026-04-13**: Milestone v3.0 (Meal Generation Refinement) initiated. Scoped to granular control over individual slots, plan quality (duplicates, specificity), and enhanced UI feedback.
-- **2026-04-13**: Phase 07 (Your Household [v2]) completed. Shell, navigation, and household components refactor finalized.
-- **2026-04-13**: Phase 06 (Landing & Login [v2]) completed. Verified visual refactor to editorial cookbook aesthetic and synchronized tests.
-- **2026-04-13**: Milestone v2.0 (Desktop UI Refactor) completed.
-- **2026-04-13**: v1.0 Milestone Archived. Final Polish & Deploy completed.
-
-## Recent Decisions
-- Milestone v3.0 scoped to Surgical control and AI Quality refinement.
-- Move towards multi-agent/multi-pass generation for reliability.
-- Integrate individual slot actions into the existing Desktop UI.
+- **2026-04-16**: Milestone v4.0 (Overhaul AI Architecture) initiated. Scoped to grounded recipes via Spoonacular, lazy-save draft workflow, shared AI client with token controls.
+- **2026-04-14**: Backlog review completed.
+- **2026-04-13**: Phase 08 (Surgical Slot Control & Multi-Agent Generation) completed.
+- **2026-04-13**: Milestone v3.0 (Meal Generation Refinement) initiated.

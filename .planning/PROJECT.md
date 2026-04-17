@@ -11,6 +11,22 @@ A web-based family meal planner where a single logged-in user manages a househol
 - **AI Providers**: Gemini, Grok, Ollama (Direct local call for dev)
 - **Deployment**: Netlify (Frontend), Supabase (Backend)
 
+## Current Milestone: v4.0 Overhaul AI Architecture
+
+**Goal:** Replace AI-invented recipes with database-grounded meals from Spoonacular, implement lazy-save draft workflow, and consolidate all LLM calls through a shared client with enforced token controls.
+
+**Target features:**
+- Shared AI client (`_shared/ai-client.ts`) — role-based temp/max_tokens, token logging, provider resolution
+- AI Coordinator outputs search directives (`select-meals` Edge Function)
+- Recipe lookup via Spoonacular with local cache (`recipe-search` Edge Function, `recipe_cache` table)
+- AI Adapter for allergy substitutions/serving scale (`adapt-recipe` Edge Function)
+- Lazy-save: generation → draft in React state → explicit save to DB
+- Programmatic post-assembly allergy/constraint scan
+- Fallback AI generation flagged in data (`source_provider: 'ai-generated'`) and UI
+- RecipeDetail supports draft mode (React state) and persisted mode (DB)
+- Shopping list uses Spoonacular aisle data — categorizer eliminated
+- Bulk DB inserts on save (replaces N+1 pattern)
+
 ## Current State
 - **Shipped Version**: v3.0 (Meal Generation Refinement)
 - **Latest Features**: 
@@ -46,3 +62,23 @@ A web-based family meal planner where a single logged-in user manages a househol
 - Consolidated Shopping List (Basic grouping)
 - AI Settings & Debug Page
 </details>
+
+## Evolution
+
+This document evolves at phase transitions and milestone boundaries.
+
+**After each phase transition** (via `/gsd:transition`):
+1. Requirements invalidated? → Move to Out of Scope with reason
+2. Requirements validated? → Move to Validated with phase reference
+3. New requirements emerged? → Add to Active
+4. Decisions to log? → Add to Key Decisions
+5. "What This Is" still accurate? → Update if drifted
+
+**After each milestone** (via `/gsd:complete-milestone`):
+1. Full review of all sections
+2. Core Value check — still the right priority?
+3. Audit Out of Scope — reasons still valid?
+4. Update Context with current state
+
+---
+*Last updated: 2026-04-16 after milestone v4.0 started*
