@@ -22,7 +22,7 @@ Requirements for milestone v4.0: Overhaul AI Architecture. Each maps to roadmap 
 - [x] **SEARCH-02**: AI Coordinator outputs search directives (query, diet, cuisine, allergen exclusions, calorie range) instead of inventing recipes
 - [x] **SEARCH-03**: User can configure how many meals to generate (partial generation for testing, not always 21)
 - [x] **SEARCH-04**: System tracks Spoonacular points consumed per day and displays quota status to user
-- [ ] **SEARCH-05**: System automatically falls back to AI generation when Spoonacular quota is near exhaustion (~80%)
+- [x] **SEARCH-05**: System automatically falls back to AI generation when Spoonacular quota is near exhaustion (~80%)
 
 ### Lazy-Save & Persistence
 
@@ -103,7 +103,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SEARCH-02 | Phase 14 | Complete |
 | SEARCH-03 | Phase 14 | Complete |
 | SEARCH-04 | Phase 14 | Complete |
-| SEARCH-05 | Phase 14 | Pending |
+| SEARCH-05 | Phase 14 | Complete |
 | SAVE-01 | Phase 15 | Pending |
 | SAVE-02 | Phase 15 | Pending |
 | SAVE-03 | Phase 15 | Pending |

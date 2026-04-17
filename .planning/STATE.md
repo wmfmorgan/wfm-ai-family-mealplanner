@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v4.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 14-02-PLAN.md
-last_updated: "2026-04-17T21:31:49.624Z"
+stopped_at: Completed 14-03-PLAN.md
+last_updated: "2026-04-17T21:41:56.588Z"
 last_activity: 2026-04-17
 progress:
   total_phases: 2
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-04-16)
 ## Current Position
 
 Phase: 14 (spoonacular-integration-ai-coordinator) — EXECUTING
-Plan: 3 of 4
+Plan: 4 of 4
 Status: Ready to execute
 Last activity: 2026-04-17
 
@@ -53,6 +53,7 @@ Progress: [....................] 0%
 | Phase 13-foundation-database-migrations P03 | 1min | 1 tasks | 1 files |
 | Phase 14 P01 | 4min | 4 tasks | 4 files |
 | Phase 14 P02 | 3 min | 2 tasks | 6 files |
+| Phase 14 P03 | 6 min | 2 tasks | 5 files |
 
 ### Decisions
 
@@ -74,6 +75,9 @@ Progress: [....................] 0%
 - [Phase 14]: Spoonacular quota logs record daily_limit per request to handle post-2026-04-17 pricing changes.
 - [Phase 14]: Cache reuse is split between recipe_cache payload rows and recipe_cache_directive_lookup directive hashes with one-hour TTL checks.
 - [Phase 14]: Coordinator responses are sanitized to directives-only and must exactly match enabled matrix cells
+- [Phase 14]: Quota state is recomputed from Spoonacular response headers after every live request so later directives in the same batch can switch to fallback.
+- [Phase 14]: Recipe-search reuses cached grounded recipes by directive hash before any live Spoonacular call and never logs usage on cache hits.
+- [Phase 14]: Fallback slots preserve the same response shape as grounded slots while labeling recipes as ai-generated and nulling provider-only shopping metadata.
 
 ### Pending Todos
 
@@ -86,6 +90,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-17T21:31:49.621Z
-Stopped at: Completed 14-02-PLAN.md
+Last session: 2026-04-17T21:41:56.586Z
+Stopped at: Completed 14-03-PLAN.md
 Resume file: None
