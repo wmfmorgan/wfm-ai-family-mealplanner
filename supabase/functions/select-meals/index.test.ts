@@ -78,6 +78,7 @@ Deno.test('SEARCH-02: falls back to persisted generation_preferences.matrix', as
   assertEquals(payload.directives.length, 1)
   assertEquals(payload.directives[0].day, 1)
   assertEquals(payload.directives[0].meal_type, 'dinner')
+  assertEquals(JSON.stringify(payload).includes('"directives"'), true)
   assertEquals('recipes' in payload, false)
   assertEquals(capturedUserPrompt.includes('"1":["dinner"]'), true)
 })
