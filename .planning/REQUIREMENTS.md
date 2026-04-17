@@ -10,11 +10,11 @@ Requirements for milestone v4.0: Overhaul AI Architecture. Each maps to roadmap 
 ### Foundation & Infrastructure
 
 - [ ] **INFRA-01**: All LLM calls route through shared AI client with role-based temperature and max_tokens enforcement
-- [ ] **INFRA-02**: Shared AI client logs token usage (prompt_tokens, completion_tokens) for every LLM call
+- [x] **INFRA-02**: Shared AI client logs token usage (prompt_tokens, completion_tokens) for every LLM call
 - [ ] **INFRA-03**: Shared AI client handles provider resolution from environment variables (replaces duplicated logic across Edge Functions)
-- [ ] **INFRA-04**: Recipe cache table stores Spoonacular results with JSONB data, GIN indexes, extracted columns, and 30-day TTL
-- [ ] **INFRA-05**: Recipes table supports source tracking (source_id, source_provider, is_adapted, adaptations, image_url)
-- [ ] **INFRA-06**: Shopping list items table supports provider aisle data (aisle, amount, unit)
+- [x] **INFRA-04**: Recipe cache table stores Spoonacular results with JSONB data, GIN indexes, extracted columns, and 30-day TTL
+- [x] **INFRA-05**: Recipes table supports source tracking (source_id, source_provider, is_adapted, adaptations, image_url)
+- [x] **INFRA-06**: Shopping list items table supports provider aisle data (aisle, amount, unit)
 
 ### Recipe Search & Grounding
 
@@ -94,11 +94,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | INFRA-01 | Phase 13 | Pending |
-| INFRA-02 | Phase 13 | Pending |
+| INFRA-02 | Phase 13 | Complete |
 | INFRA-03 | Phase 13 | Pending |
-| INFRA-04 | Phase 13 | Pending |
-| INFRA-05 | Phase 13 | Pending |
-| INFRA-06 | Phase 13 | Pending |
+| INFRA-04 | Phase 13 | Complete |
+| INFRA-05 | Phase 13 | Complete |
+| INFRA-06 | Phase 13 | Complete |
 | SEARCH-01 | Phase 14 | Pending |
 | SEARCH-02 | Phase 14 | Pending |
 | SEARCH-03 | Phase 14 | Pending |

@@ -2,10 +2,10 @@
 gsd_state_version: 1.0
 milestone: v4.0
 milestone_name: milestone
-status: planning
-stopped_at: Phase 13 context gathered
-last_updated: "2026-04-17T11:53:22.904Z"
-last_activity: 2026-04-16 — Roadmap created for v4.0
+status: executing
+stopped_at: Completed 13-02-PLAN.md
+last_updated: "2026-04-17T19:10:51.585Z"
+last_activity: 2026-04-17
 progress:
   total_phases: 2
   completed_phases: 0
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-16)
 
 **Core value:** Replace AI-invented recipes with database-grounded meals, lazy-save draft workflow, shared AI client with token controls
-**Current focus:** Phase 13 - Foundation & Database Migrations
+**Current focus:** Phase 13 — foundation-database-migrations
 
 ## Current Position
 
-Phase: 13 (first of 5 in v4.0) — Foundation & Database Migrations
-Plan: 0 of 0 (not yet planned)
-Status: Ready to plan
-Last activity: 2026-04-16 — Roadmap created for v4.0
+Phase: 13 (foundation-database-migrations) — EXECUTING
+Plan: 2 of 3
+Status: Ready to execute
+Last activity: 2026-04-17
 
 Progress: [....................] 0%
 
@@ -48,6 +48,8 @@ Progress: [....................] 0%
 
 ## Accumulated Context
 
+| Phase 13-foundation-database-migrations P02 | 52s | 2 tasks | 4 files |
+
 ### Decisions
 
 - Spoonacular first, Edamam deferred to future milestone
@@ -56,6 +58,9 @@ Progress: [....................] 0%
 - Fallback AI-generated recipes must be explicitly flagged in data and UI
 - SAFE-05 (allergen taxonomy) grouped with Phase 14 since search filtering needs it
 - SAFE-02 (AI adapter) deferred to Phase 17 after core pipeline proven stable
+- [Phase 13-foundation-database-migrations]: recipe_cache and ai_usage_log use RLS with no user policy (service-role only in Phase 13)
+- [Phase 13-foundation-database-migrations]: source_provider uses 3-step NOT NULL backfill: ADD nullable -> UPDATE 'ai-generated' -> SET NOT NULL + CHECK constraint
+- [Phase 13-foundation-database-migrations]: shopping_list_items.amount uses NUMERIC not FLOAT for exact fractional quantity support
 
 ### Pending Todos
 
@@ -68,6 +73,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-17T11:53:22.902Z
-Stopped at: Phase 13 context gathered
-Resume file: .planning/phases/13-foundation-database-migrations/13-CONTEXT.md
+Last session: 2026-04-17T19:10:51.582Z
+Stopped at: Completed 13-02-PLAN.md
+Resume file: None
