@@ -20,9 +20,9 @@ type RecipeSearchResponse = {
 } & Record<string, unknown>;
 
 const DEFAULT_QUOTA_STATUS: QuotaStatus = {
-  daily_limit: 150,
+  daily_limit: 50,
   points_used_today: 0,
-  points_left_today: 150,
+  points_left_today: 50,
 };
 
 const QUOTA_STORAGE_KEY_PREFIX = 'spoonacular_quota_status:';

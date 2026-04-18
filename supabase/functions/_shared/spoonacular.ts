@@ -1,5 +1,5 @@
 export function getDefaultDailyLimit(): number {
-  return Number(Deno.env.get('SPOONACULAR_DAILY_LIMIT') ?? '150')
+  return Number(Deno.env.get('SPOONACULAR_DAILY_LIMIT') ?? '50')
 }
 
 export const DEFAULT_SPOONACULAR_FALLBACK_THRESHOLD = Number(
