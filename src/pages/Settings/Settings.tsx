@@ -237,7 +237,7 @@ const Settings: React.FC = () => {
           )}
 
           <div className="debug-container">
-            <DebugLog quotaSummary={quotaStatus} />
+            <DebugLog householdId={householdId} quotaSummary={quotaStatus} />
           </div>
         </div>
       </section>

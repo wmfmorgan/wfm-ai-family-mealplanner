@@ -2,16 +2,49 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import Settings from '../pages/Settings/Settings';
 import * as logger from '../lib/ai/logger';
+import { householdService } from '../lib/services/household';
+import { getSpoonacularQuotaStatus } from '../lib/services/spoonacular';
 
 // Mock the logger
 vi.mock('../lib/ai/logger', () => ({
-  getAiLogs: vi.fn(),
+  getDisplayAiLogs: vi.fn(),
+}));
+
+vi.mock('../lib/services/household', () => ({
+  householdService: {
+    getMyHouseholdId: vi.fn(),
+    getGenerationPreferences: vi.fn(),
+    updateGenerationPreferences: vi.fn(),
+  },
+}));
+
+vi.mock('../lib/services/spoonacular', () => ({
+  getSpoonacularQuotaStatus: vi.fn(),
 }));
 
 describe('Settings Component', () => {
   beforeEach(() => {
     localStorage.clear();
-    vi.mocked(logger.getAiLogs).mockReturnValue([]);
+    vi.mocked(logger.getDisplayAiLogs).mockResolvedValue([]);
+    vi.mocked(householdService.getMyHouseholdId).mockResolvedValue('household-1');
+    vi.mocked(householdService.getGenerationPreferences).mockResolvedValue({
+      selected_days: [0, 1, 2, 3, 4, 5, 6],
+      selected_meals: ['breakfast', 'lunch', 'dinner'],
+      matrix: {
+        0: ['breakfast', 'lunch', 'dinner'],
+        1: ['breakfast', 'lunch', 'dinner'],
+        2: ['breakfast', 'lunch', 'dinner'],
+        3: ['breakfast', 'lunch', 'dinner'],
+        4: ['breakfast', 'lunch', 'dinner'],
+        5: ['breakfast', 'lunch', 'dinner'],
+        6: ['breakfast', 'lunch', 'dinner'],
+      },
+    });
+    vi.mocked(getSpoonacularQuotaStatus).mockResolvedValue({
+      daily_limit: 50,
+      points_used_today: 0,
+      points_left_today: 50,
+    });
   });
 
   it('renders provider selection correctly', () => {
@@ -31,7 +64,7 @@ describe('Settings Component', () => {
     expect(localStorage.getItem('active_ai_provider')).toBe('grok');
   });
 
-  it('renders DebugLog with logs', () => {
+  it('renders DebugLog with logs', async () => {
     const mockLogs = [
       {
         id: '1',
@@ -43,11 +76,11 @@ describe('Settings Component', () => {
         status_code: 200,
       },
     ];
-    vi.mocked(logger.getAiLogs).mockReturnValue(mockLogs);
+    vi.mocked(logger.getDisplayAiLogs).mockResolvedValue(mockLogs);
 
     render(<Settings />);
     
-    expect(screen.getByText('gemini')).toBeInTheDocument();
+    expect(await screen.findByText('gemini')).toBeInTheDocument();
     expect(screen.getByText('120ms')).toBeInTheDocument();
   });
 });

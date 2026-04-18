@@ -81,10 +81,12 @@ Deno.test('SEARCH-02: falls back to persisted generation_preferences.matrix', as
   assertEquals(JSON.stringify(payload).includes('"directives"'), true)
   assertEquals('recipes' in payload, false)
   assertEquals(capturedUserPrompt.includes('"1":["dinner"]'), true)
+  assertEquals(capturedUserPrompt.includes('"leftover_strategy":true'), true)
 })
 
 Deno.test('SEARCH-02: explicit request matrix overrides persisted preferences', async () => {
   let capturedRole = ''
+  let capturedUserPrompt = ''
 
   const handler = createHandler({
     verifyAuth: async () => ({ user: { id: 'user-1' }, authHeader }),
@@ -95,6 +97,7 @@ Deno.test('SEARCH-02: explicit request matrix overrides persisted preferences', 
     }),
     callAI: async (options) => {
       capturedRole = options.role
+      capturedUserPrompt = options.userPrompt
       return {
         content: JSON.stringify({
           directives: [
@@ -126,6 +129,7 @@ Deno.test('SEARCH-02: explicit request matrix overrides persisted preferences', 
     matrix: {
       '3': ['breakfast'],
     },
+    leftover_strategy: false,
   }))
   const payload = await response.json()
 
@@ -134,6 +138,7 @@ Deno.test('SEARCH-02: explicit request matrix overrides persisted preferences', 
   assertEquals(payload.directives[0].day, 3)
   assertEquals(payload.directives[0].meal_type, 'breakfast')
   assertEquals(capturedRole, 'coordinator')
+  assertEquals(capturedUserPrompt.includes('"leftover_strategy":false'), true)
 })
 
 Deno.test('SEARCH-02: sparse matrix preserves exact cells only', async () => {

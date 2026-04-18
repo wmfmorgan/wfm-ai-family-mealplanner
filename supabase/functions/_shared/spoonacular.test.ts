@@ -22,8 +22,8 @@ const directive = {
   fallback_reason: null,
 }
 
-Deno.test('SEARCH-04: default daily limit remains 150', () => {
-  assertEquals(DEFAULT_SPOONACULAR_DAILY_LIMIT, 150)
+Deno.test('SEARCH-04: default daily limit remains 50', () => {
+  assertEquals(DEFAULT_SPOONACULAR_DAILY_LIMIT, 50)
 })
 
 Deno.test('SEARCH-04: default threshold remains 0.8', () => {
@@ -36,17 +36,17 @@ Deno.test('SEARCH-04: buildDirectiveHash is stable', () => {
 
 Deno.test('SEARCH-04: threshold stays false below the limit and true at the limit', () => {
   const belowThreshold = getQuotaState({
-    pointsUsedToday: 119,
-    dailyLimit: 150,
+    pointsUsedToday: 39,
+    dailyLimit: 50,
     threshold: 0.8,
   })
   const atThreshold = getQuotaState({
-    pointsUsedToday: 120,
-    dailyLimit: 150,
+    pointsUsedToday: 40,
+    dailyLimit: 50,
     threshold: 0.8,
   })
 
-  assertEquals(belowThreshold.threshold_points, 120)
+  assertEquals(belowThreshold.threshold_points, 40)
   assertEquals(belowThreshold.threshold_reached, false)
   assertEquals(atThreshold.threshold_reached, true)
 })

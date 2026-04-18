@@ -165,9 +165,9 @@ describe('MealPlanner - Optimistic UI', () => {
     vi.mocked(invokeRecipeSearch).mockResolvedValue({
       week_start_date: '2026-04-19',
       quota_status: {
-        daily_limit: 150,
+        daily_limit: 50,
         points_used_today: 5,
-        points_left_today: 145,
+        points_left_today: 45,
       },
       slots: [
         {
@@ -213,6 +213,7 @@ describe('MealPlanner - Optimistic UI', () => {
         members: [mockMember],
         week_start_date: expect.any(String),
         matrix: { 0: ['dinner'] },
+        leftover_strategy: true,
       });
     });
 

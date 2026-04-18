@@ -61,4 +61,30 @@ describe('RecipeDetail Component', () => {
     if (drawer) fireEvent.click(drawer);
     expect(onClose).not.toHaveBeenCalled();
   });
+
+  it('formats nested nutrition payloads without rendering object Object', () => {
+    const spoonacularRecipe: Recipe = {
+      ...mockRecipe,
+      nutrition: {
+        nutrients: [
+          { name: 'Calories', amount: 550, unit: 'kcal' },
+          { name: 'Protein', amount: 32, unit: 'g' },
+        ],
+        caloricBreakdown: {
+          percentProtein: 24.1,
+          percentFat: 31.2,
+        },
+      },
+    };
+
+    render(<RecipeDetail recipe={spoonacularRecipe} onClose={() => {}} />);
+
+    expect(screen.getByText('Calories')).toBeInTheDocument();
+    expect(screen.getByText('550kcal')).toBeInTheDocument();
+    expect(screen.getByText('Protein')).toBeInTheDocument();
+    expect(screen.getByText('32g')).toBeInTheDocument();
+    expect(screen.getByText('caloricBreakdown')).toBeInTheDocument();
+    expect(screen.getByText('percentProtein: 24.1, percentFat: 31.2')).toBeInTheDocument();
+    expect(screen.queryByText('[object Object]')).not.toBeInTheDocument();
+  });
 });

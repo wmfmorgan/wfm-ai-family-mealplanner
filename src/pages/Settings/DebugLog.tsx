@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { getAiLogs, type AILog } from '../../lib/ai/logger';
+import { getDisplayAiLogs, type AILog } from '../../lib/ai/logger';
 import { RefreshCcw, ChevronDown, ChevronUp, AlertCircle, Clock } from 'lucide-react';
 
 interface DebugLogProps {
+  householdId?: string | null;
   quotaSummary?: {
     daily_limit: number;
     points_used_today: number;
@@ -10,17 +11,25 @@ interface DebugLogProps {
   } | null;
 }
 
-const DebugLog: React.FC<DebugLogProps> = ({ quotaSummary }) => {
+function formatResponse(value: string): string {
+  try {
+    return JSON.stringify(JSON.parse(value), null, 2);
+  } catch {
+    return value;
+  }
+}
+
+const DebugLog: React.FC<DebugLogProps> = ({ householdId, quotaSummary }) => {
   const [logs, setLogs] = useState<AILog[]>([]);
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
-  const refreshLogs = () => {
-    setLogs(getAiLogs());
+  const refreshLogs = async () => {
+    setLogs(await getDisplayAiLogs(householdId));
   };
 
   useEffect(() => {
-    refreshLogs();
-  }, []);
+    void refreshLogs();
+  }, [householdId]);
 
   const toggleExpand = (id: string) => {
     setExpandedId(expandedId === id ? null : id);
@@ -33,7 +42,7 @@ const DebugLog: React.FC<DebugLogProps> = ({ quotaSummary }) => {
           <div className="debug-log-header">
             <h3>Spoonacular quota</h3>
           </div>
-          <p>{quotaSummary.points_used_today} / 150</p>
+          <p>{quotaSummary.points_used_today} / {quotaSummary.daily_limit}</p>
           <p>{quotaSummary.points_left_today} points left today</p>
         </div>
       )}
@@ -78,7 +87,7 @@ const DebugLog: React.FC<DebugLogProps> = ({ quotaSummary }) => {
                   {log.response && (
                     <div className="log-section">
                       <label>Response:</label>
-                      <pre>{JSON.stringify(JSON.parse(log.response), null, 2)}</pre>
+                      <pre>{formatResponse(log.response)}</pre>
                     </div>
                   )}
                   {log.error && (

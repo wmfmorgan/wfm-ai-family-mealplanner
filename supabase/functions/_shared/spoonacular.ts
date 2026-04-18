@@ -1,5 +1,5 @@
 export const DEFAULT_SPOONACULAR_DAILY_LIMIT = Number(
-  Deno.env.get('SPOONACULAR_DAILY_LIMIT') ?? '150',
+  Deno.env.get('SPOONACULAR_DAILY_LIMIT') ?? '50',
 )
 
 export const DEFAULT_SPOONACULAR_FALLBACK_THRESHOLD = Number(
@@ -160,6 +160,7 @@ export async function upsertRecipeCache(serviceClient: SupabaseClient, payload: 
   directiveHash: string
   recipe: SpoonacularRecipeResult
 }) {
+  const createdAt = new Date().toISOString()
   const expiresAt = new Date(Date.now() + 60 * 60 * 1000).toISOString()
   const { error: recipeError } = await serviceClient
     .from('recipe_cache')
@@ -170,6 +171,7 @@ export async function upsertRecipeCache(serviceClient: SupabaseClient, payload: 
       servings: payload.recipe.servings ?? null,
       image_url: payload.recipe.image ?? null,
       raw_data: payload.recipe,
+      created_at: createdAt,
       expires_at: expiresAt,
     }, {
       onConflict: 'spoonacular_id',
@@ -184,6 +186,7 @@ export async function upsertRecipeCache(serviceClient: SupabaseClient, payload: 
     .upsert({
       directive_hash: payload.directiveHash,
       spoonacular_id: payload.recipe.id,
+      created_at: createdAt,
       expires_at: expiresAt,
     }, {
       onConflict: 'directive_hash',

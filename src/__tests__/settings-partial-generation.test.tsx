@@ -7,7 +7,7 @@ import { householdService } from '../lib/services/household';
 import { getSpoonacularQuotaStatus } from '../lib/services/spoonacular';
 
 vi.mock('../lib/ai/logger', () => ({
-  getAiLogs: vi.fn(),
+  getDisplayAiLogs: vi.fn(),
 }));
 
 vi.mock('../lib/services/household', () => ({
@@ -35,14 +35,14 @@ describe('Settings partial generation preferences', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     localStorage.clear();
-    vi.mocked(logger.getAiLogs).mockReturnValue([]);
+    vi.mocked(logger.getDisplayAiLogs).mockResolvedValue([]);
     vi.mocked(householdService.getMyHouseholdId).mockResolvedValue('household-1');
     vi.mocked(householdService.getGenerationPreferences).mockResolvedValue(basePreferences);
     vi.mocked(householdService.updateGenerationPreferences).mockResolvedValue();
     vi.mocked(getSpoonacularQuotaStatus).mockResolvedValue({
-      daily_limit: 150,
+      daily_limit: 50,
       points_used_today: 12,
-      points_left_today: 138,
+      points_left_today: 38,
     });
   });
 

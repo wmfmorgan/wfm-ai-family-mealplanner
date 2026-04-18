@@ -49,6 +49,7 @@ type SelectMealsRequest = {
   members?: HouseholdMember[]
   week_start_date?: string
   matrix?: Record<string, unknown>
+  leftover_strategy?: boolean
 }
 
 type HandlerDependencies = {
@@ -222,6 +223,7 @@ function buildPrompts(input: {
   weekStartDate: string
   members: HouseholdMember[]
   matrix: Matrix
+  leftoverStrategy: boolean
 }) {
   const targets = buildDirectiveTargets(input.matrix)
   const memberContext = collectMemberContext(input.members)
@@ -233,11 +235,16 @@ function buildPrompts(input: {
     'Output directives only. Do not return recipes, ingredient lists, instructions, shopping lists, prose, markdown, or commentary.',
     'Treat the provided matrix as the source of truth for enabled day/meal cells. Produce exactly one directive per enabled cell and none for disabled cells.',
     'Every directive must include both min_calories and max_calories as numeric values.',
+    'Write short, provider-searchable query strings that Spoonacular can match reliably.',
+    'Do not use query phrases like "leftovers", "meal prep", "batch cook", "cook once eat twice", "family style", or "double batch" unless leftover strategy is explicitly enabled.',
+    'When leftover strategy is disabled, prefer distinct recipes per slot and set fallback_reason to null unless there is a real search limitation.',
   ].join(' ')
 
   const userPrompt = JSON.stringify({
     household_id: input.householdId,
     week_start_date: input.weekStartDate,
+    household_size: input.members.length,
+    leftover_strategy: input.leftoverStrategy,
     matrix: input.matrix,
     targets,
     members: input.members,
@@ -312,6 +319,7 @@ export function createHandler(overrides: Partial<HandlerDependencies> = {}) {
         weekStartDate: body.week_start_date,
         members: body.members,
         matrix: finalMatrix,
+        leftoverStrategy: body.leftover_strategy ?? true,
       })
 
       const aiResult = await deps.callAI({

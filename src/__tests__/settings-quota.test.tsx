@@ -6,7 +6,7 @@ import { householdService } from '../lib/services/household';
 import { getSpoonacularQuotaStatus } from '../lib/services/spoonacular';
 
 vi.mock('../lib/ai/logger', () => ({
-  getAiLogs: vi.fn(),
+  getDisplayAiLogs: vi.fn(),
 }));
 
 vi.mock('../lib/services/household', () => ({
@@ -24,7 +24,7 @@ vi.mock('../lib/services/spoonacular', () => ({
 describe('Settings Spoonacular quota surface', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(logger.getAiLogs).mockReturnValue([]);
+    vi.mocked(logger.getDisplayAiLogs).mockResolvedValue([]);
     vi.mocked(householdService.getMyHouseholdId).mockResolvedValue('household-1');
     vi.mocked(householdService.getGenerationPreferences).mockResolvedValue({
       selected_days: [0, 1, 2, 3, 4, 5, 6],
@@ -43,27 +43,27 @@ describe('Settings Spoonacular quota surface', () => {
 
   it('renders Spoonacular quota usage text', async () => {
     vi.mocked(getSpoonacularQuotaStatus).mockResolvedValue({
-      daily_limit: 150,
+      daily_limit: 50,
       points_used_today: 44,
-      points_left_today: 106,
+      points_left_today: 6,
     });
 
     render(<Settings />);
 
     expect(await screen.findByText('Spoonacular quota')).toBeInTheDocument();
-    expect(screen.getByText('44 / 150')).toBeInTheDocument();
+    expect(screen.getByText('44 / 50')).toBeInTheDocument();
   });
 
   it('renders the empty-log default quota state', async () => {
     vi.mocked(getSpoonacularQuotaStatus).mockResolvedValue({
-      daily_limit: 150,
+      daily_limit: 50,
       points_used_today: 0,
-      points_left_today: 150,
+      points_left_today: 50,
     });
 
     render(<Settings />);
 
     expect(await screen.findByText('Spoonacular quota')).toBeInTheDocument();
-    expect(screen.getByText('0 / 150')).toBeInTheDocument();
+    expect(screen.getByText('0 / 50')).toBeInTheDocument();
   });
 });

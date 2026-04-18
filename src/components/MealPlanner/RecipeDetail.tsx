@@ -10,6 +10,86 @@ interface RecipeDetailProps {
 const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe, onClose }) => {
   if (!recipe) return null;
 
+  const formatNutritionEntries = (nutrition: Record<string, unknown>) => {
+    const formattedEntries: Array<[string, string]> = [];
+
+    for (const [key, value] of Object.entries(nutrition)) {
+      if (value == null) {
+        continue;
+      }
+
+      if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+        formattedEntries.push([key, String(value)]);
+        continue;
+      }
+
+      if (Array.isArray(value)) {
+        const nutrients = value
+          .filter((item): item is Record<string, unknown> => !!item && typeof item === 'object')
+          .map((item) => {
+            const title = typeof item.title === 'string'
+              ? item.title
+              : typeof item.name === 'string'
+              ? item.name
+              : null;
+            const amount = typeof item.amount === 'number' || typeof item.amount === 'string'
+              ? String(item.amount)
+              : null;
+            const unit = typeof item.unit === 'string' ? item.unit : '';
+
+            if (!title || !amount) {
+              return null;
+            }
+
+            return [title, `${amount}${unit}`] as [string, string];
+          })
+          .filter((entry): entry is [string, string] => entry !== null);
+
+        if (nutrients.length > 0) {
+          formattedEntries.push(...nutrients);
+          continue;
+        }
+
+        const primitiveValues = value
+          .filter((item) =>
+            typeof item === 'string' || typeof item === 'number' || typeof item === 'boolean')
+          .map(String);
+
+        if (primitiveValues.length > 0) {
+          formattedEntries.push([key, primitiveValues.join(', ')]);
+        }
+
+        continue;
+      }
+
+      if (typeof value === 'object') {
+        const record = value as Record<string, unknown>;
+        const amount = typeof record.amount === 'number' || typeof record.amount === 'string'
+          ? String(record.amount)
+          : null;
+        const unit = typeof record.unit === 'string' ? record.unit : '';
+
+        if (amount) {
+          formattedEntries.push([key, `${amount}${unit}`]);
+          continue;
+        }
+
+        const nestedValues = Object.entries(record)
+          .filter(([, nestedValue]) =>
+            typeof nestedValue === 'string' || typeof nestedValue === 'number' || typeof nestedValue === 'boolean')
+          .map(([nestedKey, nestedValue]) => `${nestedKey}: ${String(nestedValue)}`);
+
+        if (nestedValues.length > 0) {
+          formattedEntries.push([key, nestedValues.join(', ')]);
+        }
+      }
+    }
+
+    return formattedEntries;
+  };
+
+  const nutritionEntries = recipe.nutrition ? formatNutritionEntries(recipe.nutrition) : [];
+
   const renderIngredient = (item: any) => {
     if (typeof item === 'string') return item;
     if (typeof item === 'object' && item !== null) {
@@ -60,14 +140,14 @@ const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe, onClose }) => {
           </ol>
         </section>
 
-        {recipe.nutrition && Object.keys(recipe.nutrition).length > 0 && (
+        {nutritionEntries.length > 0 && (
           <section className="recipe-section">
             <h3>Nutrition (per serving)</h3>
             <div className="nutrition-grid">
-              {Object.entries(recipe.nutrition).map(([key, value]) => (
+              {nutritionEntries.map(([key, value]) => (
                 <div key={key} className="nutrition-item">
                   <span className="nutrition-key">{key}</span>
-                  <span className="nutrition-value">{String(value)}</span>
+                  <span className="nutrition-value">{value}</span>
                 </div>
               ))}
             </div>

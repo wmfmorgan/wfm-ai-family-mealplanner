@@ -246,6 +246,7 @@ const MealPlanner: React.FC = () => {
           members,
           week_start_date: weekDateStr,
           matrix: persistedPreferences.matrix,
+          leftover_strategy: leftoverStrategy,
         });
 
         finalPlan = await invokeRecipeSearch({
