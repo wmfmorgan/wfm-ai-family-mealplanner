@@ -245,3 +245,54 @@
   color: #c53030;
   border: 1px solid #fed7d7;
 }
+
+/* Generation Matrix Grid */
+.generation-matrix {
+  display: grid;
+  grid-template-columns: 7rem repeat(7, 1fr);
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+  font-size: 0.8125rem;
+}
+
+.matrix-row {
+  display: contents;
+}
+
+.matrix-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 0.25rem;
+  border-bottom: 1px solid #edf2f7;
+  border-right: 1px solid #edf2f7;
+  text-align: center;
+  color: #4a5568;
+}
+
+.matrix-cell[role="rowheader"] {
+  justify-content: flex-start;
+  padding-left: 0.75rem;
+  font-weight: 600;
+  background: #f8fafc;
+  color: #2d3748;
+}
+
+.matrix-cell[role="columnheader"] {
+  font-weight: 600;
+  background: #f8fafc;
+  color: #2d3748;
+}
+
+.matrix-cell input[type="checkbox"] {
+  width: 1rem;
+  height: 1rem;
+  cursor: pointer;
+  accent-color: var(--primary-color, #38a169);
+}
+
+/* Remove right border on last column and bottom border on last row */
+.matrix-cell:nth-child(8n) {
+  border-right: none;
+}

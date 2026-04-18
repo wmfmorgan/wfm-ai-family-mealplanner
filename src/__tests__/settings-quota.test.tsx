@@ -56,14 +56,14 @@ describe('Settings Spoonacular quota surface', () => {
 
   it('renders the empty-log default quota state', async () => {
     vi.mocked(getSpoonacularQuotaStatus).mockResolvedValue({
-      daily_limit: 50,
+      daily_limit: 150,
       points_used_today: 0,
-      points_left_today: 50,
+      points_left_today: 150,
     });
 
     render(<Settings />);
 
     expect(await screen.findByText('Spoonacular quota')).toBeInTheDocument();
-    expect(screen.getByText('0 / 50')).toBeInTheDocument();
+    expect(screen.getByText('0 / 150')).toBeInTheDocument();
   });
 });

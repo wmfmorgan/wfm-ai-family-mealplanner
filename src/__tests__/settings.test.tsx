@@ -41,9 +41,9 @@ describe('Settings Component', () => {
       },
     });
     vi.mocked(getSpoonacularQuotaStatus).mockResolvedValue({
-      daily_limit: 50,
+      daily_limit: 150,
       points_used_today: 0,
-      points_left_today: 50,
+      points_left_today: 150,
     });
   });
 
