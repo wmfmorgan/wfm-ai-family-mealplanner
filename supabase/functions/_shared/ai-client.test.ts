@@ -9,6 +9,20 @@ Deno.test("INFRA-01: coordinator role config", () => {
   assertEquals(ROLE_CONFIG_FOR_TEST['coordinator'].max_tokens, 1024)
 })
 
+// INFRA-03: Plan 14-06 — coordinator token budget raised to 4096
+Deno.test("INFRA-03: coordinator max_tokens is 4096", () => {
+  assertEquals(ROLE_CONFIG_FOR_TEST['coordinator'].max_tokens, 4096)
+})
+
+Deno.test("INFRA-03: adapter and fallback-generator max_tokens unchanged at 2048", () => {
+  assertEquals(ROLE_CONFIG_FOR_TEST['adapter'].max_tokens, 2048)
+  assertEquals(ROLE_CONFIG_FOR_TEST['fallback-generator'].max_tokens, 2048)
+})
+
+Deno.test("INFRA-03: coordinator temperature unchanged at 0.7", () => {
+  assertEquals(ROLE_CONFIG_FOR_TEST['coordinator'].temperature, 0.7)
+})
+
 Deno.test("INFRA-01: adapter role config", () => {
   assertEquals(ROLE_CONFIG_FOR_TEST['adapter'].temperature, 0.3)
   assertEquals(ROLE_CONFIG_FOR_TEST['adapter'].max_tokens, 2048)
