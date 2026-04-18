@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { format, startOfWeek, addWeeks, subWeeks, addDays } from 'date-fns';
-import { householdService, HouseholdMember } from '../../lib/services/household';
+import {
+  householdService,
+  type GenerationPreferences,
+  HouseholdMember,
+} from '../../lib/services/household';
 import { plannerService } from '../../lib/services/planner';
 import { askAI } from '../../lib/ai/client';
 import { generateMealPlanPrompt } from '../../lib/ai/prompts';
@@ -8,14 +12,14 @@ import PlannerGrid from '../../components/MealPlanner/PlannerGrid';
 import GenerationPanel from '../../components/MealPlanner/GenerationPanel';
 import RecipeDetail from '../../components/MealPlanner/RecipeDetail';
 import { Recipe } from '../../lib/services/planner';
-import { supabase } from '../../lib/supabase';
+import { invokeRecipeSearch, invokeSelectMeals } from '../../lib/services/spoonacular';
 import './MealPlanner.css';
 
 const MealPlanner: React.FC = () => {
   const [weekStartDate, setWeekStartDate] = useState<Date>(startOfWeek(new Date(), { weekStartsOn: 0 }));
   const [members, setMembers] = useState<HouseholdMember[]>([]);
   const [planData, setPlanData] = useState<Record<string, any>>({});
-  const [selectedMeals, setSelectedMeals] = useState<string[]>(['dinner']);
+  const [generationPreferences, setGenerationPreferences] = useState<GenerationPreferences | null>(null);
   const [leftoverStrategy, setLeftoverStrategy] = useState<boolean>(true);
   const [loading, setLoading] = useState<boolean>(true);
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
@@ -29,8 +33,12 @@ const MealPlanner: React.FC = () => {
         const hId = await householdService.getMyHouseholdId();
         if (hId) {
           setHouseholdId(hId);
-          const membersData = await householdService.getMembers(hId);
+          const [membersData, preferences] = await Promise.all([
+            householdService.getMembers(hId),
+            householdService.getGenerationPreferences(hId),
+          ]);
           setMembers(membersData);
+          setGenerationPreferences(preferences);
         }
       } catch (err) {
         console.error('Error initializing planner:', err);
@@ -75,12 +83,6 @@ const MealPlanner: React.FC = () => {
 
   const handlePrevWeek = () => setWeekStartDate(prev => subWeeks(prev, 1));
   const handleNextWeek = () => setWeekStartDate(prev => addWeeks(prev, 1));
-
-  const handleToggleMeal = (meal: string) => {
-    setSelectedMeals(prev => 
-      prev.includes(meal) ? prev.filter(m => m !== meal) : [...prev, meal]
-    );
-  };
 
   const handleLockToggle = async (date: string, mealType: string, isLocked: boolean) => {
     const slot = planData[date]?.[mealType];
@@ -223,63 +225,73 @@ const MealPlanner: React.FC = () => {
 
       const activeProvider = localStorage.getItem('active_ai_provider') || 'grok';
       const activeModel = localStorage.getItem('active_ai_model') || (activeProvider === 'grok' ? 'grok-3' : 'gemini-1.5-flash');
+      const persistedPreferences = await householdService.getGenerationPreferences(householdId);
+      setGenerationPreferences(persistedPreferences);
       
       let finalPlan;
       if (activeProvider === 'mock') {
         const prompt = generateMealPlanPrompt({
           members,
           weekStartDate: format(weekStartDate, 'yyyy-MM-dd'),
-          selectedMeals: selectedMeals as any,
+          selectedMeals: persistedPreferences.selected_meals as any,
           leftoverStrategy,
           lockedSlots: [],
         });
         const responseData = await askAI({ prompt, provider: 'mock' });
         finalPlan = responseData;
       } else {
-        // Call new Multi-Agent Edge Function
-        const { data, error } = await supabase.functions.invoke('generate-plan', {
-          body: {
-            members,
-            household_id: householdId,
-            provider: activeProvider,
-            model: activeModel,
-            selected_meals: selectedMeals
-          }
-        });        if (error) throw error;
-        finalPlan = data;
+        const weekDateStr = format(weekStartDate, 'yyyy-MM-dd');
+        const selectMeals = await invokeSelectMeals({
+          household_id: householdId,
+          members,
+          week_start_date: weekDateStr,
+          matrix: persistedPreferences.matrix,
+        });
+
+        finalPlan = await invokeRecipeSearch({
+          household_id: householdId,
+          week_start_date: weekDateStr,
+          directives: selectMeals.directives,
+        });
       }
 
       const weekDateStr = format(weekStartDate, 'yyyy-MM-dd');
 
-      // Map response to save format - EXPLICITLY pick fields to avoid 400 errors with unknown columns
-      const recipesToSave = (finalPlan.days || []).flatMap((d: any) => [
-        d.breakfast, d.lunch, d.dinner
-      ]).filter(Boolean).map((r: any) => ({ 
-        household_id: householdId,
-        name: r.name,
-        ingredients: r.ingredients,
-        instructions: r.instructions,
-        prep_time_min: r.prep_time_minutes || r.prep_time_min || 0,
-        cook_time_min: r.cook_time_min || 0,
-        servings: r.servings || 4,
-        category: r.category || '',
-        description: r.description || '',
-        nutrition: r.nutrition || {}
-      }));
+      const recipeSlots = Array.isArray(finalPlan?.slots)
+        ? finalPlan.slots
+        : (finalPlan.days || []).flatMap((day: any) => ([
+          day.breakfast ? { day: day.day, meal_type: 'breakfast', recipe: day.breakfast, shopping_items: [] } : null,
+          day.lunch ? { day: day.day, meal_type: 'lunch', recipe: day.lunch, shopping_items: [] } : null,
+          day.dinner ? { day: day.day, meal_type: 'dinner', recipe: day.dinner, shopping_items: [] } : null,
+        ].filter(Boolean)));
 
-      const slotsToSave = (finalPlan.days || []).flatMap((d: any) => {
-        const dailySlots = [];
-        if (selectedMeals.includes('breakfast')) {
-          dailySlots.push({ day_of_week: d.day, meal_type: 'breakfast', recipe_name: d.breakfast?.name });
-        }
-        if (selectedMeals.includes('lunch')) {
-          dailySlots.push({ day_of_week: d.day, meal_type: 'lunch', recipe_name: d.lunch?.name });
-        }
-        if (selectedMeals.includes('dinner')) {
-          dailySlots.push({ day_of_week: d.day, meal_type: 'dinner', recipe_name: d.dinner?.name });
-        }
-        return dailySlots;
-      });
+      const recipesToSave = recipeSlots
+        .filter((slot: any) => slot?.recipe)
+        .map((slot: any) => {
+          const recipe = slot.recipe;
+          return {
+        household_id: householdId,
+            name: recipe.name,
+            ingredients: recipe.ingredients || [],
+            instructions: recipe.instructions || [],
+            prep_time_min: recipe.prep_time_minutes || recipe.prep_time_min || 0,
+            cook_time_min: recipe.cook_time_min || 0,
+            servings: recipe.servings || 4,
+            category: recipe.category || slot.meal_type || '',
+            description: recipe.description || '',
+            nutrition: recipe.nutrition || {},
+            source_provider: recipe.source_provider || 'ai-generated',
+            source_id: recipe.source_id || null,
+            image_url: recipe.image_url || null,
+            shopping_items: slot.shopping_items || [],
+          };
+        });
+
+      const slotsToSave = recipeSlots.map((slot: any) => ({
+        day_of_week: slot.day,
+        meal_type: slot.meal_type,
+        recipe_name: slot.recipe?.name,
+      }));
 
       if (activeProvider !== 'mock') {
         await plannerService.saveMealPlan(
@@ -345,11 +357,10 @@ const MealPlanner: React.FC = () => {
 
       <GenerationPanel 
         weekStartDate={weekStartDate}
-        selectedMeals={selectedMeals}
+        selectedMeals={generationPreferences?.selected_meals ?? []}
         leftoverStrategy={leftoverStrategy}
         onPrevWeek={handlePrevWeek}
         onNextWeek={handleNextWeek}
-        onToggleMeal={handleToggleMeal}
         onToggleStrategy={() => setLeftoverStrategy(!leftoverStrategy)}
         onGenerate={handleGenerate}
         isGenerating={isGenerating}

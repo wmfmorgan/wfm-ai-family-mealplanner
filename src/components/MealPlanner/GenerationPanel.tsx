@@ -8,7 +8,6 @@ interface GenerationPanelProps {
   leftoverStrategy: boolean;
   onPrevWeek: () => void;
   onNextWeek: () => void;
-  onToggleMeal: (meal: string) => void;
   onToggleStrategy: () => void;
   onGenerate: () => void;
   isGenerating: boolean;
@@ -21,7 +20,6 @@ const GenerationPanel: React.FC<GenerationPanelProps> = ({
   leftoverStrategy,
   onPrevWeek,
   onNextWeek,
-  onToggleMeal,
   onToggleStrategy,
   onGenerate,
   isGenerating,
@@ -34,7 +32,6 @@ const GenerationPanel: React.FC<GenerationPanelProps> = ({
     { id: 'breakfast', label: 'Breakfast' },
     { id: 'lunch', label: 'Lunch' },
     { id: 'dinner', label: 'Dinner' },
-    { id: 'snack', label: 'Snack' },
   ];
 
   return (
@@ -49,18 +46,22 @@ const GenerationPanel: React.FC<GenerationPanelProps> = ({
       </div>
 
       <div className="panel-section">
-        <h3 className="section-title">Meal Types</h3>
+        <h3 className="section-title">Meal Scope</h3>
+        <p className="strategy-desc">
+          Generation scope is managed in Settings and shown here for reference.
+        </p>
         <div className="meal-type-grid">
           {mealTypes.map((meal) => (
             <div 
               key={meal.id} 
               className={`checkbox-card ${selectedMeals.includes(meal.id) ? 'selected' : ''}`}
-              onClick={() => onToggleMeal(meal.id)}
+              aria-disabled="true"
             >
               <input 
                 type="checkbox" 
                 checked={selectedMeals.includes(meal.id)} 
-                onChange={() => {}} // Handled by div click
+                onChange={() => {}}
+                disabled
               />
               <span className="checkbox-label">{meal.label}</span>
             </div>

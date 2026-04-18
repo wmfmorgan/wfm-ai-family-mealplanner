@@ -12,6 +12,16 @@ export interface Recipe {
   prep_time_min: number;
   cook_time_min: number;
   servings: number;
+  source_provider: 'spoonacular' | 'ai-generated';
+  source_id?: string | null;
+  image_url?: string | null;
+  shopping_items?: Array<{
+    original_string: string;
+    category: string;
+    aisle: string | null;
+    amount: number | null;
+    unit: string | null;
+  }>;
 }
 
 export interface MealPlan {
@@ -81,22 +91,27 @@ export async function saveMealPlan(
   // 1. Ensure recipes exist and get their IDs
   const savedRecipes: Recipe[] = [];
   for (const recipe of recipes) {
+    const {
+      shopping_items,
+      ...recipeRecord
+    } = recipe;
+
     if (recipe.id) {
       const { data, error } = await supabase
         .from('recipes')
-        .upsert({ ...recipe, household_id: householdId })
+        .upsert({ ...recipeRecord, household_id: householdId })
         .select()
         .single();
       if (error) throw error;
-      savedRecipes.push(data);
+      savedRecipes.push({ ...data, shopping_items });
     } else {
       const { data, error } = await supabase
         .from('recipes')
-        .insert({ ...recipe, household_id: householdId })
+        .insert({ ...recipeRecord, household_id: householdId })
         .select()
         .single();
       if (error) throw error;
-      savedRecipes.push(data);
+      savedRecipes.push({ ...data, shopping_items });
     }
   }
 
@@ -154,26 +169,62 @@ export async function saveMealPlan(
 
   if (slotsError) throw slotsError;
 
-  // 4. Trigger AI ingredient categorization (non-blocking)
-  const allIngredients = recipes.flatMap(r => {
-    if (Array.isArray(r.ingredients)) {
-      return r.ingredients.map((i: any) => {
-        if (typeof i === 'string') return i;
-        if (typeof i === 'object' && i !== null) {
-          return `${i.amount || ''} ${i.item || i.name || ''}`.trim();
+  // 4. Rebuild shopping items from grounded/fallback payloads.
+  const { error: deleteShoppingItemsError } = await supabase
+    .from('shopping_list_items')
+    .delete()
+    .eq('meal_plan_id', plan.id);
+
+  if (deleteShoppingItemsError) throw deleteShoppingItemsError;
+
+  const shoppingItemsToInsert = savedRecipes.flatMap((recipe) =>
+    (recipe.shopping_items ?? []).map((item) => ({
+      meal_plan_id: plan.id,
+      original_string: item.original_string,
+      category: item.aisle || item.category || 'Other',
+      aisle: item.aisle,
+      amount: item.amount,
+      unit: item.unit,
+    }))
+  );
+
+  if (shoppingItemsToInsert.length > 0) {
+    const { error: shoppingListInsertError } = await supabase
+      .from('shopping_list_items')
+      .insert(shoppingItemsToInsert);
+
+    if (shoppingListInsertError) throw shoppingListInsertError;
+  }
+
+  // 5. Trigger AI categorization only for fallback recipes or missing aisle data.
+  const uncategorizedIngredients = savedRecipes.flatMap((recipe) => {
+    const hasMissingAisles = (recipe.shopping_items ?? []).some((item) => !item.aisle);
+    if (recipe.source_provider !== 'ai-generated' && !hasMissingAisles) {
+      return [];
+    }
+
+    if ((recipe.shopping_items ?? []).length > 0) {
+      return recipe.shopping_items!.map((item) => item.original_string).filter(Boolean);
+    }
+
+    if (Array.isArray(recipe.ingredients)) {
+      return recipe.ingredients.map((ingredient: any) => {
+        if (typeof ingredient === 'string') return ingredient;
+        if (typeof ingredient === 'object' && ingredient !== null) {
+          return `${ingredient.amount || ''} ${ingredient.item || ingredient.name || ''}`.trim();
         }
         return null;
       }).filter(Boolean);
     }
+
     return [];
   });
 
-  if (allIngredients.length > 0) {
-    // Non-blocking call to categorize ingredients
+  if (uncategorizedIngredients.length > 0) {
     supabase.functions.invoke('categorize-ingredients', {
       body: { 
         meal_plan_id: plan.id, 
-        ingredients: allIngredients,
+        ingredients: uncategorizedIngredients,
         provider: options?.provider,
         model: options?.model
       }
