@@ -25,6 +25,14 @@ export interface HouseholdMember {
   created_at: string;
 }
 
+export type GenerationMealType = 'breakfast' | 'lunch' | 'dinner';
+
+export interface GenerationPreferences {
+  selected_days: number[];
+  selected_meals: GenerationMealType[];
+  matrix: Record<string, GenerationMealType[]>;
+}
+
 export const DEFAULT_NUTRITION_PROFILE: NutritionProfile = {
   target_calories: 2000,
   macro_targets: {
@@ -42,6 +50,104 @@ export const DEFAULT_NUTRITION_PROFILE: NutritionProfile = {
 
 const IS_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
 const MOCK_STORAGE_KEY = 'wfm_mock_household_members';
+const MOCK_GENERATION_PREFERENCES_KEY = 'wfm_mock_generation_preferences';
+
+const DEFAULT_GENERATION_PREFERENCES: GenerationPreferences = {
+  selected_days: [0, 1, 2, 3, 4, 5, 6],
+  selected_meals: ['breakfast', 'lunch', 'dinner'],
+  matrix: {
+    0: ['breakfast', 'lunch', 'dinner'],
+    1: ['breakfast', 'lunch', 'dinner'],
+    2: ['breakfast', 'lunch', 'dinner'],
+    3: ['breakfast', 'lunch', 'dinner'],
+    4: ['breakfast', 'lunch', 'dinner'],
+    5: ['breakfast', 'lunch', 'dinner'],
+    6: ['breakfast', 'lunch', 'dinner']
+  }
+};
+
+const sanitizeGenerationPreferences = (value: Partial<GenerationPreferences> | null | undefined): GenerationPreferences => {
+  const matrixEntries = Object.entries(value?.matrix ?? {})
+    .filter(([day]) => /^\d+$/.test(day))
+    .map(([day, meals]) => {
+      const normalizedMeals = Array.isArray(meals)
+        ? meals.filter((meal): meal is GenerationMealType =>
+          meal === 'breakfast' || meal === 'lunch' || meal === 'dinner')
+        : [];
+
+      return [day, Array.from(new Set(normalizedMeals))];
+    });
+
+  const matrix = Object.fromEntries(matrixEntries);
+  const selectedDays = Array.from(new Set(
+    (Array.isArray(value?.selected_days) ? value?.selected_days : Object.keys(matrix).map(Number))
+      .filter((day): day is number => Number.isInteger(day) && day >= 0 && day <= 6)
+  )).sort((a, b) => a - b);
+
+  const selectedMealsSource = Array.isArray(value?.selected_meals)
+    ? value?.selected_meals
+    : Array.from(new Set(Object.values(matrix).flat()));
+  const selectedMeals = Array.from(new Set(
+    selectedMealsSource.filter((meal): meal is GenerationMealType =>
+      meal === 'breakfast' || meal === 'lunch' || meal === 'dinner')
+  ));
+
+  if (Object.keys(matrix).length === 0) {
+    return DEFAULT_GENERATION_PREFERENCES;
+  }
+
+  return {
+    selected_days: selectedDays,
+    selected_meals: selectedMeals,
+    matrix
+  };
+};
+
+const getMockGenerationPreferences = (): GenerationPreferences => {
+  const stored = localStorage.getItem(MOCK_GENERATION_PREFERENCES_KEY);
+  if (!stored) {
+    return DEFAULT_GENERATION_PREFERENCES;
+  }
+
+  return sanitizeGenerationPreferences(JSON.parse(stored) as GenerationPreferences);
+};
+
+export async function getGenerationPreferences(householdId: string): Promise<GenerationPreferences> {
+  if (IS_MOCK) {
+    return getMockGenerationPreferences();
+  }
+
+  const { data, error } = await supabase
+    .from('households')
+    .select('generation_preferences')
+    .eq('id', householdId)
+    .single();
+
+  if (error) throw error;
+
+  return sanitizeGenerationPreferences(
+    (data?.generation_preferences as GenerationPreferences | null | undefined) ?? null
+  );
+}
+
+export async function updateGenerationPreferences(
+  householdId: string,
+  prefs: GenerationPreferences
+): Promise<void> {
+  const nextPrefs = sanitizeGenerationPreferences(prefs);
+
+  if (IS_MOCK) {
+    localStorage.setItem(MOCK_GENERATION_PREFERENCES_KEY, JSON.stringify(nextPrefs));
+    return;
+  }
+
+  const { error } = await supabase
+    .from('households')
+    .update({ generation_preferences: nextPrefs })
+    .eq('id', householdId);
+
+  if (error) throw error;
+}
 
 const getMockData = (): HouseholdMember[] => {
   const stored = localStorage.getItem(MOCK_STORAGE_KEY);
@@ -181,7 +287,10 @@ export const householdService = {
       .eq('id', memberId);
 
     if (error) throw error;
-  }
+  },
+
+  getGenerationPreferences,
+  updateGenerationPreferences
 };
 
 export const NUTRITION_PRESETS: Record<string, Partial<NutritionProfile>> = {
