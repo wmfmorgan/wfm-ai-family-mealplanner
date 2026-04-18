@@ -2,7 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { getAiLogs, type AILog } from '../../lib/ai/logger';
 import { RefreshCcw, ChevronDown, ChevronUp, AlertCircle, Clock } from 'lucide-react';
 
-const DebugLog: React.FC = () => {
+interface DebugLogProps {
+  quotaSummary?: {
+    daily_limit: number;
+    points_used_today: number;
+    points_left_today: number;
+  } | null;
+}
+
+const DebugLog: React.FC<DebugLogProps> = ({ quotaSummary }) => {
   const [logs, setLogs] = useState<AILog[]>([]);
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
@@ -20,6 +28,16 @@ const DebugLog: React.FC = () => {
 
   return (
     <div className="debug-log">
+      {quotaSummary && (
+        <div className="debug-log-quota" data-testid="quota-summary">
+          <div className="debug-log-header">
+            <h3>Spoonacular quota</h3>
+          </div>
+          <p>{quotaSummary.points_used_today} / 150</p>
+          <p>{quotaSummary.points_left_today} points left today</p>
+        </div>
+      )}
+
       <div className="debug-log-header">
         <h3>AI Interaction Log (Last 10)</h3>
         <button onClick={refreshLogs} className="icon-button" title="Refresh logs">
