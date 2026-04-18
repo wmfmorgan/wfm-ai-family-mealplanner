@@ -4,7 +4,7 @@ import {
 
 import {
   buildDirectiveHash,
-  DEFAULT_SPOONACULAR_DAILY_LIMIT,
+  getDefaultDailyLimit,
   DEFAULT_SPOONACULAR_FALLBACK_THRESHOLD,
   getQuotaState,
 } from './spoonacular.ts'
@@ -23,7 +23,7 @@ const directive = {
 }
 
 Deno.test('SEARCH-04: default daily limit remains 50', () => {
-  assertEquals(DEFAULT_SPOONACULAR_DAILY_LIMIT, 50)
+  assertEquals(getDefaultDailyLimit(), 50)
 })
 
 Deno.test('SEARCH-04: default threshold remains 0.8', () => {
