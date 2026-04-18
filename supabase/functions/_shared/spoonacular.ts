@@ -1,6 +1,6 @@
-export const DEFAULT_SPOONACULAR_DAILY_LIMIT = Number(
-  Deno.env.get('SPOONACULAR_DAILY_LIMIT') ?? '50',
-)
+export function getDefaultDailyLimit(): number {
+  return Number(Deno.env.get('SPOONACULAR_DAILY_LIMIT') ?? '150')
+}
 
 export const DEFAULT_SPOONACULAR_FALLBACK_THRESHOLD = Number(
   Deno.env.get('SPOONACULAR_FALLBACK_THRESHOLD') ?? '0.8',
@@ -57,7 +57,7 @@ export function getQuotaState(input: {
   dailyLimit?: number
   threshold?: number
 }) {
-  const dailyLimit = input.dailyLimit ?? DEFAULT_SPOONACULAR_DAILY_LIMIT
+  const dailyLimit = input.dailyLimit ?? getDefaultDailyLimit()
   const threshold = input.threshold ?? DEFAULT_SPOONACULAR_FALLBACK_THRESHOLD
   const thresholdPoints = Math.ceil(dailyLimit * threshold)
 

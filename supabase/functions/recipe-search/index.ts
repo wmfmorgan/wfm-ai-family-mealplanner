@@ -12,7 +12,7 @@ import {
 import { matchesAllergenTaxonomy } from '../_shared/allergen-taxonomy.ts'
 import {
   buildDirectiveHash,
-  DEFAULT_SPOONACULAR_DAILY_LIMIT,
+  getDefaultDailyLimit,
   DEFAULT_SPOONACULAR_FALLBACK_THRESHOLD,
   fetchComplexSearch,
   getQuotaState,
@@ -303,7 +303,7 @@ function parseQuotaNumber(value: string | null, fallback: number): number {
 export function parseQuotaHeaders(
   response: Response,
   fallbackPointsUsedToday: number,
-  dailyLimit = DEFAULT_SPOONACULAR_DAILY_LIMIT,
+  dailyLimit = getDefaultDailyLimit(),
 ) {
   const pointsRequested = parseQuotaNumber(
     response.headers.get('X-API-Quota-Request'),
@@ -438,7 +438,7 @@ export function createHandler(overrides: Partial<HandlerDependencies> = {}) {
       void userClient
 
       const usageRows = await deps.loadQuotaUsage(serviceClient, body.household_id)
-      const dailyLimit = Number(Deno.env.get('SPOONACULAR_DAILY_LIMIT') ?? DEFAULT_SPOONACULAR_DAILY_LIMIT)
+      const dailyLimit = Number(Deno.env.get('SPOONACULAR_DAILY_LIMIT') ?? getDefaultDailyLimit())
       const threshold = Number(
         Deno.env.get('SPOONACULAR_FALLBACK_THRESHOLD') ?? DEFAULT_SPOONACULAR_FALLBACK_THRESHOLD,
       )
