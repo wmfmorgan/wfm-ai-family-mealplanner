@@ -6,7 +6,8 @@ import { ROLE_CONFIG_FOR_TEST } from './ai-client.ts'
 
 Deno.test("INFRA-01: coordinator role config", () => {
   assertEquals(ROLE_CONFIG_FOR_TEST['coordinator'].temperature, 0.7)
-  assertEquals(ROLE_CONFIG_FOR_TEST['coordinator'].max_tokens, 1024)
+  // max_tokens updated to 4096 by plan 14-06 (INFRA-03)
+  assertEquals(ROLE_CONFIG_FOR_TEST['coordinator'].max_tokens, 4096)
 })
 
 // INFRA-03: Plan 14-06 — coordinator token budget raised to 4096

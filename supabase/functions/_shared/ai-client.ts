@@ -3,7 +3,7 @@ import { createServiceClient } from './auth.ts'
 
 // D-01: Role config map — hardcoded, not overridable by callers
 const ROLE_CONFIG: Record<string, { temperature: number; max_tokens: number }> = {
-  'coordinator':         { temperature: 0.7, max_tokens: 1024 },
+  'coordinator':         { temperature: 0.7, max_tokens: 4096 },
   'adapter':            { temperature: 0.3, max_tokens: 2048 },
   'fallback-generator': { temperature: 0.9, max_tokens: 2048 },
 }
