@@ -32,14 +32,14 @@ function getQuotaStorageKey(householdId: string): string {
 }
 
 function normalizeQuotaStatus(input: Partial<QuotaStatus> | null | undefined): QuotaStatus {
-  const dailyLimit = typeof input?.daily_limit === 'number'
-    ? input.daily_limit
-    : DEFAULT_QUOTA_STATUS.daily_limit;
+  // Always use the frontend-configured daily limit — DB rows may have stale values
+  // written by the edge function when SPOONACULAR_DAILY_LIMIT was set differently.
+  const dailyLimit = DEFAULT_QUOTA_STATUS.daily_limit;
   const pointsUsedToday = typeof input?.points_used_today === 'number'
     ? input.points_used_today
     : DEFAULT_QUOTA_STATUS.points_used_today;
   const pointsLeftToday = typeof input?.points_left_today === 'number'
-    ? input.points_left_today
+    ? Math.min(input.points_left_today, dailyLimit)
     : Math.max(dailyLimit - pointsUsedToday, 0);
 
   return {
