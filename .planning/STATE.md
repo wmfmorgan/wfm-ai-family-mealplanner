@@ -4,7 +4,7 @@ milestone: v4.0
 milestone_name: milestone
 status: executing
 stopped_at: Completed 14-03-PLAN.md
-last_updated: "2026-04-17T21:41:56.588Z"
+last_updated: "2026-04-18T12:55:36.695Z"
 last_activity: 2026-04-17
 progress:
   total_phases: 2
@@ -78,6 +78,7 @@ Progress: [....................] 0%
 - [Phase 14]: Quota state is recomputed from Spoonacular response headers after every live request so later directives in the same batch can switch to fallback.
 - [Phase 14]: Recipe-search reuses cached grounded recipes by directive hash before any live Spoonacular call and never logs usage on cache hits.
 - [Phase 14]: Fallback slots preserve the same response shape as grounded slots while labeling recipes as ai-generated and nulling provider-only shopping metadata.
+- [Phase 14]: MealPlanner reloads persisted household generation preferences at generation time so Settings remains the source of truth for scope.
 
 ### Pending Todos
 
