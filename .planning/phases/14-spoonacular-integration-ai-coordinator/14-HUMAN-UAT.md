@@ -1,5 +1,5 @@
 ---
-status: diagnosed
+status: resolved
 phase: 14-spoonacular-integration-ai-coordinator
 source:
   - 14-VERIFICATION.md
@@ -34,7 +34,7 @@ blocked: 0
 
 ## Gaps
 - truth: "Planner receives grounded Spoonacular slots with nutrition, ingredients, aisle metadata, and persisted source fields"
-  status: diagnosed
+  status: resolved
   reason: "User reported: Clicking generate returns a 500 from /functions/v1/select-meals and MealPlanner shows FunctionsHttpError: Edge Function returned a non-2xx status code."
   severity: major
   test: 1
