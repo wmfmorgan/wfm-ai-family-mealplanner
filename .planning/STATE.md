@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v4.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 14-03-PLAN.md
-last_updated: "2026-04-18T12:55:36.695Z"
-last_activity: 2026-04-17
+stopped_at: Completed 14-05-PLAN.md
+last_updated: "2026-04-18T16:30:39.164Z"
+last_activity: 2026-04-18
 progress:
   total_phases: 2
   completed_phases: 0
@@ -26,9 +26,9 @@ See: .planning/PROJECT.md (updated 2026-04-16)
 ## Current Position
 
 Phase: 14 (spoonacular-integration-ai-coordinator) — EXECUTING
-Plan: 4 of 4
+Plan: 2 of 5
 Status: Ready to execute
-Last activity: 2026-04-17
+Last activity: 2026-04-18
 
 Progress: [....................] 0%
 
@@ -54,6 +54,7 @@ Progress: [....................] 0%
 | Phase 14 P01 | 4min | 4 tasks | 4 files |
 | Phase 14 P02 | 3 min | 2 tasks | 6 files |
 | Phase 14 P03 | 6 min | 2 tasks | 5 files |
+| Phase 14-spoonacular-integration-ai-coordinator P05 | 25 | 3 tasks | 5 files |
 
 ### Decisions
 
@@ -79,6 +80,8 @@ Progress: [....................] 0%
 - [Phase 14]: Recipe-search reuses cached grounded recipes by directive hash before any live Spoonacular call and never logs usage on cache hits.
 - [Phase 14]: Fallback slots preserve the same response shape as grounded slots while labeling recipes as ai-generated and nulling provider-only shopping metadata.
 - [Phase 14]: MealPlanner reloads persisted household generation preferences at generation time so Settings remains the source of truth for scope.
+- [Phase 14]: Correct Spoonacular free-tier daily limit is 50 pts, not 150 — plan frontmatter was wrong
+- [Phase 14]: getDefaultDailyLimit() reads env var at call time to avoid module-load-time secret injection race in Deno edge functions
 
 ### Pending Todos
 
@@ -91,6 +94,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-17T21:41:56.586Z
-Stopped at: Completed 14-03-PLAN.md
+Last session: 2026-04-18T16:30:39.162Z
+Stopped at: Completed 14-05-PLAN.md
 Resume file: None
