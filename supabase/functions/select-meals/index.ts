@@ -331,7 +331,12 @@ export function createHandler(overrides: Partial<HandlerDependencies> = {}) {
         householdId: body.household_id,
       })
 
-      const parsed = JSON.parse(aiResult.content) as { directives?: unknown }
+      let parsed: { directives?: unknown }
+      try {
+        parsed = JSON.parse(aiResult.content) as { directives?: unknown }
+      } catch {
+        return errorResponse(500, 'coordinator_response_truncated')
+      }
       const directives = validateDirectives(parsed.directives, targets)
 
       return jsonResponse({
