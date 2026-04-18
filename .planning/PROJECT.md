@@ -29,11 +29,17 @@ A web-based family meal planner where a single logged-in user manages a househol
 
 ## Current State
 - **Shipped Version**: v3.0 (Meal Generation Refinement)
-- **Phase 13 complete** — Foundation & Database Migrations: `_shared/` AI client modules + 5 DB migrations deployed
+- **Phase 14 complete** — Spoonacular Integration & AI Coordinator: two-step meal generation pipeline (select-meals → recipe-search), quota tracking, allergen taxonomy, CSS generation matrix
 - **Latest Features**: 
     - Granular slot control (Delete/Refresh).
     - Multi-agent coordinator-worker architecture for meal generation.
     - Editorial progress indicators.
+    - Spoonacular-grounded recipe search with cache-first lookup and fallback labeling.
+    - Household generation preferences (3×7 day×meal-type matrix).
+
+## Validated Requirements (Phase 14)
+- **SEARCH-03** — Frontend quota default shows 50 pts (free-tier limit) *(Validated in Phase 14: Spoonacular Integration & AI Coordinator)*
+- **SEARCH-04** — `getDefaultDailyLimit()` reads env at call time; Deno secret injection race eliminated *(Validated in Phase 14)*
 
 ## Validated Requirements (Phase 13)
 - **INFRA-01** — Shared AI client with role-based temperature/max_tokens enforcement *(Validated in Phase 13: Foundation & Database Migrations)*
@@ -90,4 +96,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-17 after Phase 13 complete*
+*Last updated: 2026-04-18 after Phase 14 complete*
