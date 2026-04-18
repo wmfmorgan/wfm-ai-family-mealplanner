@@ -7,7 +7,7 @@ source:
   - 14-03-SUMMARY.md
   - 14-04-SUMMARY.md
 started: 2026-04-18T00:00:00Z
-updated: 2026-04-18T00:00:00Z
+updated: 2026-04-18T12:00:00Z
 ---
 
 ## Current Test
@@ -57,26 +57,37 @@ blocked: 0
 
 ## Gaps
 
-- truth: "Settings quota display shows correct daily limit of 150 pts"
-  status: failed
+- truth: "Settings quota display shows correct daily limit (50 pts — free-tier Spoonacular limit)"
+  status: resolved
   reason: "User reported: i see that but the max is 50 points per day, not 150"
   severity: major
   test: 2
-  artifacts: []
+  root_cause: "DEFAULT_QUOTA_STATUS in src/lib/services/spoonacular.ts hardcoded wrong value; backend fallback also wrong."
+  resolved_by: "14-05 task 2 + correction: daily_limit set to 50 in frontend and backend fallback. Plan frontmatter was wrong about 150 — 50 is correct free-tier limit."
+  artifacts:
+    - src/lib/services/spoonacular.ts
+    - supabase/functions/_shared/spoonacular.ts
   missing: []
 
 - truth: "Generated meal slots show Spoonacular-grounded recipes with image, recipe name, and aisle-level ingredient data"
-  status: failed
+  status: resolved
   reason: "User reported: when i generate a meal plan, i get a fallback recipe (i dont see any console errors), i do not see a picture, and i see fallback ingredients. fail"
   severity: major
   test: 4
-  artifacts: []
+  root_cause: "DEFAULT_SPOONACULAR_DAILY_LIMIT was module-level const evaluated at import time before secrets injected, always '50'. Threshold fired early, short-circuiting to fallback."
+  resolved_by: "14-05 task 1: replaced with getDefaultDailyLimit() function — reads env at call time, fallback '50'."
+  artifacts:
+    - supabase/functions/_shared/spoonacular.ts
+    - supabase/functions/recipe-search/index.ts
   missing: []
 
 - truth: "Settings shows a 3x7 grid of toggles (days × meal types)"
-  status: failed
+  status: resolved
   reason: "User reported: i see the settings and can toggle them, but they are not in a grid"
   severity: minor
   test: 1
-  artifacts: []
+  root_cause: "CSS classes .generation-matrix, .matrix-row, .matrix-cell applied in JSX but never defined in stylesheet."
+  resolved_by: "14-05 task 2: added CSS grid rules to Settings.css — display:grid with 8 columns, display:contents on rows."
+  artifacts:
+    - src/pages/Settings/Settings.css
   missing: []
