@@ -202,3 +202,111 @@ Deno.test('SEARCH-02: sparse matrix preserves exact cells only', async () => {
     directive.meal_type,
   ]), [[1, 'dinner'], [3, 'breakfast']])
 })
+
+// Plan 14-06: Pre-parse guard for truncated coordinator JSON (INFRA-03)
+
+Deno.test('INFRA-03: truncated coordinator JSON returns HTTP 500 with coordinator_response_truncated', async () => {
+  const handler = createHandler({
+    verifyAuth: async () => ({ user: { id: 'user-1' }, authHeader }),
+    loadGenerationPreferences: async () => ({ matrix: { '1': ['dinner'] } }),
+    callAI: async () => ({
+      content: '{"directives":[{"day":1',  // truncated / invalid JSON
+      usage: { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 },
+      provider: 'test',
+      model: 'test',
+    }),
+  })
+
+  const response = await handler(buildRequest({
+    household_id: 'household-1',
+    members: baseMembers,
+    week_start_date: '2026-04-19',
+    matrix: { '1': ['dinner'] },
+  }))
+  const payload = await response.json()
+
+  assertEquals(response.status, 500)
+  assertEquals(payload.error, 'coordinator_response_truncated')
+})
+
+Deno.test('INFRA-03: valid coordinator JSON with passing directives returns HTTP 200', async () => {
+  const handler = createHandler({
+    verifyAuth: async () => ({ user: { id: 'user-1' }, authHeader }),
+    loadGenerationPreferences: async () => null,
+    callAI: async () => ({
+      content: JSON.stringify({
+        directives: [
+          {
+            day: 2,
+            meal_type: 'lunch',
+            query: 'grilled chicken salad',
+            cuisine: null,
+            diet: null,
+            min_calories: 400,
+            max_calories: 600,
+            intolerances: [],
+            exclude_ingredients: [],
+            fallback_reason: null,
+          },
+        ],
+      }),
+      usage: { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 },
+      provider: 'test',
+      model: 'test',
+    }),
+  })
+
+  const response = await handler(buildRequest({
+    household_id: 'household-1',
+    members: baseMembers,
+    week_start_date: '2026-04-19',
+    matrix: { '2': ['lunch'] },
+  }))
+  const payload = await response.json()
+
+  assertEquals(response.status, 200)
+  assertEquals(payload.directives.length, 1)
+  assertEquals(payload.directives[0].day, 2)
+  assertEquals(payload.directives[0].meal_type, 'lunch')
+})
+
+Deno.test('INFRA-03: valid JSON with wrong directive count returns validateDirectives error, not coordinator_response_truncated', async () => {
+  const handler = createHandler({
+    verifyAuth: async () => ({ user: { id: 'user-1' }, authHeader }),
+    loadGenerationPreferences: async () => null,
+    callAI: async () => ({
+      // Valid JSON but directives count doesn't match matrix (2 cells, 1 directive)
+      content: JSON.stringify({
+        directives: [
+          {
+            day: 1,
+            meal_type: 'breakfast',
+            query: 'scrambled eggs',
+            cuisine: null,
+            diet: null,
+            min_calories: 300,
+            max_calories: 450,
+            intolerances: [],
+            exclude_ingredients: [],
+            fallback_reason: null,
+          },
+        ],
+      }),
+      usage: { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 },
+      provider: 'test',
+      model: 'test',
+    }),
+  })
+
+  const response = await handler(buildRequest({
+    household_id: 'household-1',
+    members: baseMembers,
+    week_start_date: '2026-04-19',
+    matrix: { '1': ['breakfast', 'dinner'] },  // 2 cells, but AI only returned 1 directive
+  }))
+  const payload = await response.json()
+
+  assertEquals(response.status, 500)
+  assertEquals(payload.error !== 'coordinator_response_truncated', true)
+  assertEquals(payload.error.includes('did not produce directives for every enabled matrix cell'), true)
+})
