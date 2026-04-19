@@ -69,13 +69,98 @@ export function getQuotaState(input: {
   }
 }
 
+export function resolveComplexSearchType(
+  mealType: SearchDirective['meal_type'],
+): string {
+  switch (mealType) {
+    case 'breakfast':
+      return 'breakfast'
+    case 'lunch':
+    case 'dinner':
+      return 'main course'
+  }
+}
+
+export function resolveComplexSearchDiet(
+  diet: SearchDirective['diet'],
+): string | null {
+  if (!diet) {
+    return null
+  }
+
+  const normalized = diet.toLowerCase().trim()
+  switch (normalized) {
+    case 'vegetarian':
+      return 'vegetarian'
+    case 'vegan':
+      return 'vegan'
+    case 'pescatarian':
+    case 'pescetarian':
+      return 'pescetarian'
+    case 'paleo':
+      return 'paleo'
+    case 'keto':
+    case 'ketogenic':
+      return 'ketogenic'
+    case 'standard':
+    case 'omnivore':
+    case 'low-carb':
+    case 'low carb':
+      return null
+    default:
+      return null
+  }
+}
+
+export function resolveComplexSearchIntolerances(
+  intolerances: SearchDirective['intolerances'],
+): string[] {
+  const normalized = intolerances
+    .map((value) => value.toLowerCase().trim())
+    .filter(Boolean)
+
+  const mapped = normalized.flatMap((value) => {
+    switch (value) {
+      case 'milk':
+      case 'dairy':
+        return ['dairy']
+      case 'egg':
+      case 'eggs':
+        return ['egg']
+      case 'wheat':
+        return ['wheat']
+      case 'gluten':
+        return ['gluten']
+      case 'soy':
+        return ['soy']
+      case 'sesame':
+        return ['sesame']
+      case 'shellfish':
+        return ['shellfish']
+      case 'fish':
+      case 'seafood':
+        return ['seafood']
+      case 'peanut':
+      case 'peanuts':
+        return ['peanut']
+      case 'tree nuts':
+      case 'tree nut':
+        return ['tree nut']
+      default:
+        return []
+    }
+  })
+
+  return Array.from(new Set(mapped))
+}
+
 export async function fetchComplexSearch(args: {
   directive: SearchDirective
   apiKey: string
 }): Promise<Response> {
   const url = new URL('https://api.spoonacular.com/recipes/complexSearch')
   url.searchParams.set('query', args.directive.query)
-  url.searchParams.set('type', args.directive.meal_type)
+  url.searchParams.set('type', resolveComplexSearchType(args.directive.meal_type))
   url.searchParams.set('instructionsRequired', 'true')
   url.searchParams.set('fillIngredients', 'true')
   url.searchParams.set('addRecipeInformation', 'true')
@@ -86,12 +171,14 @@ export async function fetchComplexSearch(args: {
     url.searchParams.set('cuisine', args.directive.cuisine)
   }
 
-  if (args.directive.diet) {
-    url.searchParams.set('diet', args.directive.diet)
+  const diet = resolveComplexSearchDiet(args.directive.diet)
+  if (diet) {
+    url.searchParams.set('diet', diet)
   }
 
-  if (args.directive.intolerances.length > 0) {
-    url.searchParams.set('intolerances', args.directive.intolerances.join(','))
+  const intolerances = resolveComplexSearchIntolerances(args.directive.intolerances)
+  if (intolerances.length > 0) {
+    url.searchParams.set('intolerances', intolerances.join(','))
   }
 
   if (args.directive.exclude_ingredients.length > 0) {
@@ -151,7 +238,11 @@ export async function loadCachedRecipe(
     throw new Error(`Failed to load cached recipe: ${error.message}`)
   }
 
-  if (!data?.recipe_cache) {
+  const recipeCache = Array.isArray(data?.recipe_cache)
+    ? data.recipe_cache[0]
+    : data?.recipe_cache
+
+  if (!data || !recipeCache) {
     return null
   }
 
@@ -159,7 +250,7 @@ export async function loadCachedRecipe(
     directive_hash: data.directive_hash,
     spoonacular_id: data.spoonacular_id,
     expires_at: data.expires_at,
-    recipe: data.recipe_cache.raw_data as SpoonacularRecipeResult,
+    recipe: recipeCache.raw_data as SpoonacularRecipeResult,
   }
 }
 

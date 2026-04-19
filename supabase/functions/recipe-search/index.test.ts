@@ -83,7 +83,12 @@ Deno.test('SEARCH-01: cache hit short-circuits provider fetch and usage-log writ
     createUserClient: () => createSupabaseStub(),
     createServiceClient: () => createSupabaseStub(),
     loadQuotaUsage: async () => [],
-    loadCachedRecipe: async () => ({ recipe: groundedRecipe }),
+    loadCachedRecipe: async () => ({
+      directive_hash: 'hash',
+      spoonacular_id: groundedRecipe.id,
+      expires_at: new Date(Date.now() + 60_000).toISOString(),
+      recipe: groundedRecipe,
+    }),
     fetchComplexSearch: async () => {
       providerCalls += 1
       return new Response('{}')

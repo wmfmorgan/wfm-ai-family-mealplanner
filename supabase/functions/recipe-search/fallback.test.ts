@@ -238,3 +238,69 @@ Deno.test('SEARCH-05: zero surviving grounded candidates after taxonomy filterin
   assertEquals(payload.slots[0].recipe.source_provider, 'ai-generated')
   assertEquals(payload.slots[0].recipe.source_id, null)
 })
+
+Deno.test('SEARCH-05: provider-no-results retries broader search variants before falling back', async () => {
+  const handler = createHandler({
+    verifyAuth: async () => ({ user: { id: 'user-1' }, authHeader }),
+    createUserClient: () => createSupabaseStub(),
+    createServiceClient: () => createSupabaseStub(),
+    loadQuotaUsage: async () => [],
+    loadCachedRecipe: async () => null,
+    fetchComplexSearch: async ({ directive }) => {
+      if (
+        directive.query === 'chicken pasta bake'
+        && directive.cuisine === 'Italian'
+        && directive.min_calories === 600
+        && directive.max_calories === 800
+      ) {
+        return new Response(JSON.stringify({ results: [] }), {
+          status: 200,
+          headers: {
+            'Content-Type': 'application/json',
+            'X-API-Quota-Request': '1',
+            'X-API-Quota-Used': '10',
+            'X-API-Quota-Left': '40',
+          },
+        })
+      }
+
+      return new Response(JSON.stringify({ results: [groundedRecipe] }), {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+          'X-API-Quota-Request': '1',
+          'X-API-Quota-Used': '11',
+          'X-API-Quota-Left': '39',
+        },
+      })
+    },
+    writeUsageLog: async () => undefined,
+    upsertRecipeCache: async () => undefined,
+    callAI: async () => ({
+      content: fallbackContent,
+      usage: { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 },
+      provider: 'test',
+      model: 'test',
+    }),
+  })
+
+  const response = await handler(buildRequest({
+    household_id: 'household-1',
+    week_start_date: '2026-04-19',
+    directives: [{
+      ...directiveA,
+      query: 'chicken pasta bake',
+      cuisine: 'Italian',
+      diet: 'Standard',
+      min_calories: 600,
+      max_calories: 800,
+      intolerances: ['peanuts', 'fish'],
+      exclude_ingredients: ['fish'],
+    }],
+  }))
+  const payload = await response.json()
+
+  assertEquals(response.status, 200)
+  assertEquals(payload.slots[0].recipe.source_provider, 'spoonacular')
+  assertEquals(payload.slots[0].fallback_reason, null)
+})

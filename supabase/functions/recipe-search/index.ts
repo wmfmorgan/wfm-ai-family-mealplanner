@@ -258,6 +258,52 @@ function ingredientNamesForRecipe(recipe: SpoonacularRecipeResult): string[] {
     })
 }
 
+function buildRelaxedQueries(query: string): string[] {
+  const words = query
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+
+  if (words.length <= 2) {
+    return []
+  }
+
+  const variants = [
+    words.slice(0, 2).join(' '),
+    words.slice(-2).join(' '),
+  ]
+
+  return Array.from(new Set(variants.filter((value) => value !== query)))
+}
+
+export function buildSearchDirectiveAttempts(directive: SearchDirective): SearchDirective[] {
+  const attempts: SearchDirective[] = [
+    directive,
+    { ...directive, cuisine: null },
+    { ...directive, min_calories: null, max_calories: null },
+    { ...directive, cuisine: null, min_calories: null, max_calories: null },
+  ]
+
+  for (const query of buildRelaxedQueries(directive.query)) {
+    attempts.push(
+      { ...directive, query },
+      { ...directive, query, cuisine: null },
+      { ...directive, query, min_calories: null, max_calories: null },
+      { ...directive, query, cuisine: null, min_calories: null, max_calories: null },
+    )
+  }
+
+  const seen = new Set<string>()
+  return attempts.filter((attempt) => {
+    const key = JSON.stringify(attempt)
+    if (seen.has(key)) {
+      return false
+    }
+    seen.add(key)
+    return true
+  })
+}
+
 function selectCompliantCandidate(
   candidates: SpoonacularRecipeResult[],
   directive: SearchDirective,
@@ -490,76 +536,87 @@ export function createHandler(overrides: Partial<HandlerDependencies> = {}) {
           continue
         }
 
-        const providerResponse = await deps.fetchComplexSearch({
-          directive,
-          apiKey,
-        })
+        const attempts = buildSearchDirectiveAttempts(directive)
+        let selectedRecipe: SpoonacularRecipeResult | null = null
+        let sawAnyCandidates = false
+        let fallbackReason: string | null = null
 
-        const quotaHeaders = parseQuotaHeaders(
-          providerResponse,
-          quotaStatus.points_used_today,
-          dailyLimit,
-        )
-        await deps.writeUsageLog(serviceClient, {
-          household_id: body.household_id,
-          endpoint: '/recipes/complexSearch',
-          directive_hash: directiveHash,
-          points_requested: quotaHeaders.points_requested,
-          points_used_today: quotaHeaders.points_used_today,
-          points_left_today: quotaHeaders.points_left_today,
-          daily_limit: dailyLimit,
-          status_code: providerResponse.status,
-        })
+        for (const [attemptIndex, attempt] of attempts.entries()) {
+          if (attemptIndex > 0) {
+            console.warn(
+              `[recipe-search] retrying provider search attempt=${attemptIndex + 1}/${attempts.length} day=${directive.day} meal=${directive.meal_type} query="${attempt.query}" cuisine=${attempt.cuisine ?? 'null'} min=${attempt.min_calories ?? 'null'} max=${attempt.max_calories ?? 'null'}`,
+            )
+          }
 
-        quotaStatus = getQuotaState({
-          pointsUsedToday: quotaHeaders.points_used_today,
-          dailyLimit,
-          threshold,
-        })
+          const providerResponse = await deps.fetchComplexSearch({
+            directive: attempt,
+            apiKey,
+          })
 
-        if (providerResponse.status === 402) {
-          console.error(`[recipe-search] fallback=provider-quota-exhausted day=${directive.day} meal=${directive.meal_type} status=402`)
-          slots.push(await buildFallbackSlot(
-            deps,
-            directive,
-            body.household_id,
-            'provider-quota-exhausted',
-          ))
-          continue
+          const quotaHeaders = parseQuotaHeaders(
+            providerResponse,
+            quotaStatus.points_used_today,
+            dailyLimit,
+          )
+          await deps.writeUsageLog(serviceClient, {
+            household_id: body.household_id,
+            endpoint: '/recipes/complexSearch',
+            directive_hash: directiveHash,
+            points_requested: quotaHeaders.points_requested,
+            points_used_today: quotaHeaders.points_used_today,
+            points_left_today: quotaHeaders.points_left_today,
+            daily_limit: dailyLimit,
+            status_code: providerResponse.status,
+          })
+
+          quotaStatus = getQuotaState({
+            pointsUsedToday: quotaHeaders.points_used_today,
+            dailyLimit,
+            threshold,
+          })
+
+          if (providerResponse.status === 402) {
+            fallbackReason = 'provider-quota-exhausted'
+            break
+          }
+
+          if (!providerResponse.ok) {
+            fallbackReason = `provider-error-${providerResponse.status}`
+            break
+          }
+
+          const providerPayload = await providerResponse.json() as { results?: SpoonacularRecipeResult[] }
+          const candidates = Array.isArray(providerPayload.results) ? providerPayload.results : []
+          if (candidates.length > 0) {
+            sawAnyCandidates = true
+          }
+
+          const compliantCandidate = selectCompliantCandidate(candidates, directive)
+          if (compliantCandidate) {
+            selectedRecipe = compliantCandidate
+            break
+          }
         }
 
-        if (!providerResponse.ok) {
-          console.error(`[recipe-search] fallback=provider-error day=${directive.day} meal=${directive.meal_type} status=${providerResponse.status}`)
+        if (!selectedRecipe) {
+          const resolvedFallbackReason = fallbackReason ?? (
+            sawAnyCandidates ? 'taxonomy-rejected-all-candidates' : 'provider-no-results'
+          )
+          console.error(`[recipe-search] fallback=${resolvedFallbackReason} day=${directive.day} meal=${directive.meal_type} query="${directive.query}"`)
           slots.push(await buildFallbackSlot(
             deps,
             directive,
             body.household_id,
-            `provider-error-${providerResponse.status}`,
-          ))
-          continue
-        }
-
-        const providerPayload = await providerResponse.json() as { results?: SpoonacularRecipeResult[] }
-        const candidates = Array.isArray(providerPayload.results) ? providerPayload.results : []
-        const compliantCandidate = selectCompliantCandidate(candidates, directive)
-
-        if (!compliantCandidate) {
-          const fallbackReason = candidates.length === 0 ? 'provider-no-results' : 'taxonomy-rejected-all-candidates'
-          console.error(`[recipe-search] fallback=${fallbackReason} day=${directive.day} meal=${directive.meal_type} query="${directive.query}" candidateCount=${candidates.length}`)
-          slots.push(await buildFallbackSlot(
-            deps,
-            directive,
-            body.household_id,
-            fallbackReason,
+            resolvedFallbackReason,
           ))
           continue
         }
 
         await deps.upsertRecipeCache(serviceClient, {
           directiveHash,
-          recipe: compliantCandidate,
+          recipe: selectedRecipe,
         })
-        slots.push(normalizeProviderSlot(directive, compliantCandidate))
+        slots.push(normalizeProviderSlot(directive, selectedRecipe))
       }
 
       const responseBody: RecipeSearchResponse = {
