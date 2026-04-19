@@ -1,18 +1,18 @@
 ---
-status: investigating
+status: fixing
 trigger: "generate-returns-fallback-meals — Clicking Generate Plan completes without error but all meal slots are fallback (AI-generated) instead of Spoonacular-grounded recipes"
 created: 2026-04-18T00:00:00Z
-updated: 2026-04-19T00:00:00Z
+updated: 2026-04-18T21:00:00Z
 symptoms_prefilled: true
 goal: find_and_fix
 ---
 
 ## Current Focus
 
-hypothesis: The missing-key hypothesis is eliminated (key is now deployed). The fallback is caused by one or more of three remaining paths — each of which produces silent HTTP 200 with ai-generated slots: (A) the API key was deployed with leading/trailing whitespace so Spoonacular returns 401 and !providerResponse.ok fires, (B) today's spoonacular_usage_log rows from prior Generate attempts pushed points_used_today >= 40 (threshold), or (C) AI coordinator query strings with tight or equal min_calories/max_calories produce provider-no-results for every directive. The code previously had no logging or response field that surfaced which path was active.
-test: Added fallback_reason field to SlotResponse so the browser response exposes the exact reason for every fallback slot. Added console.error for every non-cache fallback path. Trimmed apiKey before use to neutralize whitespace. Deployed the fix so the user can regenerate and inspect response.slots[N].fallback_reason.
-expecting: After redeploying the edge function and regenerating, the response will show specific fallback reasons — e.g. 'provider-error-401' confirms key whitespace issue; 'quota-threshold-reached' confirms DB row accumulation; 'provider-no-results' confirms query/calorie range issue.
-next_action: deploy recipe-search/index.ts, regenerate, inspect fallback_reason values in browser DevTools Network tab
+hypothesis: CONFIRMED — fallback_reason is "provider-no-results". Spoonacular is called successfully (quota shows 17.66 pts, threshold not reached, key valid) but returns 0 results for every directive. Root cause is a zero-width calorie range: collectMemberContext in select-meals sets minCalories = maxCalories = target_calories when household has one member with a single target. This produces directives like min_calories=2000, max_calories=2000, which Spoonacular cannot match (zero-width window returns 0 results). Secondary issue: fetchComplexSearch sent number=2, too few candidates for allergen filtering.
+test: Applied three fixes: (1) collectMemberContext widens min/max to ±20% when min === max before passing to AI coordinator; (2) fetchComplexSearch widens calorie range ±20% when min === max as a safety net; (3) increased number=2 to number=5 so allergen filtering has more candidates. Also relaxed normalizeDirective to accept null calorie values instead of rejecting the whole directive.
+expecting: After deploying both edge functions, Spoonacular receives e.g. minCalories=1600 maxCalories=2400 instead of 2000/2000, returns results, and slots show source_provider=spoonacular.
+next_action: deploy both select-meals and recipe-search edge functions, regenerate, verify slots have source_provider=spoonacular
 
 ## Symptoms
 
@@ -98,22 +98,38 @@ started: Ongoing — the select-meals 500 was fixed (plan 14-06) but grounded re
   found: Direct curl test with query="grilled chicken salad" type=lunch minCalories=400 maxCalories=400 (same value) → 0 results. When min_calories == max_calories (single target_calories member), Spoonacular returns empty.
   implication: If household members all have the same target_calories, the AI coordinator generates directives with min_calories == max_calories, causing provider-no-results for every directive.
 
+- timestamp: 2026-04-18T21:00:00Z
+  checked: checkpoint response — fallback_reason confirmed as "provider-no-results"; quota 17.66 pts, threshold not reached
+  found: Spoonacular IS being called. Key is valid. Quota not exceeded. 0 results returned for every directive. Recipe name "chicken pasta dinner family style for leftovers fallback" shows AI fallback, not Spoonacular result.
+  implication: Zero-width calorie range is the confirmed root cause. No other path is active.
+
+- timestamp: 2026-04-18T21:00:00Z
+  checked: collectMemberContext in select-meals/index.ts lines 111-151
+  found: Single member with target_calories=N produces minCalories=N, maxCalories=N (both set from same value). This zero-width range is passed to AI coordinator as household_constraints.calorie_range. AI then generates directives with min_calories=N, max_calories=N. fetchComplexSearch sends minCalories=N&maxCalories=N to Spoonacular.
+  implication: Every directive produces provider-no-results. Fix: widen to ±20% when min===max at both the collectMemberContext level (so AI gets realistic range) and fetchComplexSearch level (safety net).
+
+- timestamp: 2026-04-18T21:00:00Z
+  checked: fetchComplexSearch number parameter in spoonacular.ts line 83
+  found: number=2 — only 2 candidates requested. With allergen filtering via selectCompliantCandidate, if both candidates contain allergens, fallback fires even when Spoonacular has valid results.
+  implication: Increased to number=5 for more candidate headroom.
+
+- timestamp: 2026-04-18T21:00:00Z
+  checked: normalizeDirective in select-meals/index.ts lines 177-179
+  found: Hard rejection (return null) when min_calories or max_calories is not a number. SearchDirective type declares these as number | null. If household has no calorie targets at all, AI may produce null and the directive is silently dropped, causing "did not produce directives for every enabled matrix cell" error.
+  implication: Relaxed to accept null via parseCalories helper — lets calorie-free households generate plans without crashing.
+
 ## Resolution
 
 root_cause: |
-  Three potential active causes, all producing silent HTTP 200 with ai-generated slots. The code had no logging or response field to distinguish them:
-  (A) API key deployed with whitespace → Spoonacular returns 401 → !providerResponse.ok fires → provider-error-401 fallback
-  (B) Prior Generate runs after key was added accumulated points_used_today >= 40 in spoonacular_usage_log → threshold_reached=true → quota-threshold-reached fallback
-  (C) AI coordinator generates min_calories == max_calories (or very tight range) when all household members share same target_calories → Spoonacular returns 0 results → provider-no-results fallback
-  Root cause (A) is highest probability because it explains why ALL slots fail from the first directive.
+  CONFIRMED: collectMemberContext in select-meals/index.ts produces calorie_range.min === calorie_range.max when the household has one member with a single target_calories value. The AI coordinator passes this zero-width range into each SearchDirective (min_calories=N, max_calories=N). fetchComplexSearch sends minCalories=N&maxCalories=N to Spoonacular, which returns 0 results for every directive. This triggers provider-no-results fallback for all slots, producing silent HTTP 200 with AI-generated meals. Secondary: number=2 is too few candidates for allergen filtering to have headroom.
 
 fix: |
-  1. CODE (applied): Added fallback_reason: string | null to SlotResponse type and propagated it through normalizeFallbackSlot and buildFallbackSlot. Now every slot in the response includes the exact reason it fell back — visible in browser DevTools Network tab.
-  2. CODE (applied): Added console.error for every non-cache fallback path in the directive loop, including quota state, status codes, query strings, and candidate counts.
-  3. CODE (applied): Trimmed the apiKey value (rawApiKey.trim()) before use — neutralizes whitespace from Dashboard copy-paste.
-  4. OPS (pending): Redeploy recipe-search edge function: supabase functions deploy recipe-search
-  5. FOLLOW-UP (pending): After redeploying, user regenerates and inspects response.slots[N].fallback_reason. If 'provider-no-results', additional fix needed for calorie range widening. If 'provider-error-4xx', key value is wrong and must be re-set.
+  1. select-meals/index.ts — collectMemberContext: when minCalories === maxCalories after collecting all members, widen to ±20% before returning to AI coordinator. This ensures AI directives use a searchable calorie range (e.g., 1600–2400 instead of 2000–2000).
+  2. spoonacular.ts — fetchComplexSearch: apply same ±20% widening as a safety net at the HTTP call level if the directive still arrives with min === max.
+  3. spoonacular.ts — fetchComplexSearch: increase number from 2 to 5 so allergen filtering has more candidates before falling back.
+  4. select-meals/index.ts — normalizeDirective: relaxed hard rejection of non-number calories to accept null via parseCalories helper, preventing silent directive drops for calorie-free households.
 
-verification: pending — fix deployed, awaiting user to regenerate and report fallback_reason values from browser DevTools
+verification: pending — fix applied, awaiting deploy and user verification
 files_changed:
-  - supabase/functions/recipe-search/index.ts
+  - supabase/functions/_shared/spoonacular.ts
+  - supabase/functions/select-meals/index.ts

@@ -80,7 +80,7 @@ export async function fetchComplexSearch(args: {
   url.searchParams.set('fillIngredients', 'true')
   url.searchParams.set('addRecipeInformation', 'true')
   url.searchParams.set('addRecipeNutrition', 'true')
-  url.searchParams.set('number', '2')
+  url.searchParams.set('number', '5')
 
   if (args.directive.cuisine) {
     url.searchParams.set('cuisine', args.directive.cuisine)
@@ -98,12 +98,19 @@ export async function fetchComplexSearch(args: {
     url.searchParams.set('excludeIngredients', args.directive.exclude_ingredients.join(','))
   }
 
-  if (typeof args.directive.min_calories === 'number') {
-    url.searchParams.set('minCalories', String(args.directive.min_calories))
-  }
-
-  if (typeof args.directive.max_calories === 'number') {
-    url.searchParams.set('maxCalories', String(args.directive.max_calories))
+  const minCal = args.directive.min_calories
+  const maxCal = args.directive.max_calories
+  if (typeof minCal === 'number' && typeof maxCal === 'number') {
+    // When min === max (single target_calories member), Spoonacular returns 0 results.
+    // Widen to ±20% of the target so the search has a non-zero window.
+    const effectiveMin = minCal === maxCal ? Math.round(minCal * 0.8) : minCal
+    const effectiveMax = minCal === maxCal ? Math.round(maxCal * 1.2) : maxCal
+    url.searchParams.set('minCalories', String(effectiveMin))
+    url.searchParams.set('maxCalories', String(effectiveMax))
+  } else if (typeof minCal === 'number') {
+    url.searchParams.set('minCalories', String(Math.round(minCal * 0.8)))
+  } else if (typeof maxCal === 'number') {
+    url.searchParams.set('maxCalories', String(Math.round(maxCal * 1.2)))
   }
 
   return fetch(url, {

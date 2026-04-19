@@ -140,13 +140,23 @@ function collectMemberContext(members: HouseholdMember[]) {
     }
   }
 
+  // When all members share the same target_calories, min === max produces a zero-width
+  // range that Spoonacular's complexSearch cannot match. Widen to ±20% of the target
+  // so the AI coordinator generates search-friendly min_calories/max_calories in directives.
+  const effectiveMin = minCalories !== null && maxCalories !== null && minCalories === maxCalories
+    ? Math.round(minCalories * 0.8)
+    : minCalories
+  const effectiveMax = minCalories !== null && maxCalories !== null && minCalories === maxCalories
+    ? Math.round(maxCalories * 1.2)
+    : maxCalories
+
   return {
     allergies: Array.from(allergies).sort(),
     avoidances: Array.from(avoidances).sort(),
     diets: Array.from(diets).sort(),
     calorie_range: {
-      min: minCalories,
-      max: maxCalories,
+      min: effectiveMin,
+      max: effectiveMax,
     },
   }
 }
@@ -164,14 +174,13 @@ function normalizeDirective(raw: Record<string, unknown>): SearchDirective | nul
     return null
   }
 
-  if (typeof raw.min_calories !== 'number' || typeof raw.max_calories !== 'number') {
-    return null
-  }
-
   const stringList = (value: unknown): string[] =>
     Array.isArray(value)
       ? value.filter((item): item is string => typeof item === 'string' && item.trim().length > 0)
       : []
+
+  const parseCalories = (value: unknown): number | null =>
+    typeof value === 'number' && Number.isFinite(value) ? value : null
 
   return {
     day: raw.day,
@@ -179,8 +188,8 @@ function normalizeDirective(raw: Record<string, unknown>): SearchDirective | nul
     query: raw.query.trim(),
     cuisine: typeof raw.cuisine === 'string' ? raw.cuisine : null,
     diet: typeof raw.diet === 'string' ? raw.diet : null,
-    min_calories: raw.min_calories,
-    max_calories: raw.max_calories,
+    min_calories: parseCalories(raw.min_calories),
+    max_calories: parseCalories(raw.max_calories),
     intolerances: stringList(raw.intolerances),
     exclude_ingredients: stringList(raw.exclude_ingredients),
     fallback_reason: typeof raw.fallback_reason === 'string' ? raw.fallback_reason : null,
