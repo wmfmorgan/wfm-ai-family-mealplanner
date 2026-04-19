@@ -244,9 +244,9 @@ function buildPrompts(input: {
     'Output directives only. Do not return recipes, ingredient lists, instructions, shopping lists, prose, markdown, or commentary.',
     'Treat the provided matrix as the source of truth for enabled day/meal cells. Produce exactly one directive per enabled cell and none for disabled cells.',
     'Every directive must include both min_calories and max_calories as numeric values.',
-    'Write short, provider-searchable query strings that Spoonacular can match reliably.',
-    'Do not use query phrases like "leftovers", "meal prep", "batch cook", "cook once eat twice", "family style", or "double batch" unless leftover strategy is explicitly enabled.',
-    'When leftover strategy is disabled, prefer distinct recipes per slot and set fallback_reason to null unless there is a real search limitation.',
+    'The query field must be 1–4 words maximum — a short ingredient or dish name that a recipe search engine can match reliably (e.g. "chicken stir fry", "pasta bake", "lentil soup"). Never include planning words like "leftovers", "meal prep", "batch cook", "family style", "cook once", or "double batch" in the query field.',
+    'If leftover_strategy is true, express it by assigning the same short query to two different slots (signalling cook-once intent) — never by making the query longer or adding planning language.',
+    'Set fallback_reason to null for every directive unless there is a genuine search limitation specific to this household.',
   ].join(' ')
 
   const userPrompt = JSON.stringify({

@@ -1,18 +1,18 @@
 ---
-status: fixing
+status: awaiting_human_verify
 trigger: "generate-returns-fallback-meals — Clicking Generate Plan completes without error but all meal slots are fallback (AI-generated) instead of Spoonacular-grounded recipes"
 created: 2026-04-18T00:00:00Z
-updated: 2026-04-18T21:00:00Z
+updated: 2026-04-18T22:30:00Z
 symptoms_prefilled: true
 goal: find_and_fix
 ---
 
 ## Current Focus
 
-hypothesis: CONFIRMED — fallback_reason is "provider-no-results". Spoonacular is called successfully (quota shows 17.66 pts, threshold not reached, key valid) but returns 0 results for every directive. Root cause is a zero-width calorie range: collectMemberContext in select-meals sets minCalories = maxCalories = target_calories when household has one member with a single target. This produces directives like min_calories=2000, max_calories=2000, which Spoonacular cannot match (zero-width window returns 0 results). Secondary issue: fetchComplexSearch sent number=2, too few candidates for allergen filtering.
-test: Applied three fixes: (1) collectMemberContext widens min/max to ±20% when min === max before passing to AI coordinator; (2) fetchComplexSearch widens calorie range ±20% when min === max as a safety net; (3) increased number=2 to number=5 so allergen filtering has more candidates. Also relaxed normalizeDirective to accept null calorie values instead of rejecting the whole directive.
-expecting: After deploying both edge functions, Spoonacular receives e.g. minCalories=1600 maxCalories=2400 instead of 2000/2000, returns results, and slots show source_provider=spoonacular.
-next_action: deploy both select-meals and recipe-search edge functions, regenerate, verify slots have source_provider=spoonacular
+hypothesis: CONFIRMED — TWO root causes. (1) Zero-width calorie range (calorie-widening fix already in code, NOT YET deployed — user confirmed still getting fallback). (2) NEWLY CONFIRMED: The system prompt in buildPrompts explicitly grants the AI permission to use phrases like "leftovers", "family style", "double batch" when leftover_strategy is true. leftover_strategy defaults to true (MealPlanner.tsx line 23 useState(true)). AI coordinator generates verbose queries like "chicken pasta dinner family style for leftovers" — these return 0 results from Spoonacular regardless of calorie range. The checkpoint evidence (recipe name "chicken pasta dinner family style for leftovers fallback") confirms this is actively firing.
+test: Fix system prompt to enforce short, searchable queries unconditionally. The "leftover strategy" concept should control which recipe types are chosen (e.g. same query for two slots), never the query string verbosity. Apply this alongside the calorie-widening and number=5 fixes.
+expecting: After deploying select-meals with corrected system prompt + calorie-widening, AI generates queries like "chicken pasta" or "pasta bake" (not "chicken pasta dinner family style for leftovers"), Spoonacular returns results, slots show source_provider=spoonacular.
+next_action: Fix system prompt in select-meals/index.ts, deploy both functions, regenerate
 
 ## Symptoms
 
@@ -118,18 +118,36 @@ started: Ongoing — the select-meals 500 was fixed (plan 14-06) but grounded re
   found: Hard rejection (return null) when min_calories or max_calories is not a number. SearchDirective type declares these as number | null. If household has no calorie targets at all, AI may produce null and the directive is silently dropped, causing "did not produce directives for every enabled matrix cell" error.
   implication: Relaxed to accept null via parseCalories helper — lets calorie-free households generate plans without crashing.
 
+- timestamp: 2026-04-18T22:00:00Z
+  checked: checkpoint response — recipe name "chicken pasta dinner family style for leftovers fallback" after calorie-widening fix deployed (or not yet deployed)
+  found: The recipe name is built from `${directive.query} fallback` in normalizeFallbackSlot line 227. This means the AI coordinator sent query="chicken pasta dinner family style for leftovers". Spoonacular returned 0 results for this verbose query, triggering provider-no-results fallback.
+  implication: The calorie-widening fix alone is insufficient. Even with a valid calorie range, Spoonacular returns 0 for a 7-word leftover-phrase query. The system prompt's "unless leftover strategy is explicitly enabled" carve-out is actively causing this.
+
+- timestamp: 2026-04-18T22:00:00Z
+  checked: MealPlanner.tsx line 23 — leftoverStrategy initial state
+  found: const [leftoverStrategy, setLeftoverStrategy] = useState<boolean>(true) — defaults to true on every page load. User has not toggled it off. select-meals receives leftover_strategy=true for every generation.
+  implication: leftoverStrategy=true is the default runtime state. The AI coordinator always has permission to use verbose leftover phrases in query strings.
+
+- timestamp: 2026-04-18T22:00:00Z
+  checked: select-meals/index.ts buildPrompts systemPrompt — the carve-out sentence
+  found: "Do not use query phrases like 'leftovers', 'meal prep', 'batch cook', 'cook once eat twice', 'family style', or 'double batch' unless leftover strategy is explicitly enabled." Combined with leftover_strategy=true default, this unconditionally grants AI permission to use all banned phrases.
+  implication: Fix must remove the "unless" carve-out. Leftover strategy should only affect WHICH slots share a query (two slots with same short query = cook-once plan), not the verbosity of the query string itself.
+
 ## Resolution
 
 root_cause: |
-  CONFIRMED: collectMemberContext in select-meals/index.ts produces calorie_range.min === calorie_range.max when the household has one member with a single target_calories value. The AI coordinator passes this zero-width range into each SearchDirective (min_calories=N, max_calories=N). fetchComplexSearch sends minCalories=N&maxCalories=N to Spoonacular, which returns 0 results for every directive. This triggers provider-no-results fallback for all slots, producing silent HTTP 200 with AI-generated meals. Secondary: number=2 is too few candidates for allergen filtering to have headroom.
+  TWO confirmed root causes for provider-no-results on every directive:
+  1. Zero-width calorie range: collectMemberContext produces min_calories === max_calories for single-member households. Spoonacular returns 0 results for a zero-width range. Fix (calorie-widening ±20%) is already in code but NOT YET DEPLOYED.
+  2. Verbose AI-generated queries from leftover strategy: The system prompt in buildPrompts explicitly allows phrases like "leftovers", "family style", "double batch" when leftover_strategy is true. leftover_strategy defaults to true (MealPlanner.tsx line 23). AI generates queries like "chicken pasta dinner family style for leftovers" which Spoonacular cannot match regardless of calorie range. This second cause is actively firing and is the more immediate blocker — even after deploying the calorie-widening fix, queries like this would still return 0 results.
 
 fix: |
-  1. select-meals/index.ts — collectMemberContext: when minCalories === maxCalories after collecting all members, widen to ±20% before returning to AI coordinator. This ensures AI directives use a searchable calorie range (e.g., 1600–2400 instead of 2000–2000).
-  2. spoonacular.ts — fetchComplexSearch: apply same ±20% widening as a safety net at the HTTP call level if the directive still arrives with min === max.
-  3. spoonacular.ts — fetchComplexSearch: increase number from 2 to 5 so allergen filtering has more candidates before falling back.
-  4. select-meals/index.ts — normalizeDirective: relaxed hard rejection of non-number calories to accept null via parseCalories helper, preventing silent directive drops for calorie-free households.
+  1. select-meals/index.ts — buildPrompts systemPrompt: enforce short, provider-searchable query strings unconditionally. Remove the "unless leftover strategy is explicitly enabled" carve-out that permits verbose query phrases. Leftover strategy should express itself via repeated queries across slots (same short query for two slots = plan to cook once and eat twice), never via verbose query strings.
+  2. select-meals/index.ts — collectMemberContext: widen calorie range ±20% when min===max (already in code, not yet deployed).
+  3. spoonacular.ts — fetchComplexSearch: same ±20% calorie widening safety net (already in code, not yet deployed).
+  4. spoonacular.ts — fetchComplexSearch: number=5 (already in code, not yet deployed).
+  5. select-meals/index.ts — normalizeDirective: parseCalories helper accepts null (already in code, not yet deployed).
 
-verification: pending — fix applied, awaiting deploy and user verification
+verification: pending — all code fixes applied; awaiting deploy and user verification
 files_changed:
   - supabase/functions/_shared/spoonacular.ts
   - supabase/functions/select-meals/index.ts
