@@ -57,6 +57,7 @@ type SlotResponse = {
   meal_type: 'breakfast' | 'lunch' | 'dinner'
   recipe: NormalizedRecipe
   shopping_items: NormalizedShoppingItem[]
+  fallback_reason: string | null
 }
 
 type RecipeSearchResponse = {
@@ -168,6 +169,7 @@ function normalizeProviderSlot(directive: SearchDirective, recipe: SpoonacularRe
       image_url: recipe.image ?? null,
     },
     shopping_items: ingredients.map(normalizeShoppingItem),
+    fallback_reason: null,
   }
 }
 
@@ -196,6 +198,7 @@ function normalizeFallbackShoppingItem(
 function normalizeFallbackSlot(
   directive: SearchDirective,
   payload: FallbackPayload,
+  reason: string,
 ): SlotResponse {
   const recipeRecord = (payload.recipe && typeof payload.recipe === 'object')
     ? payload.recipe
@@ -238,6 +241,7 @@ function normalizeFallbackSlot(
       image_url: null,
     },
     shopping_items: shoppingItems.map((item) => normalizeFallbackShoppingItem(item, directive.meal_type)),
+    fallback_reason: reason,
   }
 }
 
@@ -292,7 +296,7 @@ async function buildFallbackSlot(
     }),
   })
 
-  return normalizeFallbackSlot(directive, parseFallbackContent(aiResult.content))
+  return normalizeFallbackSlot(directive, parseFallbackContent(aiResult.content), reason)
 }
 
 function parseQuotaNumber(value: string | null, fallback: number): number {
@@ -448,7 +452,12 @@ export function createHandler(overrides: Partial<HandlerDependencies> = {}) {
         threshold,
       })
 
-      const apiKey = Deno.env.get('SPOONACULAR_API_KEY')
+      const rawApiKey = Deno.env.get('SPOONACULAR_API_KEY')
+      const apiKey = typeof rawApiKey === 'string' ? rawApiKey.trim() : rawApiKey
+      if (!apiKey) {
+        console.warn('[recipe-search] SPOONACULAR_API_KEY is not set — all slots will use AI fallback. Set the secret via: supabase secrets set SPOONACULAR_API_KEY=<your_key>')
+      }
+      console.log(`[recipe-search] quota_state=${JSON.stringify(quotaStatus)} dailyLimit=${dailyLimit} threshold=${threshold}`)
       const slots: SlotResponse[] = []
 
       for (const directive of directives) {
@@ -460,6 +469,7 @@ export function createHandler(overrides: Partial<HandlerDependencies> = {}) {
         }
 
         if (quotaStatus.threshold_reached) {
+          console.error(`[recipe-search] fallback=quota-threshold-reached day=${directive.day} meal=${directive.meal_type} points_used=${quotaStatus.points_used_today} threshold_points=${quotaStatus.threshold_points}`)
           slots.push(await buildFallbackSlot(
             deps,
             directive,
@@ -470,6 +480,7 @@ export function createHandler(overrides: Partial<HandlerDependencies> = {}) {
         }
 
         if (!apiKey) {
+          console.error(`[recipe-search] fallback=missing-spoonacular-api-key day=${directive.day} meal=${directive.meal_type}`)
           slots.push(await buildFallbackSlot(
             deps,
             directive,
@@ -507,6 +518,7 @@ export function createHandler(overrides: Partial<HandlerDependencies> = {}) {
         })
 
         if (providerResponse.status === 402) {
+          console.error(`[recipe-search] fallback=provider-quota-exhausted day=${directive.day} meal=${directive.meal_type} status=402`)
           slots.push(await buildFallbackSlot(
             deps,
             directive,
@@ -517,6 +529,7 @@ export function createHandler(overrides: Partial<HandlerDependencies> = {}) {
         }
 
         if (!providerResponse.ok) {
+          console.error(`[recipe-search] fallback=provider-error day=${directive.day} meal=${directive.meal_type} status=${providerResponse.status}`)
           slots.push(await buildFallbackSlot(
             deps,
             directive,
@@ -531,11 +544,13 @@ export function createHandler(overrides: Partial<HandlerDependencies> = {}) {
         const compliantCandidate = selectCompliantCandidate(candidates, directive)
 
         if (!compliantCandidate) {
+          const fallbackReason = candidates.length === 0 ? 'provider-no-results' : 'taxonomy-rejected-all-candidates'
+          console.error(`[recipe-search] fallback=${fallbackReason} day=${directive.day} meal=${directive.meal_type} query="${directive.query}" candidateCount=${candidates.length}`)
           slots.push(await buildFallbackSlot(
             deps,
             directive,
             body.household_id,
-            candidates.length === 0 ? 'provider-no-results' : 'taxonomy-rejected-all-candidates',
+            fallbackReason,
           ))
           continue
         }
